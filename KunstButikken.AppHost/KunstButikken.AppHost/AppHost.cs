@@ -1,3 +1,4 @@
+#pragma warning disable CS8604,CS8601,CS8625
 // Use the main Aspire.Hosting namespace (extension methods live in this namespace)
 using Aspire.Hosting;
 using KunstButikken.ServiceDefaults;
@@ -55,19 +56,22 @@ var keycloak = builder.AddContainer("keycloak", "quay.io/keycloak/keycloak", "la
 // Wait for Keycloak OIDC discovery to be reachable (prevents frontend/keycloak-init hangs)
 keycloak.WaitForHttp($"/realms/{realmName}/.well-known/openid-configuration", "http");
 
+// Local variables with null-forgiving where GetEndpoint is used multiple times
+var keycloakHttpEndpoint = keycloak.GetEndpoint("http")!;
+
 // RabbitMQ
 var eventBus = builder.AddRabbitMQ("eventbus");
 
 // Microservices
 var userService = builder.AddProject("user-service", "../../KunstButikken.UserService/KunstButikken.UserService/KunstButikken.UserService.csproj")
     .WithReference(usersDb)
-    .WithReference(keycloak.GetEndpoint("http")!)
+    .WithReference(keycloakHttpEndpoint)
     .WithReference(postgres)
     .WithReference(eventBus)
     .WithEnvironment("ConnectionStrings__Default", usersDb)
-    .WithEnvironment("KEYCLOAK_ISSUER", $"{keycloak.GetEndpoint("http")!}/realms/{realmName}")
+    .WithEnvironment("KEYCLOAK_ISSUER", $"{keycloakHttpEndpoint}/realms/{realmName}")
     .WithEnvironment("KEYCLOAK_REALM", realmName)
-    .WithEnvironment("KEYCLOAK_BASE", keycloak.GetEndpoint("http")!)
+    .WithEnvironment("KEYCLOAK_BASE", keycloakHttpEndpoint)
     .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", keycloakAdminUser)
     .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", keycloakAdminPassword)
     // Pin the host port for the user-service to avoid collisions with macOS system services.
@@ -272,22 +276,21 @@ var nextJsFrontend = builder.AddNpmApp("frontend", nextFrontendPath, "dev")
     .WithEnvironment("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? "")
     .WithEnvironment("NEXT_PUBLIC_API_GATEWAY", authGateway.GetEndpoint("gateway")!)
     .WithEnvironment("NEXT_PUBLIC_AUCTION_SIGNALR_URL", $"{authGateway.GetEndpoint("gateway")!}/hubs/auctions")
-    .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_BASE_URL", keycloak.GetEndpoint("http")!)
+    .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_BASE_URL", keycloakHttpEndpoint!)
     .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_REALM", realmName)
-    .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_ISSUER", $"{keycloak.GetEndpoint("http")!}/realms/{realmName}")
+    .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_ISSUER", $"{keycloakHttpEndpoint!}/realms/{realmName}")
     .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_CLIENT_ID", keycloakClientId)
     .WaitFor(keycloak)
     .WaitFor(postgres)
     .WaitFor(authGateway);
 
-// Angular Frontend (run npm script 'start' in the angular frontend folder)
 var angularFrontend = builder.AddNpmApp("frontend-ang", angularFrontendPath, "start")
     .WithHttpEndpoint(targetPort: 4200, port: 4200, name: "web", isProxied: false)
     .WithEnvironment("NG_APP_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? "")
     .WithEnvironment("NG_APP_API_GATEWAY", authGateway.GetEndpoint("gateway")!)
-    .WithEnvironment("NG_APP_KEYCLOAK_BASE_URL", keycloak.GetEndpoint("http")!)
+    .WithEnvironment("NG_APP_KEYCLOAK_BASE_URL", keycloakHttpEndpoint!)
     .WithEnvironment("NG_APP_KEYCLOAK_REALM", realmName)
-    .WithEnvironment("NG_APP_KEYCLOAK_ISSUER", $"{keycloak.GetEndpoint("http")!}/realms/{realmName}")
+    .WithEnvironment("NG_APP_KEYCLOAK_ISSUER", $"{keycloakHttpEndpoint!}/realms/{realmName}")
     .WithEnvironment("NG_APP_KEYCLOAK_CLIENT_ID", keycloakAngularClientId)
     .WaitFor(keycloak)
     .WaitFor(postgres)
@@ -510,3 +513,4 @@ static void PropagateCors(
         svc.WithEnvironment("FRONTEND_ORIGINS", string.Join(",", origins));
     }
 }
+#pragma warning restore CS8604,CS8601,CS8625

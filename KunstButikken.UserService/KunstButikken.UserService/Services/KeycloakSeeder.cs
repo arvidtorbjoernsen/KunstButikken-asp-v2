@@ -426,7 +426,7 @@ public class KeycloakSeeder(
 
                 if (checkResponse.IsSuccessStatusCode)
                 {
-                    _roleExists(logger, roleName, ctx.Realm, null);
+                    _roleExists(logger, roleName!, ctx.Realm!, null);
                     continue;
                 }
 
@@ -443,12 +443,12 @@ public class KeycloakSeeder(
 
                 if (createResponse.IsSuccessStatusCode)
                 {
-                    _roleCreated(logger, roleName, ctx.Realm, null);
+                    _roleCreated(logger, roleName!, ctx.Realm!, null);
                 }
                 else
                 {
                     var errorContent = await createResponse.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
-                    _failedToCreateRole(logger, roleName, createResponse.StatusCode, errorContent, null);
+                    _failedToCreateRole(logger, roleName!, createResponse.StatusCode, errorContent ?? string.Empty, null);
                 }
             }
             catch (Exception ex)
@@ -482,16 +482,16 @@ public class KeycloakSeeder(
             if (users is { Count: > 0 } && users[0].TryGetProperty("id", out var idElement))
             {
                 var userId = idElement.GetString();
-                _foundUserId(logger, username, userId, null);
+                _foundUserId(logger, username, userId ?? string.Empty, null);
                 return userId;
             }
 
-            _userNotFoundAfterCreation(logger, username, null);
+            _userNotFoundAfterCreation(logger, username ?? string.Empty, null);
             return null;
         }
         catch (Exception ex)
         {
-            _errorEnsuringRole(logger, username, ex); // reuse an error delegate; will still record message
+            _errorEnsuringRole(logger, username ?? string.Empty, ex);
             return null;
         }
     }

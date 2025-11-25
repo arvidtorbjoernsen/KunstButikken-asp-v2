@@ -15,7 +15,10 @@ public class DevController(
     IWebHostEnvironment env,
     IServiceProvider services,
     ILogger<DevController>? logger = null) : ControllerBase
-{
+{ // Reference constructor parameters to avoid CS9113 "parameter is unread" warnings
+    private readonly IHttpClientFactory _httpFactory = http;
+    private readonly ILogger<DevController>? _loggerField = logger;
+
     private static readonly string[] RolesSeller = ["seller"];
     private static readonly string[] RolesBuyer = ["buyer"];
     private static readonly string[] RolesAdmin = ["admin"];
