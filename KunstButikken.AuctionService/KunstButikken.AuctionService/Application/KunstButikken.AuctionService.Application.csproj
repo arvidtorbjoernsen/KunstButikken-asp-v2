@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\..\..\KunstButikken.IntegrationEvents.Contracts\KunstButikken.IntegrationEvents.Contracts.csproj" />
+    <ProjectReference Include="..\Domain\KunstButikken.AuctionService.Domain.csproj" />
+    <ProjectReference Include="..\..\KunstButikken.IntegrationEvents.Contracts\KunstButikken.IntegrationEvents.Contracts.csproj" />
     <ProjectReference Include="..\..\KunstButikken.Common.Logging\KunstButikken.Common.Logging.csproj" />
     <ProjectReference Include="..\..\KunstButikken.ServiceDefaults\KunstButikken.ServiceDefaults.csproj" />
   </ItemGroup>

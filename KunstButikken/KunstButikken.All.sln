@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -23,23 +22,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".tmp", ".tmp", "{8171D0AE-4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nullblobtest", ".tmp\nullblobtest\nullblobtest.csproj", "{C8321AF1-A5EE-45E3-8A99-4464C81AA763}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "..\KunstButikken.AdminService\KunstButikken.AdminService\Application\Application.csproj", "{F598F2E8-5806-4943-B0DC-0BABA868AA6C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "..\KunstButikken.AdminService\KunstButikken.AdminService\Domain\Domain.csproj", "{4E74A8DF-DD5F-4F13-BD40-B31D237E89CF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AdminService.Domain", "..\KunstButikken.AdminService\KunstButikken.AdminService\Domain\KunstButikken.AdminService.Domain.csproj", "{0521D1A0-B6D2-4BA5-AC43-7461BA91AFF8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AdminService.Application", "..\KunstButikken.AdminService\KunstButikken.AdminService\Application\KunstButikken.AdminService.Application.csproj", "{5FD531F9-8760-4690-A04B-EEDE05BAB742}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.IntegrationEvents.Contracts", "..\KunstButikken.IntegrationEvents.Contracts\KunstButikken.IntegrationEvents.Contracts.csproj", "{758B3DA2-26D7-459A-A8FE-B7D58218BF8A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.Common.Logging", "..\KunstButikken.Common.Logging\KunstButikken.Common.Logging.csproj", "{DB02A64A-CF23-46AD-87B4-23809768CD71}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AdminService", "..\KunstButikken.AdminService\KunstButikken.AdminService\KunstButikken.AdminService.csproj", "{8C542E34-F1CE-4022-B2D0-EF9F13BFE834}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AdminService.Infrastructure", "..\KunstButikken.AdminService\KunstButikken.AdminService\Infrastructure\KunstButikken.AdminService.Infrastructure.csproj", "{70F06FAF-413F-4AC4-B6D9-50D16D9B0389}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "..\KunstButikken.AdminService\KunstButikken.AdminService\Infrastructure\Infrastructure.csproj", "{4A2C61A8-103A-4F03-8D75-292A84C0B209}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService", "..\KunstButikken.AuctionService\KunstButikken.AuctionService\KunstButikken.AuctionService.csproj", "{1527C4D3-3CC9-4ABD-A957-15840B5737C1}"
 EndProject

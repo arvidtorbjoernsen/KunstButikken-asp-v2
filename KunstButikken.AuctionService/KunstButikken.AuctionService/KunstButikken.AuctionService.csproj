@@ -5,6 +5,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.OpenApi" />
@@ -17,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="../Application/KunstButikken.AuctionService.Application.csproj" />
     <ProjectReference Include="../Infrastructure/KunstButikken.AuctionService.Infrastructure.csproj" />
+    <ProjectReference Include="../../KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj" />
     <ProjectReference Include="../../KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj" />
     <ProjectReference Include="../../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj" />
   </ItemGroup>
