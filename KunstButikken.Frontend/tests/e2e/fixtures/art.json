@@ -1,0 +1,9 @@
+[
+  { "id": "1", "title": "Sunset Over Oslo", "artist": "A. Painter", "sellerDisplayName": "Gallery A", "price": 250, "imageUrl": "/placeholder-600x400.svg" },
+  { "id": "2", "title": "Blue Horizon", "artist": "B. Artist", "sellerDisplayName": "Gallery B", "price": 420, "imageUrl": "/placeholder-600x400.svg" },
+  { "id": "3", "title": "Forest Path", "artist": "C. Creator", "sellerDisplayName": "Gallery C", "price": 150, "imageUrl": "/placeholder-600x400.svg" },
+  { "id": "4", "title": "City Lights", "artist": "D. Drawer", "sellerDisplayName": "Gallery D", "price": 990, "imageUrl": "/placeholder-600x400.svg" },
+  { "id": "5", "title": "Abstract Forms", "artist": "E. Maker", "sellerDisplayName": "Gallery E", "price": 310, "imageUrl": "/placeholder-600x400.svg" },
+  { "id": "6", "title": "Mountain View", "artist": "F. Painter", "sellerDisplayName": "Gallery F", "price": 430, "imageUrl": "/placeholder-600x400.svg" }
+]
+

@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Infrastructure compiles only files in its project folder (default globbing).
+         Removed cross-project Compile includes that caused duplicate types to be compiled
+         both into the Web project and into this library. Place shared types into the
+         Domain/Application projects or keep copies inside this Infrastructure folder. -->
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Framework packages used by the included service files -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\KunstButikken.UserService.Domain.csproj" />
+    <ProjectReference Include="..\..\..\KunstButikken.IntegrationEvents.Contracts\KunstButikken.IntegrationEvents.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\KunstButikken.ServiceDefaults\KunstButikken.ServiceDefaults.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\KunstButikken.Common.Logging\KunstButikken.Common.Logging.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Include the UserService implementation files that live in the solution's Data/Services folders
+         The Web project explicitly removes these files from its compilation so the class library
+         becomes the single owner of these implementation files. -->
+    <Compile Include="..\Data\**\*.cs" />
+    <Compile Include="..\Services\**\*.cs" />
+    <Compile Include="..\Migrations\**\*.cs" />
+    <Compile Include="..\Logging\**\*.cs" />
+    <!-- Include only the DTOs/helpers from Controllers that are used by services -->
+    <Compile Include="..\Controllers\DevRequests.cs" />
+    <Compile Include="..\Controllers\DevControllerHelpers.cs" />
+    <!-- Controllers are part of the Web project; do not include them here to avoid duplicate types -->
+  </ItemGroup>
+</Project>

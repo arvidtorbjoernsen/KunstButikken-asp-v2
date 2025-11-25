@@ -1,0 +1,17 @@
+/* Global base styles — keep minimal to avoid fighting MUI theme. */
+
+html, body { height: 100%; }
+
+/* Smoothing defaults */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Constrain MUI SvgIcon dimensions globally to prevent oversized icons if any rule leaks */
+.MuiSvgIcon-root {
+  width: 1em !important;
+  height: 1em !important;
+  display: inline-block !important;
+  color: inherit !important;
+}

@@ -1,0 +1,574 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-10-20T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2025.1.0",
+  "resources": [
+    {
+      "_id": "wrk_kunstbutikken",
+      "_type": "workspace",
+      "name": "KunstButikken",
+      "description": "Workspace for KunstButikken services (Auth, User, Art, Auction, Payment, Admin)",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_kunstbutikken",
+      "_type": "environment",
+      "parentId": "wrk_kunstbutikken",
+      "name": "KunstButikken - Local",
+      "data": {
+        "authBaseUrl": "http://localhost:5010",
+        "userBaseUrl": "http://localhost:5011",
+        "artBaseUrl": "http://localhost:5012",
+        "auctionBaseUrl": "http://localhost:5013",
+        "paymentBaseUrl": "http://localhost:5082",
+        "paymentWebhookBaseUrl": "http://localhost:5083",
+        "adminBaseUrl": "http://localhost:5014",
+        "keycloakBaseUrl": "http://localhost:8080",
+        "realm": "KunstButikken",
+        "clientId": "kunstbutikken-insomnia",
+        "username": "admin",
+        "password": "admin",
+        "scope": "openid",
+        "tokenEndpoint": "http://localhost:8080/realms/KunstButikken/protocol/openid-connect/token",
+        "accessToken": "",
+        "refreshToken": "",
+        "bearerToken": "",
+        "adminAccessToken": "",
+        "seller1AccessToken": "",
+        "seller2AccessToken": "",
+        "buyer1AccessToken": "",
+        "buyer2AccessToken": "",
+        "buyer3AccessToken": ""
+      }
+    },
+    {
+      "_id": "fld_kc",
+      "_type": "request_group",
+      "parentId": "wrk_kunstbutikken",
+      "name": "Keycloak (OIDC)"
+    },
+    {
+      "_id": "req_kc_openid_config",
+      "_type": "request",
+      "parentId": "fld_kc",
+      "name": ".well-known/openid-configuration",
+      "method": "GET",
+      "body": {},
+      "url": "{{ keycloakBaseUrl }}/realms/{{ realm }}/.well-known/openid-configuration",
+      "headers": []
+    },
+    {
+      "_id": "req_kc_token_pwd",
+      "_type": "request",
+      "parentId": "fld_kc",
+      "name": "Token (password grant)",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/x-www-form-urlencoded",
+        "params": [
+          { "name": "grant_type", "value": "password" },
+          { "name": "client_id", "value": "{{ clientId }}" },
+          { "name": "username", "value": "{{ username }}" },
+          { "name": "password", "value": "{{ password }}" },
+          { "name": "scope", "value": "{{ scope }}" }
+        ]
+      },
+      "url": "{{ keycloakBaseUrl }}/realms/{{ realm }}/protocol/openid-connect/token",
+      "headers": [ { "name": "Content-Type", "value": "application/x-www-form-urlencoded" } ]
+    },
+    {
+      "_id": "req_kc_token_refresh",
+      "_type": "request",
+      "parentId": "fld_kc",
+      "name": "Token (refresh)",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/x-www-form-urlencoded",
+        "params": [
+          { "name": "grant_type", "value": "refresh_token" },
+          { "name": "client_id", "value": "{{ clientId }}" },
+          { "name": "refresh_token", "value": "{{ refreshToken }}" }
+        ]
+      },
+      "url": "{{ keycloakBaseUrl }}/realms/{{ realm }}/protocol/openid-connect/token",
+      "headers": [ { "name": "Content-Type", "value": "application/x-www-form-urlencoded" } ]
+    },
+    {
+      "_id": "fld_auth",
+      "_type": "request_group",
+      "parentId": "wrk_kunstbutikken",
+      "name": "AuthGateway"
+    },
+    {
+      "_id": "req_auth_alive",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "Alive",
+      "method": "GET",
+      "body": {},
+      "url": "{{ authBaseUrl }}/auth/alive",
+      "headers": []
+    },
+    {
+      "_id": "req_auth_me",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "Me (requires bearer token)",
+      "method": "GET",
+      "body": {},
+      "url": "{{ authBaseUrl }}/auth/me",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ accessToken }}" }
+      ]
+    },
+    {
+      "_id": "fld_user",
+      "_type": "request_group",
+      "parentId": "wrk_kunstbutikken",
+      "name": "UserService"
+    },
+    {
+      "_id": "req_user_me",
+      "_type": "request",
+      "parentId": "fld_user",
+      "name": "Get my profile",
+      "method": "GET",
+      "body": {},
+      "url": "{{ userBaseUrl }}/api/profile/me",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_user_update",
+      "_type": "request",
+      "parentId": "fld_user",
+      "name": "Update profile",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"displayName\": \"Example\",\n  \"email\": \"me@example.com\",\n  \"fullName\": \"Example Name\",\n  \"isSeller\": false\n}"
+      },
+      "url": "{{ userBaseUrl }}/api/profile",
+      "headers": [ { "name": "Content-Type", "value": "application/json" }, { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_user_register",
+      "_type": "request",
+      "parentId": "fld_user",
+      "name": "Register",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"newuser@example.com\",\n  \"fullName\": \"New User\",\n  \"displayName\": \"newuser\",\n  \"userType\": \"buyer\"\n}"
+      },
+      "url": "{{ userBaseUrl }}/api/profile/register",
+      "headers": [ { "name": "Content-Type", "value": "application/json" } ]
+    },
+    {
+      "_id": "req_user_admin_pending",
+      "_type": "request",
+      "parentId": "fld_user",
+      "name": "Admin - Pending Sellers",
+      "method": "GET",
+      "body": {},
+      "url": "{{ userBaseUrl }}/api/admin/profiles/pending-sellers",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_user_admin_makebyemail",
+      "_type": "request",
+      "parentId": "fld_user",
+      "name": "Admin - Make admin by email",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"admin@example.com\"\n}"
+      },
+      "url": "{{ userBaseUrl }}/api/admin/profiles/make-admin-by-email",
+      "headers": [ { "name": "Content-Type", "value": "application/json" }, { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "fld_art",
+      "_type": "request_group",
+      "parentId": "wrk_kunstbutikken",
+      "name": "ArtService"
+    },
+    {
+      "_id": "req_art_list",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "List art",
+      "method": "GET",
+      "body": {},
+      "url": "{{ artBaseUrl }}/api/art",
+      "headers": []
+    },
+    {
+      "_id": "req_art_get",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "Get art by id",
+      "method": "GET",
+      "body": {},
+      "url": "{{ artBaseUrl }}/api/art/{{ artId }}",
+      "headers": []
+    },
+    {
+      "_id": "req_art_create",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "Create art (seller)",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Sunset\",\n  \"description\": \"A beautiful sunset\",\n  \"price\": 120.5,\n  \"artist\": \"Some Artist\"\n}"
+      },
+      "url": "{{ artBaseUrl }}/api/art",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ accessToken }}" }
+      ]
+    },
+    {
+      "_id": "req_art_upload",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "Upload image (form-data)",
+      "method": "POST",
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          { "name": "file", "type": "file", "fileName": "", "value": "", "contentType": "" }
+        ]
+      },
+      "url": "{{ artBaseUrl }}/api/art/{{ artId }}/upload",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_art_publish",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "Publish art",
+      "method": "POST",
+      "body": {},
+      "url": "{{ artBaseUrl }}/api/art/{{ artId }}/publish",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_art_verify",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "Verify art (admin)",
+      "method": "POST",
+      "body": {},
+      "url": "{{ artBaseUrl }}/api/art/{{ artId }}/verify",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_art_reject",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "Reject art (admin)",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "\"Reason for rejection\""
+      },
+      "url": "{{ artBaseUrl }}/api/art/{{ artId }}/reject",
+      "headers": [ { "name": "Content-Type", "value": "application/json" }, { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_art_feature",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "Feature art (admin)",
+      "method": "POST",
+      "body": {},
+      "url": "{{ artBaseUrl }}/api/art/{{ artId }}/feature",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_art_unfeature",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "Unfeature art (admin)",
+      "method": "DELETE",
+      "body": {},
+      "url": "{{ artBaseUrl }}/api/art/{{ artId }}/feature",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_art_featured",
+      "_type": "request",
+      "parentId": "fld_art",
+      "name": "Get featured",
+      "method": "GET",
+      "body": {},
+      "url": "{{ artBaseUrl }}/api/art/featured?limit=5",
+      "headers": []
+    },
+    {
+      "_id": "fld_auction",
+      "_type": "request_group",
+      "parentId": "wrk_kunstbutikken",
+      "name": "AuctionService"
+    },
+    {
+      "_id": "req_auction_list",
+      "_type": "request",
+      "parentId": "fld_auction",
+      "name": "List auctions",
+      "method": "GET",
+      "body": {},
+      "url": "{{ auctionBaseUrl }}/api/auctions",
+      "headers": []
+    },
+    {
+      "_id": "req_auction_get",
+      "_type": "request",
+      "parentId": "fld_auction",
+      "name": "Get auction",
+      "method": "GET",
+      "body": {},
+      "url": "{{ auctionBaseUrl }}/api/auctions/{{ auctionId }}",
+      "headers": []
+    },
+    {
+      "_id": "req_auction_create",
+      "_type": "request",
+      "parentId": "fld_auction",
+      "name": "Create auction",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Lot 1\",\n  \"startingPrice\": 50.0,\n  \"startsAt\": \"2025-10-20T12:00:00Z\",\n  \"endsAt\": \"2025-10-27T12:00:00Z\"\n}"
+      },
+      "url": "{{ auctionBaseUrl }}/api/auctions",
+      "headers": [ { "name": "Content-Type", "value": "application/json" }, { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_auction_bid",
+      "_type": "request",
+      "parentId": "fld_auction",
+      "name": "Bid on auction",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "100.0"
+      },
+      "url": "{{ auctionBaseUrl }}/api/auctions/{{ auctionId }}/bid",
+      "headers": [ { "name": "Content-Type", "value": "application/json" }, { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_auction_close",
+      "_type": "request",
+      "parentId": "fld_auction",
+      "name": "Close auction (admin)",
+      "method": "POST",
+      "body": {},
+      "url": "{{ auctionBaseUrl }}/api/auctions/{{ auctionId }}/close",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "fld_payment",
+      "_type": "request_group",
+      "parentId": "wrk_kunstbutikken",
+      "name": "PaymentService"
+    },
+    {
+      "_id": "req_payment_checkout",
+      "_type": "request",
+      "parentId": "fld_payment",
+      "name": "Create checkout session",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"amount\": 25.5,\n  \"currency\": \"usd\",\n  \"artId\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "url": "{{ paymentBaseUrl }}/api/payments/checkout-session",
+      "headers": [ { "name": "Content-Type", "value": "application/json" }, { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_payment_webhook",
+      "_type": "request",
+      "parentId": "fld_payment",
+      "name": "Webhook (stripe) - simulate",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": \"evt_test_webhook\",\n  \"type\": \"checkout.session.completed\",\n  \"data\": { \"object\": { \"id\": \"cs_test_session\" } }\n}"
+      },
+      "url": "{{ paymentWebhookBaseUrl }}/api/payments/webhook",
+      "headers": [ { "name": "Content-Type", "value": "application/json" } ]
+    },
+    {
+      "_id": "fld_admin",
+      "_type": "request_group",
+      "parentId": "wrk_kunstbutikken",
+      "name": "AdminService"
+    },
+    {
+      "_id": "req_admin_approve",
+      "_type": "request",
+      "parentId": "fld_admin",
+      "name": "Approve art",
+      "method": "POST",
+      "body": {},
+      "url": "{{ adminBaseUrl }}/api/admin/art/{{ artId }}/approve",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_admin_reject",
+      "_type": "request",
+      "parentId": "fld_admin",
+      "name": "Reject art",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "\"Duplicate content\""
+      },
+      "url": "{{ adminBaseUrl }}/api/admin/art/{{ artId }}/reject",
+      "headers": [ { "name": "Content-Type", "value": "application/json" }, { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "req_admin_health",
+      "_type": "request",
+      "parentId": "fld_admin",
+      "name": "Health",
+      "method": "GET",
+      "body": {},
+      "url": "{{ adminBaseUrl }}/api/admin/health",
+      "headers": []
+    },
+    {
+      "_id": "fld_keycloak",
+      "_type": "request_group",
+      "parentId": "wrk_kunstbutikken",
+      "name": "Keycloak"
+    },
+    {
+      "_id": "req_kc_get_token",
+      "_type": "request",
+      "parentId": "fld_keycloak",
+      "name": "Get Token (password grant)",
+      "method": "POST",
+      "url": "{{ tokenEndpoint }}",
+      "body": {
+        "mimeType": "application/x-www-form-urlencoded",
+        "params": [
+          { "name": "grant_type", "value": "password", "disabled": false },
+          { "name": "client_id", "value": "{{ clientId }}", "disabled": false },
+          { "name": "username", "value": "{{ username }}", "disabled": false },
+          { "name": "password", "value": "{{ password }}", "disabled": false },
+          { "name": "scope", "value": "{{ scope }}", "disabled": false }
+        ]
+      },
+      "headers": [ { "name": "Content-Type", "value": "application/x-www-form-urlencoded" } ],
+      "events": [
+        {
+          "_id": "evt_req_kc_get_token_response",
+          "_type": "request",
+          "event": "response",
+          "actions": [
+            {
+              "_id": "act_set_tokens",
+              "_type": "responseAction",
+              "actionType": "setEnvironment",
+              "data": {
+                "accessToken": "{{ response.body.access_token }}",
+                "refreshToken": "{{ response.body.refresh_token }}",
+                "bearerToken": "Bearer {{ response.body.access_token }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_id": "req_kc_refresh",
+      "_type": "request",
+      "parentId": "fld_keycloak",
+      "name": "Refresh Token",
+      "method": "POST",
+      "url": "{{ tokenEndpoint }}",
+      "body": {
+        "mimeType": "application/x-www-form-urlencoded",
+        "params": [
+          { "name": "grant_type", "value": "refresh_token", "disabled": false },
+          { "name": "client_id", "value": "{{ clientId }}", "disabled": false },
+          { "name": "refresh_token", "value": "{{ refreshToken }}", "disabled": false }
+        ]
+      },
+      "headers": [ { "name": "Content-Type", "value": "application/x-www-form-urlencoded" } ]
+    },
+    {
+      "_id": "req_kc_test",
+      "_type": "request",
+      "parentId": "fld_keycloak",
+      "name": "Test Authenticated Request",
+      "method": "GET",
+      "url": "{{ keycloakBaseUrl }}/realms/{{ realm }}/protocol/openid-connect/userinfo",
+      "headers": [ { "name": "Authorization", "value": "Bearer {{ accessToken }}" } ]
+    },
+    {
+      "_id": "env_user_admin",
+      "_type": "environment",
+      "parentId": "env_kunstbutikken",
+      "name": "User: Admin",
+      "data": {
+        "username": "admin@example.com",
+        "password": "admin"
+      }
+    },
+    {
+      "_id": "env_user_seller1",
+      "_type": "environment",
+      "parentId": "env_kunstbutikken",
+      "name": "User: Seller 1",
+      "data": {
+        "username": "seller1@example.com",
+        "password": "password"
+      }
+    },
+    {
+      "_id": "env_user_seller2",
+      "_type": "environment",
+      "parentId": "env_kunstbutikken",
+      "name": "User: Seller 2",
+      "data": {
+        "username": "seller2@example.com",
+        "password": "password"
+      }
+    },
+    {
+      "_id": "env_user_buyer1",
+      "_type": "environment",
+      "parentId": "env_kunstbutikken",
+      "name": "User: Buyer 1",
+      "data": {
+        "username": "buyer1@example.com",
+        "password": "password"
+      }
+    },
+    {
+      "_id": "env_user_buyer2",
+      "_type": "environment",
+      "parentId": "env_kunstbutikken",
+      "name": "User: Buyer 2",
+      "data": {
+        "username": "buyer2@example.com",
+        "password": "password"
+      }
+    },
+    {
+      "_id": "env_user_buyer3",
+      "_type": "environment",
+      "parentId": "env_kunstbutikken",
+      "name": "User: Buyer 3",
+      "data": {
+        "username": "buyer3@example.com",
+        "password": "password"
+      }
+    }
+  ]
+}

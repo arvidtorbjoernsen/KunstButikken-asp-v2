@@ -1,0 +1,15 @@
+
+<!-- src/assets/silent-check-sso.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Silent SSO Check</title>
+</head>
+<body>
+<script>
+  // This script allows Keycloak to perform a silent SSO check via iframe
+  parent.postMessage(location.href, location.origin);
+</script>
+</body>
+</html>
+

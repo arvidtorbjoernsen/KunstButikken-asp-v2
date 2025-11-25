@@ -1,0 +1,65 @@
+<div class="home">
+  <header class="hero">
+    <div class="hero-text">
+      <h1 class="mat-headline-3">{{ 'home.title' | translate }}</h1>
+      <p class="mat-body-1">{{ 'home.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <section class="art-section">
+    <h2 class="mat-headline-5">{{ 'home.featured' | translate }}</h2>
+    @if (loadingFeatured()) {
+      <div class="loading">
+        <mat-spinner diameter="28"></mat-spinner>
+        <span class="mat-body-1">{{ 'home.loading' | translate }}</span>
+      </div>
+    } @else {
+      @if (hasFeatured()) {
+        <mat-grid-list [cols]="cols()" gutterSize="16px" rowHeight="1:1.5">
+          @for (art of featured(); track art.id; let i = $index) {
+            <mat-grid-tile>
+              <app-art-card [art]="art" [priority]="i < cols()"></app-art-card>
+            </mat-grid-tile>
+          }
+        </mat-grid-list>
+      } @else {
+        <div class="empty mat-body-1">
+          <mat-icon>inventory_2</mat-icon>
+          <span>{{ 'home.noResults' | translate }}</span>
+        </div>
+      }
+    }
+  </section>
+
+  <section class="art-section">
+    <h2 class="mat-headline-5">{{ 'home.allArt' | translate }}</h2>
+    @if (loadingArt()) {
+      <div class="loading">
+        <mat-spinner diameter="28"></mat-spinner>
+        <span class="mat-body-1">{{ 'home.loading' | translate }}</span>
+      </div>
+    } @else {
+      @if (hasArt()) {
+        <mat-grid-list [cols]="cols()" gutterSize="16px" rowHeight="1:1.5">
+          @for (art of art(); track art.id; let i = $index) {
+            <mat-grid-tile>
+              <app-art-card [art]="art" [priority]="i < cols()"></app-art-card>
+            </mat-grid-tile>
+          }
+        </mat-grid-list>
+      } @else {
+        <div class="empty mat-body-1">
+          <mat-icon>inventory_2</mat-icon>
+          <span>{{ 'home.noResults' | translate }}</span>
+        </div>
+      }
+    }
+  </section>
+
+  @if (error()) {
+    <div class="error mat-body-1">
+      <mat-icon color="warn">warning</mat-icon>
+      <span>{{ 'errors.artLoad' | translate }}</span>
+    </div>
+  }
+</div>

@@ -1,0 +1,291 @@
+
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">account_circle</mat-icon>
+      <div class="header-text">
+        <h1>My Profile</h1>
+        <p class="subtitle">Manage your account and auction preferences</p>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading your profile...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon color="warn">error_outline</mat-icon>
+          <p>{{ error() }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (!loading() && profile()) {
+    <div class="profile-content">
+      <!-- Profile Overview Card -->
+      <mat-card class="overview-card">
+        <mat-card-header>
+          <div class="profile-avatar">
+            @if (profile()?.profileImageUrl) {
+              <img [src]="profile()?.profileImageUrl" alt="Profile picture" />
+            } @else {
+              <mat-icon>account_circle</mat-icon>
+            }
+          </div>
+          <mat-card-title>{{ profile()?.displayName }}</mat-card-title>
+          <mat-card-subtitle>{{ profile()?.email }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="badges">
+            @if (profile()?.isSeller) {
+              <mat-chip-set>
+                <mat-chip class="seller-chip">
+                  <mat-icon>store</mat-icon>
+                  Seller Account
+                </mat-chip>
+                @if (profile()?.isSellerVerified) {
+                  <mat-chip class="verified-chip">
+                    <mat-icon>verified</mat-icon>
+                    Verified
+                  </mat-chip>
+                } @else {
+                  <mat-chip class="pending-chip">
+                    <mat-icon>pending</mat-icon>
+                    Verification Pending
+                  </mat-chip>
+                }
+              </mat-chip-set>
+            }
+            @if (profile()?.isAdmin) {
+              <mat-chip-set>
+                <mat-chip class="admin-chip">
+                  <mat-icon>admin_panel_settings</mat-icon>
+                  Administrator
+                </mat-chip>
+              </mat-chip-set>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Edit Profile Form -->
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>edit</mat-icon>
+            Edit Profile Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+            <!-- Personal Information Section -->
+            <div class="form-section">
+              <h2 class="section-title">
+                <mat-icon>person</mat-icon>
+                Personal Information
+              </h2>
+              <mat-divider></mat-divider>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Display Name</mat-label>
+                  <input matInput formControlName="displayName" placeholder="Enter your display name" required />
+                  <mat-icon matPrefix>badge</mat-icon>
+                  <mat-hint>This name will be visible to other users</mat-hint>
+                  @if (profileForm.get('displayName')?.hasError('required')) {
+                    <mat-error>Display name is required</mat-error>
+                  }
+                  @if (profileForm.get('displayName')?.hasError('minlength')) {
+                    <mat-error>Display name must be at least 2 characters</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Full Name</mat-label>
+                  <input matInput formControlName="fullName" placeholder="Enter your full name" required />
+                  <mat-icon matPrefix>person</mat-icon>
+                  @if (profileForm.get('fullName')?.hasError('required')) {
+                    <mat-error>Full name is required</mat-error>
+                  }
+                  @if (profileForm.get('fullName')?.hasError('minlength')) {
+                    <mat-error>Full name must be at least 2 characters</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email Address</mat-label>
+                  <input matInput type="email" formControlName="email" placeholder="your@email.com" required />
+                  <mat-icon matPrefix>email</mat-icon>
+                  @if (profileForm.get('email')?.hasError('required')) {
+                    <mat-error>Email is required</mat-error>
+                  }
+                  @if (profileForm.get('email')?.hasError('email')) {
+                    <mat-error>Please enter a valid email</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Phone Number</mat-label>
+                  <input matInput type="tel" formControlName="phoneNumber" placeholder="+47 123 45 678" />
+                  <mat-icon matPrefix>phone</mat-icon>
+                  <mat-hint>Optional: For auction notifications</mat-hint>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Profile Image URL</mat-label>
+                  <input matInput formControlName="profileImageUrl" placeholder="https://..." />
+                  <mat-icon matPrefix>image</mat-icon>
+                  <mat-hint>Optional: URL to your profile picture</mat-hint>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Shipping Address Section -->
+            <div class="form-section">
+              <h2 class="section-title">
+                <mat-icon>local_shipping</mat-icon>
+                Shipping Address
+              </h2>
+              <mat-divider></mat-divider>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Street Address</mat-label>
+                  <input matInput formControlName="address" placeholder="Street and number" />
+                  <mat-icon matPrefix>home</mat-icon>
+                  <mat-hint>Used for shipping won auction items</mat-hint>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Postal Code</mat-label>
+                  <input matInput formControlName="postalCode" placeholder="1234" />
+                  <mat-icon matPrefix>markunread_mailbox</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>City</mat-label>
+                  <input matInput formControlName="city" placeholder="Oslo" />
+                  <mat-icon matPrefix>location_city</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Country</mat-label>
+                  <input matInput formControlName="country" placeholder="Norway" />
+                  <mat-icon matPrefix>public</mat-icon>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Account Settings Section -->
+            <div class="form-section">
+              <h2 class="section-title">
+                <mat-icon>settings</mat-icon>
+                Account Settings
+              </h2>
+              <mat-divider></mat-divider>
+
+              <div class="toggle-section">
+                <mat-slide-toggle formControlName="isSeller" color="primary">
+                  <div class="toggle-label">
+                    <strong>Seller Account</strong>
+                    <span class="toggle-description">Enable to sell art and participate in auctions as a seller</span>
+                  </div>
+                </mat-slide-toggle>
+                @if (profileForm.get('isSeller')?.value && !profile()?.isSellerVerified) {
+                  <div class="info-message">
+                    <mat-icon>info</mat-icon>
+                    <span>Your seller account is pending verification by our team</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="profileForm.invalid || saving()"
+              >
+                @if (saving()) {
+                  <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+                } @else {
+                  <mat-icon>save</mat-icon>
+                }
+
+                <span>
+                  @if (saving()) {
+                    Saving...
+                  } @else {
+                    Save Changes
+                  }
+                </span>
+              </button>
+
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="resetForm()"
+                [disabled]="saving()"
+              >
+                <mat-icon>refresh</mat-icon>
+                Reset
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Account Information -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Account Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Account ID</span>
+              <span class="info-value">{{ profile()?.userId || 'N/A' }}</span>
+            </div>
+            @if (profile()?.createdAt) {
+              <div class="info-item">
+                <span class="info-label">Member Since</span>
+                <span class="info-value">{{ profile()?.createdAt | date: 'mediumDate' }}</span>
+              </div>
+            }
+            @if (profile()?.updatedAt) {
+              <div class="info-item">
+                <span class="info-label">Last Updated</span>
+                <span class="info-value">{{ profile()?.updatedAt | date: 'short' }}</span>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

@@ -1,0 +1,82 @@
+# Root .gitignore for KunstButikken-asp
+# Purpose: ignore build outputs, IDE caches, local env files for both .NET and Next.js
+
+coveragereport
+
+# --- OS/Editor junk ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.orig
+
+# --- JetBrains / Rider / ReSharper ---
+.idea/
+*.sln.iml
+*.DotSettings.user
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# --- VS / VSCode ---
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# --- .NET build outputs ---
+**/bin/
+**/obj/
+[Bb]uild/
+[Ll]ogs/
+TestResults/
+artifacts/
+
+# --- ASP.NET/Static site artifacts ---
+wwwroot/dist/
+wwwroot/build/
+
+# --- Node / Next.js ---
+**/node_modules/
+**/.next/
+**/.turbo/
+**/.nuxt/
+**/.cache/
+**/.eslintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Lock files: keep tracked if present, do not globally ignore
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# --- Env / secrets ---
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.envrc
+
+# --- Dapr / Aspire / tooling ---
+.dapr/
+.otel/
+
+# --- Misc ---
+coverage/
+.cypress/
+**/dist/
+**/out/
+
+# --- Keycloak ---
+# Keep realm import JSON tracked; do not ignore it
+# keycloak-realm.json
+
+# Ignore runtime data directory (databases, transaction logs, etc.)
+/.data/

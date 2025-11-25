@@ -1,0 +1,43 @@
+.art-for-sale {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hero-text {
+  h1 {
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    margin: 0;
+    max-width: 40rem;
+  }
+}
+
+.loading,
+.empty,
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+@media screen and (max-width: 600px) {
+  .art-for-sale {
+    padding: 2rem 1rem;
+  }
+}

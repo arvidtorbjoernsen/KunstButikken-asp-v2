@@ -1,0 +1,49 @@
+.next/
+out/
+node_modules/
+.DS_Store
+.env
+.env.*
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json*
+.pnp.*
+.vscode/
+.idea/
+*.log
+coverage/
+dist/
+build/
+.cache/
+.cache-loader/
+.parcel-cache/
+.eslintcache
+.next/cache/
+.vercel/
+firebase.json
+.firebase/
+.serverless/
+.sass-cache/
+public/uploads/
+# Optional: ignore local OS or editor files
+*.swp
+*~
+Thumbs.db
+
+# If you build static exports
+out/
+
+# Mac file attribute
+.DS_Store
+
+# Lockfiles (uncomment if you prefer to ignore lockfiles)
+# yarn.lock
+# pnpm-lock.yaml
+
+
+# Sentry Config File
+.env.sentry-build-plugin

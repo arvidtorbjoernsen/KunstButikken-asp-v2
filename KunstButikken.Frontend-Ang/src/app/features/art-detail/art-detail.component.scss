@@ -1,0 +1,26 @@
+.kb-art-detail__card {
+  img[mat-card-image] {
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+  }
+
+  .kb-art-detail__title {
+    margin: 16px 0 8px 0;
+    font-size: 1.6rem;
+  }
+
+  .kb-art-detail__artist,
+  .kb-art-detail__price {
+    margin: 4px 0;
+    color: rgba(0,0,0,0.7);
+  }
+
+  .kb-art-detail__description {
+    margin-top: 12px;
+  }
+
+  .kb-art-detail__notfound {
+    padding: 24px;
+  }
+}

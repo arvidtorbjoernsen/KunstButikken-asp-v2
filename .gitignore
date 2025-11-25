@@ -1,0 +1,25 @@
+# Build artifacts
+**/bin/
+**/obj/
+# Visual Studio
+.vs/
+*.user
+*.suo
+# Rider
+.idea/
+# Node
+node_modules/
+.pnpm-store/
+.pnpm-debug.log
+# Next.js
+.next/
+.out/
+# Mac
+.DS_Store
+# Aspire/dashboard local files
+*.runtimeconfig.json
+*.deps.json
+# backups
+**/.git.backup.*
+# logs
+*.log

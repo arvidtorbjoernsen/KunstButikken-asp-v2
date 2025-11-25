@@ -1,0 +1,61 @@
+{
+  "common": {
+    "appName": "KunstButikken"
+  },
+  "nav": {
+    "home": "Home",
+    "auctions": "Auctions",
+    "artForSale": "Art for Sale",
+    "admin": "Admin",
+    "sellArt": "Sell art",
+    "profile": "Profile",
+    "login": "Log in",
+    "logout": "Log out",
+    "register": "Register",
+    "tagline": "Art & auctions",
+    "language": "Language",
+    "theme": "Theme",
+    "search": "Search",
+    "light": "Light",
+    "dark": "Dark",
+    "menu": "Menu"
+  },
+  "home": {
+    "title": "Welcome to KunstButikken",
+    "subtitle": "Explore selected works from our store",
+    "featured": "Featured",
+    "allArt": "All Art",
+    "refresh": "Refresh",
+    "loading": "Loading art…",
+    "noResults": "No art available yet"
+  },
+  "artForSale": {
+    "title": "Art for Sale",
+    "subtitle": "Browse all available artworks",
+    "allArt": "All Art",
+    "searchPlaceholder": "Search by title, artist, or seller",
+    "loading": "Loading art…",
+    "noResults": "No art available yet"
+  },
+  "art": {
+    "price": "Price",
+    "artist": "Artist",
+    "unknownArtist": "Unknown Artist",
+    "currency": "NOK"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  },
+  "errors": {
+    "artLoad": "We could not load art listings. Showing sample data instead."
+  },
+  "placeholder": {
+    "title": "Coming soon",
+    "description": "We're still building this page. Please check back soon.",
+    "profile": "Profile management will be available shortly.",
+    "sellArt": "The flow for listing art is in progress.",
+    "admin": "Admin tools are being migrated to Angular.",
+    "register": "Account creation is on the way. Hold tight!"
+  }
+}

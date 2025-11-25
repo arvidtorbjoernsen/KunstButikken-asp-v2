@@ -1,0 +1,68 @@
+@use '@angular/material' as mat;
+
+/* Include core Material styles once */
+@include mat.core();
+
+/* Define light theme */
+$light-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$violet-palette,
+    tertiary: mat.$violet-palette,
+  ),
+  typography: (
+    brand-family: 'Inter',
+    plain-family: 'Inter',
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+/* Define dark theme */
+$dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$violet-palette,
+    tertiary: mat.$violet-palette,
+  ),
+  typography: (
+    brand-family: 'Inter',
+    plain-family: 'Inter',
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+/* Apply light theme by default */
+html {
+  @include mat.all-component-themes($light-theme);
+}
+
+/* Apply dark theme when data-theme="dark" */
+html[data-theme='dark'] {
+  @include mat.all-component-colors($dark-theme);
+}
+
+/* Global theme and reset */
+html,
+body {
+	min-height: 100%;
+	margin: 0;
+}
+
+body {
+	font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Minimal custom properties for app-specific needs */
+:root {
+	color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+	color-scheme: dark;
+}

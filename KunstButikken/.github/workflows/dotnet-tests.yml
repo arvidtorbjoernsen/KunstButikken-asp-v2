@@ -1,0 +1,25 @@
+name: .NET Tests (MTP)
+
+on:
+  push:
+    branches: [ main, master, dotnet10 ]
+  pull_request:
+    branches: [ main, master, dotnet10 ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up .NET 10 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore --configuration Debug --verbosity minimal
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+        # global.json is present in repo root to opt-in to MTP runner
+

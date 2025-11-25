@@ -1,0 +1,56 @@
+/* Minimal layout styles - typography handled by Material Design classes */
+.home {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hero-text {
+  h1 {
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    margin: 0;
+    max-width: 40rem;
+  }
+}
+
+.art-section {
+  h2 {
+    margin: 0 0 1rem;
+  }
+}
+
+.art-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.loading,
+.empty,
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+@media screen and (max-width: 600px) {
+  .home {
+    padding: 2rem 1rem;
+  }
+}

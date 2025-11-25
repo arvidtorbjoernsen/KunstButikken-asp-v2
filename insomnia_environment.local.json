@@ -1,0 +1,23 @@
+{
+  "_type": "environment",
+  "name": "KunstButikken - Local (Generated)",
+  "data": {
+    "authBaseUrl": "http://localhost:5010",
+    "userBaseUrl": "http://localhost:5011",
+    "artBaseUrl": "http://localhost:5012",
+    "auctionBaseUrl": "http://localhost:5013",
+    "paymentBaseUrl": "http://localhost:5082",
+    "paymentWebhookBaseUrl": "http://localhost:5083",
+    "adminBaseUrl": "http://localhost:5014",
+    "keycloakBaseUrl": "http://localhost:8080",
+    "realm": "KunstButikken",
+    "clientId": "kunstbutikken-insomnia",
+    "username": "admin",
+    "password": "admin",
+    "scope": "openid",
+    "tokenEndpoint": "http://localhost:8080/realms/KunstButikken/protocol/openid-connect/token",
+    "accessToken": "",
+    "refreshToken": "",
+    "bearerToken": ""
+  }
+}

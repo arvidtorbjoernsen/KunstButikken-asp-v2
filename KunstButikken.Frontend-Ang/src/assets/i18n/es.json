@@ -1,0 +1,61 @@
+{
+  "common": {
+    "appName": "KunstButikken"
+  },
+  "nav": {
+    "home": "Inicio",
+    "auctions": "Subastas",
+    "artForSale": "Arte en venta",
+    "admin": "Administración",
+    "sellArt": "Vender arte",
+    "profile": "Perfil",
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "register": "Regístrate",
+    "tagline": "Arte y subastas",
+    "language": "Idioma",
+    "theme": "Tema",
+    "search": "Buscar",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "menu": "Menú"
+  },
+  "home": {
+    "title": "Bienvenido a KunstButikken",
+    "subtitle": "Explora obras seleccionadas de nuestra tienda",
+    "featured": "Destacados",
+    "allArt": "Todo el arte",
+    "refresh": "Actualizar",
+    "loading": "Cargando arte…",
+    "noResults": "Todavía no hay arte disponible"
+  },
+  "artForSale": {
+    "title": "Arte en venta",
+    "subtitle": "Explora todas las obras de arte disponibles",
+    "allArt": "Todo el arte",
+    "searchPlaceholder": "Buscar por título, artista o vendedor",
+    "loading": "Cargando arte…",
+    "noResults": "Todavía no hay arte disponible"
+  },
+  "art": {
+    "price": "Precio",
+    "artist": "Artista",
+    "unknownArtist": "Artista desconocido",
+    "currency": "NOK"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión"
+  },
+  "errors": {
+    "artLoad": "No pudimos cargar los listados de arte. Mostrando datos de ejemplo."
+  },
+  "placeholder": {
+    "title": "Próximamente",
+    "description": "Seguimos construyendo esta página. Vuelve a visitarnos pronto.",
+    "profile": "La gestión de perfiles estará disponible en breve.",
+    "sellArt": "El flujo para publicar obras está en desarrollo.",
+    "admin": "Las herramientas de administración se están migrando a Angular.",
+    "register": "El registro estará disponible en breve."
+  }
+}

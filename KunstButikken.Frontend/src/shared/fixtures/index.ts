@@ -1,0 +1,1 @@
+export { sampleArt } from "./sampleData";

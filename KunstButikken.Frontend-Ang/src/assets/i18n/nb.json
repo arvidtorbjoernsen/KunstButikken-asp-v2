@@ -1,0 +1,61 @@
+{
+  "common": {
+    "appName": "KunstButikken"
+  },
+  "nav": {
+    "home": "Hjem",
+    "auctions": "Auksjoner",
+    "artForSale": "Kunst til salgs",
+    "admin": "Admin",
+    "sellArt": "Selg kunst",
+    "profile": "Profil",
+    "login": "Logg inn",
+    "logout": "Logg ut",
+    "register": "Registrer deg",
+    "tagline": "Kunst og auksjoner",
+    "language": "Språk",
+    "theme": "Tema",
+    "search": "Søk",
+    "light": "Lyst",
+    "dark": "Mørkt",
+    "menu": "Meny"
+  },
+  "home": {
+    "title": "Velkommen til KunstButikken",
+    "subtitle": "Utforsk utvalgte verk fra butikken vår",
+    "featured": "Utvalgte",
+    "allArt": "All kunst",
+    "refresh": "Last på nytt",
+    "loading": "Laster kunst…",
+    "noResults": "Ingen kunst tilgjengelig ennå"
+  },
+  "artForSale": {
+    "title": "Kunst til salgs",
+    "subtitle": "Se all tilgjengelig kunst",
+    "allArt": "All kunst",
+    "searchPlaceholder": "Søk etter tittel, kunstner eller selger",
+    "loading": "Laster kunst…",
+    "noResults": "Ingen kunst tilgjengelig ennå"
+  },
+  "art": {
+    "price": "Pris",
+    "artist": "Kunstner",
+    "unknownArtist": "Ukjent kunstner",
+    "currency": "NOK"
+  },
+  "auth": {
+    "signIn": "Logg inn",
+    "signOut": "Logg ut"
+  },
+  "errors": {
+    "artLoad": "Kunnet ikke laste kunstverk. Viser eksempeldata i stedet."
+  },
+  "placeholder": {
+    "title": "Kommer snart",
+    "description": "Vi bygger fortsatt denne siden. Prøv igjen senere.",
+    "profile": "Profilfunksjonen blir tilgjengelig snart.",
+    "sellArt": "Løsningen for å selge kunst er underveis.",
+    "admin": "Admin-verktøy porteres til Angular nå.",
+    "register": "Registreringsløsningen kommer snart."
+  }
+}

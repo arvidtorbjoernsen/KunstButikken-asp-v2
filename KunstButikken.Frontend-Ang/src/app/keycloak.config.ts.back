@@ -1,0 +1,30 @@
+import { APP_INITIALIZER, Provider } from '@angular/core';
+import { KeycloakService } from 'keycloak-angular';
+import { environment } from '../environments/environment';
+
+function initializeKeycloak(keycloak: KeycloakService) {
+  return () =>
+    keycloak.init({
+      config: {
+        url: environment.keycloak.baseUrl,
+        realm: 'kunstbutikken',
+        clientId: environment.keycloak.clientId,
+      },
+      initOptions: {
+        onLoad: 'login-required',
+        // This is the crucial line that was missing.
+        // It tells the adapter what URL to expect after a login redirect.
+        redirectUri: window.location.origin,
+        checkLoginIframe: false,
+      },
+      // Use enableBearerInterceptor instead of bearerExcludedUrls
+      enableBearerInterceptor: true,
+    });
+}
+
+export const KEYCLOAK_APP_INITIALIZER: Provider = {
+  provide: APP_INITIALIZER,
+  useFactory: initializeKeycloak,
+  multi: true,
+  deps: [KeycloakService],
+};

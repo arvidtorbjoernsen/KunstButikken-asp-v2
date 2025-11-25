@@ -1,0 +1,26 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.0.0">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UserSecretsId>31935926-3bc6-42ee-8981-3d516bdef037</UserSecretsId>
+
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Aspire.Hosting.AppHost"/>
+        <PackageReference Include="Aspire.Hosting.Azure.Storage"/>
+        <PackageReference Include="Aspire.Hosting.PostgreSQL"/>
+        <PackageReference Include="Aspire.Hosting.NodeJS"/>
+        <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
+        <!-- ModelContextProtocol packages: core + AspNetCore integration -->
+        <PackageReference Include="ModelContextProtocol.Core" />
+        <PackageReference Include="ModelContextProtocol.AspNetCore" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj">
+            <IsAspireProjectResource>false</IsAspireProjectResource>
+        </ProjectReference>
+    </ItemGroup>
+
+</Project>

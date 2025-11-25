@@ -1,0 +1,61 @@
+{
+  "common": {
+    "appName": "KunstButikken"
+  },
+  "nav": {
+    "home": "Início",
+    "auctions": "Leilões",
+    "artForSale": "Arte à venda",
+    "admin": "Administração",
+    "sellArt": "Vender arte",
+    "profile": "Perfil",
+    "login": "Entrar",
+    "logout": "Sair",
+    "register": "Criar conta",
+    "tagline": "Arte e leilões",
+    "language": "Idioma",
+    "theme": "Tema",
+    "search": "Pesquisar",
+    "light": "Claro",
+    "dark": "Escuro",
+    "menu": "Menu"
+  },
+  "home": {
+    "title": "Bem-vindo à KunstButikken",
+    "subtitle": "Explore obras selecionadas da nossa loja",
+    "featured": "Destaques",
+    "allArt": "Toda a arte",
+    "refresh": "Atualizar",
+    "loading": "Carregando arte…",
+    "noResults": "Ainda não há arte disponível"
+  },
+  "artForSale": {
+    "title": "Arte à venda",
+    "subtitle": "Navegue por todas as obras de arte disponíveis",
+    "allArt": "Toda a arte",
+    "searchPlaceholder": "Pesquisar por título, artista ou vendedor",
+    "loading": "Carregando arte…",
+    "noResults": "Ainda não há arte disponível"
+  },
+  "art": {
+    "price": "Preço",
+    "artist": "Artista",
+    "unknownArtist": "Artista desconhecido",
+    "currency": "NOK"
+  },
+  "auth": {
+    "signIn": "Entrar",
+    "signOut": "Sair"
+  },
+  "errors": {
+    "artLoad": "Não foi possível carregar as obras. Mostrando dados de exemplo."
+  },
+  "placeholder": {
+    "title": "Em breve",
+    "description": "Ainda estamos construindo esta página. Volte em breve.",
+    "profile": "O gerenciamento de perfil estará disponível em breve.",
+    "sellArt": "O fluxo para anunciar obras está em desenvolvimento.",
+    "admin": "As ferramentas administrativas estão sendo migradas para Angular.",
+    "register": "O cadastro estará disponível em breve."
+  }
+}

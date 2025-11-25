@@ -1,0 +1,21 @@
+<div class="kb-art-detail" *ngIf="art; else notFound">
+  <mat-card class="kb-art-detail__card">
+    <img mat-card-image [src]="art.image || 'assets/images/placeholder.png'" [alt]="(locale() === 'nb' ? art.titleNb : art.titleEn)" />
+    <mat-card-content>
+      <h1 class="kb-art-detail__title">{{ locale() === 'nb' ? art.titleNb : (art.titleEn || art.titleNb) }}</h1>
+      <p class="kb-art-detail__artist"><strong>{{ 'art.artist' | translate }}:</strong> {{ art.artist || ('art.unknownArtist' | translate) }}</p>
+      <p class="kb-art-detail__price"><strong>{{ 'art.price' | translate }}:</strong> {{ art.price | number:'1.0-0' }} {{ 'art.currency' | translate }}</p>
+      <div class="kb-art-detail__description" *ngIf="(locale() === 'nb' ? art.descriptionNb : art.descriptionEn) as desc">
+        <h3>{{ locale() === 'nb' ? 'Description' : 'Description' }}</h3>
+        <p>{{ desc }}</p>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button routerLink="/art">{{ 'home.featured' | translate }}</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<ng-template #notFound>
+  <p class="kb-art-detail__notfound">{{ 'errors.artLoad' | translate }}</p>
+</ng-template>

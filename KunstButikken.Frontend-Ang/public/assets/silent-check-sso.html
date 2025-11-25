@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Silent SSO Check</title>
+</head>
+<body>
+<script>
+  // Notify Keycloak that the silent SSO check iframe has loaded
+  parent.postMessage(location.href, location.origin);
+</script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<mat-toolbar class="kb-toolbar" color="primary">
+  <button [routerLinkActiveOptions]="{ exact: true }" class="kb-toolbar__brand" mat-button routerLink="/" routerLinkActive="active"
+          type="button">
+    <span aria-hidden="true" class="kb-toolbar__logo">🎨</span>
+    <span class="kb-toolbar__brand-text">
+      <span class="kb-toolbar__brand-name">{{ 'common.appName' | translate }}</span>
+      <span class="kb-toolbar__brand-tagline">{{ 'nav.tagline' | translate }}</span>
+    </span>
+  </button>
+
+  <div class="kb-toolbar__center-content">
+    <nav aria-label="Main navigation" class="kb-toolbar__nav">
+      @for (link of primaryLinks; track link.path) {
+        <a
+          [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+          [routerLink]="link.path"
+          class="kb-toolbar__nav-link"
+          mat-button
+          routerLinkActive="active"
+        >
+          <mat-icon>{{ link.icon }}</mat-icon>
+          <span class="kb-toolbar__nav-link-text">{{ link.key | translate }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="kb-toolbar__search">
+      <mat-icon>search</mat-icon>
+      <input [placeholder]="'nav.search' | translate" class="kb-toolbar__search-input" type="search" (input)="onSearch($event)">
+    </div>
+  </div>
+
+  <span class="kb-toolbar__spacer"></span>
+
+  <div class="kb-toolbar__actions">
+    <button
+      (click)="toggleSearch()"
+      [attr.aria-label]="'nav.search' | translate"
+      class="kb-toolbar__search-toggle"
+      mat-icon-button
+      type="button"
+    >
+      <mat-icon>search</mat-icon>
+    </button>
+    <button
+      (click)="toggleTheme()"
+      [attr.aria-label]="'nav.theme' | translate"
+      mat-icon-button
+      type="button"
+    >
+      <mat-icon>{{ themeIcon }}</mat-icon>
+    </button>
+
+    <button
+      [matMenuTriggerFor]="languageMenu"
+      class="kb-toolbar__locale"
+      mat-button
+      type="button"
+    >
+      <span class="kb-toolbar__flag" aria-hidden="true">{{ activeLocaleFlag }}</span>
+      <span class="kb-toolbar__locale-label">{{ activeLocaleLabel }}</span>
+    </button>
+
+    <button class="kb-toolbar__debug-token" mat-button (click)="debugToken()">Debug Token</button>
+
+    @if (isAuthenticated()) {
+      <a class="kb-toolbar__sell" mat-stroked-button routerLink="/sell">
+        <mat-icon>brush</mat-icon>
+        <span>{{ 'nav.sellArt' | translate }}</span>
+      </a>
+      <div class="kb-toolbar__auth kb-toolbar__auth--signed-in">
+        <mat-chip-set aria-label="{{ 'nav.profile' | translate }}" class="kb-toolbar__profile-chip">
+          <a mat-chip routerLink="/profile">
+            <mat-icon matChipAvatar>person</mat-icon>
+            <span>{{ 'nav.profile' | translate }}</span>
+          </a>
+        </mat-chip-set>
+        <button
+          (click)="logout()"
+          class="kb-toolbar__logout"
+          color="accent"
+          mat-flat-button
+          type="button"
+        >
+          {{ 'nav.logout' | translate }}
+        </button>
+      </div>
+    } @else {
+      <div class="kb-toolbar__auth kb-toolbar__auth--guest">
+        <button
+          (click)="login()"
+          class="kb-toolbar__login"
+          mat-button
+          type="button"
+        >
+          {{ 'nav.login' | translate }}
+        </button>
+        <a class="kb-toolbar__register" color="accent" mat-flat-button routerLink="/register">
+          {{ 'nav.register' | translate }}
+        </a>
+      </div>
+    }
+
+    <button
+      [attr.aria-label]="'nav.menu' | translate"
+      [matMenuTriggerFor]="mobileMenu"
+      class="kb-toolbar__mobile-trigger"
+      mat-icon-button
+      type="button"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
+
+<div [class.open]="isSearchOpen()" class="kb-search-overlay">
+  <div class="kb-search-overlay__content">
+    <input [placeholder]="'nav.search' | translate" class="kb-search-overlay__input" type="search" (input)="onSearch($event)">
+    <button (click)="toggleSearch()" class="kb-search-overlay__close" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div class="kb-search-overlay__help-text">
+    {{ 'nav.searchHelp' | translate }}
+  </div>
+</div>
+
+<mat-menu #languageMenu="matMenu" panelClass="kb-language-menu-panel">
+  @for (locale of locales; track locale.code) {
+    <button
+      (click)="setLocale(locale.code)"
+      mat-menu-item
+      type="button"
+    >
+      <span>{{ locale.label }}</span>
+      @if (locale.code === activeLocale) {
+        <mat-icon>check</mat-icon>
+      }
+    </button>
+  }
+</mat-menu>
+
+<mat-menu #mobileMenu="matMenu" panelClass="kb-mobile-menu-panel">
+  <a mat-menu-item routerLink="/">{{ 'nav.home' | translate }}</a>
+  <a mat-menu-item routerLink="/art">{{ 'nav.artForSale' | translate }}</a>
+  <a mat-menu-item routerLink="/auctions">{{ 'nav.auctions' | translate }}</a>
+  @if (isAuthenticated()) {
+    <a mat-menu-item routerLink="/profile">{{ 'nav.profile' | translate }}</a>
+    <a mat-menu-item routerLink="/sell">{{ 'nav.sellArt' | translate }}</a>
+    <a mat-menu-item routerLink="/admin">{{ 'nav.admin' | translate }}</a>
+  }
+  <mat-divider></mat-divider>
+  <button (click)="toggleTheme()" mat-menu-item type="button">
+    <mat-icon>{{ themeIcon }}</mat-icon>
+    <span>{{ 'nav.theme' | translate }}</span>
+  </button>
+  <button [matMenuTriggerFor]="languageMenu" mat-menu-item type="button">
+    <mat-icon>language</mat-icon>
+    <span>{{ 'nav.language' | translate }}</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="debugToken()">Debug Token</button>
+  @if (isAuthenticated()) {
+    <button (click)="logout()" mat-menu-item type="button">{{ 'nav.logout' | translate }}</button>
+  } @else {
+    <button (click)="login()" mat-menu-item type="button">{{ 'nav.login' | translate }}</button>
+    <a mat-menu-item routerLink="/register">{{ 'nav.register' | translate }}</a>
+  }
+</mat-menu>

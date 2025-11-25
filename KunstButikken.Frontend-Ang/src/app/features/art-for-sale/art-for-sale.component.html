@@ -1,0 +1,39 @@
+<div class="art-for-sale">
+  <header class="hero">
+    <div class="hero-text">
+      <h1 class="mat-headline-3">{{ 'artForSale.title' | translate }}</h1>
+      <p class="mat-body-1">{{ 'artForSale.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <section class="art-section">
+    @if (loadingArt()) {
+      <div class="loading">
+        <mat-spinner diameter="32"></mat-spinner>
+        <span class="mat-body-1">{{ 'artForSale.loading' | translate }}</span>
+      </div>
+    } @else {
+      @if (hasArt()) {
+        <mat-grid-list [cols]="cols()" gutterSize="16px" rowHeight="1:1.5">
+          @for (art of filteredArt(); track art.id; let i = $index) {
+            <mat-grid-tile>
+              <app-art-card [art]="art" [priority]="i < cols()"></app-art-card>
+            </mat-grid-tile>
+          }
+        </mat-grid-list>
+      } @else {
+        <div class="empty">
+          <mat-icon>inventory_2</mat-icon>
+          <span>{{ 'artForSale.noResults' | translate }}</span>
+        </div>
+      }
+    }
+  </section>
+
+  @if (error()) {
+    <div class="error">
+      <mat-icon color="warn">warning</mat-icon>
+      <span>{{ 'errors.artLoad' | translate }}</span>
+    </div>
+  }
+</div>

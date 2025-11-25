@@ -1,0 +1,1703 @@
+{
+  "info": {
+    "name": "KunstButikken API",
+    "_postman_id": "f5b3b2b0-5f6c-4d9e-9f2b-1b4c0a7b3b5a",
+    "description": "Postman collection for KunstButikken microservices, modeled after Aspire Overflow style. Uses variables for service base URLs and a shared bearer token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "authGatewayBase",
+      "value": "http://localhost:5010",
+      "type": "string"
+    },
+    {
+      "key": "adminServiceBase",
+      "value": "http://localhost:5014",
+      "type": "string"
+    },
+    {
+      "key": "userServiceBase",
+      "value": "http://localhost:5011",
+      "type": "string"
+    },
+    {
+      "key": "artServiceBase",
+      "value": "http://localhost:5012",
+      "type": "string"
+    },
+    {
+      "key": "auctionServiceBase",
+      "value": "http://localhost:5013",
+      "type": "string"
+    },
+    {
+      "key": "paymentServiceBase",
+      "value": "http://localhost:5082",
+      "type": "string"
+    },
+
+    {
+      "key": "keycloakBaseUrl",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "Keycloak base URL (no trailing slash), e.g. http://localhost:8080"
+    },
+    {
+      "key": "keycloakRealm",
+      "value": "KunstButikken",
+      "type": "string",
+      "description": "Keycloak realm name"
+    },
+    {
+      "key": "kcClientId",
+      "value": "kunstbutikken-postman",
+      "type": "string",
+      "description": "OIDC client id"
+    },
+    {
+      "key": "kcClientSecret",
+      "value": "",
+      "type": "string",
+      "description": "OIDC client secret (leave empty for public clients)"
+    },
+    {
+      "key": "kcUsername",
+      "value": "",
+      "type": "string",
+      "description": "End-user username for password grant"
+    },
+    {
+      "key": "kcPassword",
+      "value": "",
+      "type": "string",
+      "description": "End-user password for password grant"
+    },
+    {
+      "key": "kcScope",
+      "value": "openid profile email",
+      "type": "string",
+      "description": "Requested scopes"
+    },
+
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string",
+      "description": "JWT bearer token (without 'Bearer ' prefix)"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string",
+      "description": "OIDC refresh token (from login)"
+    },
+    {
+      "key": "idToken",
+      "value": "",
+      "type": "string",
+      "description": "OIDC id_token (if returned)"
+    },
+
+    { "key": "tokenType", "value": "", "type": "string", "description": "Access token type from login (e.g., Bearer)" },
+    { "key": "expiresIn", "value": "", "type": "string", "description": "Access token lifetime in seconds" },
+
+    { "key": "frontendBaseUrl", "value": "http://localhost:3000", "type": "string", "description": "Frontend base URL used for redirects" },
+    { "key": "stripeSignature", "value": "", "type": "string", "description": "Stripe-Signature header value for webhook testing" },
+
+    { "key": "artId", "value": "00000000-0000-0000-0000-000000000000", "type": "string" },
+    { "key": "artPrice", "value": "0", "type": "string", "description": "Latest art price captured from create/update" },
+    { "key": "artTitle", "value": "", "type": "string" },
+    { "key": "artImageUrl", "value": "", "type": "string" },
+    { "key": "checkoutSessionId", "value": "", "type": "string" },
+    { "key": "checkoutUrl", "value": "", "type": "string" },
+    { "key": "auctionId", "value": "00000000-0000-0000-0000-000000000000", "type": "string" },
+    { "key": "profileId", "value": "00000000-0000-0000-0000-000000000000", "type": "string" },
+    { "key": "userId", "value": "00000000-0000-0000-0000-000000000000", "type": "string" },
+    { "key": "currentProfileId", "value": "", "type": "string", "description": "Profile ID of the currently logged-in user (captured from profile/register/get)" },
+    { "key": "currentUserId", "value": "", "type": "string", "description": "User ID (sub) extracted from the current JWT" },
+    { "key": "lastLoginRole", "value": "", "type": "string", "description": "Role inferred from token or email match: seller|buyer|admin|" },
+    { "key": "sellerUserId", "value": "", "type": "string", "description": "User ID of the seller account (auto-set on seller login/register)" },
+    { "key": "sellerProfileId", "value": "", "type": "string", "description": "Profile ID for seller (auto-set on seller profile/register/get)" },
+    { "key": "buyerUserId", "value": "", "type": "string", "description": "User ID of the buyer account (auto-set on buyer login)" },
+    { "key": "buyerProfileId", "value": "", "type": "string", "description": "Profile ID for buyer (set when buyer profile is fetched/registered)" },
+    { "key": "sellerEmail", "value": "", "type": "string", "description": "Email of the seller account, used to auto-map IDs on login" },
+    { "key": "buyerEmail", "value": "", "type": "string", "description": "Email of the buyer account, used to auto-map IDs on login" },
+
+    { "key": "kcAdminClientId", "value": "", "type": "string" },
+    { "key": "kcAdminClientSecret", "value": "", "type": "string" },
+    { "key": "adminAuthToken", "value": "", "type": "string" },
+
+    { "key": "kcRoleAdmin", "value": "admin", "type": "string" },
+    { "key": "kcRoleSeller", "value": "seller", "type": "string" },
+
+    { "key": "kcUserEmail", "value": "user@example.com", "type": "string" },
+    { "key": "kcUserId", "value": "", "type": "string" },
+    { "key": "kcNewUserPassword", "value": "ChangeMe123!", "type": "string" },
+
+    { "key": "kcRedirectUri", "value": "http://localhost:3000/api/auth/callback", "type": "string" },
+    { "key": "kcState", "value": "", "type": "string" },
+    { "key": "kcNonce", "value": "", "type": "string" },
+    { "key": "pkceCodeVerifier", "value": "", "type": "string" },
+    { "key": "pkceCodeChallenge", "value": "", "type": "string" },
+    { "key": "kcAuthCode", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "AuthGateway",
+      "description": "Auth and identity helper endpoints.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          { "key": "token", "value": "{{authToken}}", "type": "string" }
+        ]
+      },
+      "item": [
+        {
+          "name": "Alive",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{authGatewayBase}}/auth/alive",
+              "host": ["{{authGatewayBase}}"],
+              "path": ["auth", "alive"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Me (requires auth)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{authGatewayBase}}/auth/me",
+              "host": ["{{authGatewayBase}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "UserService",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          { "key": "token", "value": "{{authToken}}", "type": "string" }
+        ]
+      },
+      "item": [
+        {
+          "name": "Profile: Get Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/Profile/me",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "Profile", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Profile: Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"fullName\": \"Jane D. Example\",\n  \"isSeller\": true,\n  \"profileImageUrl\": \"https://example.com/img.jpg\",\n  \"preferencesJson\": \"{\\\"theme\\\":\\\"dark\\\"}\"\n}"
+            },
+            "url": {
+              "raw": "{{userServiceBase}}/api/Profile",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "Profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Profile: Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{kcUserEmail}}\",\n  \"fullName\": \"Seller User\",\n  \"displayName\": \"Seller\",\n  \"userType\": \"seller\"\n}"
+            },
+            "url": {
+              "raw": "{{userServiceBase}}/api/Profile/register",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "Profile", "register"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let p={}; try{ p = pm.response.json(); }catch(e){}",
+                  "if(p && p.id){ pm.collectionVariables.set('profileId', p.id); pm.collectionVariables.set('currentProfileId', p.id); }",
+                  "if(p && p.userId){ pm.collectionVariables.set('userId', p.userId); if(!pm.collectionVariables.get('currentUserId')) pm.collectionVariables.set('currentUserId', p.userId); }",
+                  "// Map to seller/buyer profile IDs based on last login role or email mapping",
+                  "const role = pm.collectionVariables.get('lastLoginRole')||'';",
+                  "const email = (p && p.email) ? p.email : (pm.collectionVariables.get('kcUserEmail')||'');",
+                  "const sellerEmail = (pm.collectionVariables.get('sellerEmail')||'').toLowerCase();",
+                  "const buyerEmail = (pm.collectionVariables.get('buyerEmail')||'').toLowerCase();",
+                  "const em = (email||'').toLowerCase();",
+                  "if (role==='seller' || (sellerEmail && em===sellerEmail)) { if(p && p.id) pm.collectionVariables.set('sellerProfileId', p.id); if(p && p.userId) pm.collectionVariables.set('sellerUserId', p.userId); }",
+                  "if (role==='buyer' || (buyerEmail && em===buyerEmail)) { if(p && p.id) pm.collectionVariables.set('buyerProfileId', p.id); if(p && p.userId) pm.collectionVariables.set('buyerUserId', p.userId); }",
+                  "pm.test('Registered profile and captured IDs', function(){ pm.expect(Boolean(pm.collectionVariables.get('profileId'))).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Profile: Verify Seller (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \n  \"verified\": true\n}" },
+            "url": {
+              "raw": "{{userServiceBase}}/api/Profile/{{profileId}}/verify",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "Profile", "{{profileId}}", "verify"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Profile: List Unverified (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/Profile/unverified",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "Profile", "unverified"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AdminProfiles: Pending Sellers (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/admin/profiles/pending-sellers",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "admin", "profiles", "pending-sellers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AdminProfiles: Get Admins (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/admin/profiles/admins",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "admin", "profiles", "admins"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AdminProfiles: Make Admin by UserId (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/admin/profiles/{{userId}}/make-admin",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "admin", "profiles", "{{userId}}", "make-admin"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AdminProfiles: Remove Admin by UserId (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/admin/profiles/{{userId}}/remove-admin",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "admin", "profiles", "{{userId}}", "remove-admin"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AdminProfiles: Make Admin by Email (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \n  \"email\": \"admin@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{userServiceBase}}/api/admin/profiles/make-admin-by-email",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "admin", "profiles", "make-admin-by-email"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AdminProfiles: Verify Seller (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/admin/profiles/{{userId}}/verify-seller",
+              "host": ["{{userServiceBase}}"],
+              "path": [
+                "api",
+                "admin",
+                "profiles",
+                "{{userId}}",
+                "verify-seller"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AdminProfiles: Reject Seller (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/admin/profiles/{{userId}}/reject-seller",
+              "host": ["{{userServiceBase}}"],
+              "path": [
+                "api",
+                "admin",
+                "profiles",
+                "{{userId}}",
+                "reject-seller"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Sync: Trigger (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/admin/sync/trigger",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "admin", "sync", "trigger"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Sync: Status (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{userServiceBase}}/api/admin/sync/status",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "admin", "sync", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Debug: Claims Echo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{userServiceBase}}/api/debug/claims",
+              "host": ["{{userServiceBase}}"],
+              "path": ["api", "debug", "claims"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AdminService",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{authToken}}" }]
+      },
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{adminServiceBase}}/api/Admin/health",
+              "host": ["{{adminServiceBase}}"],
+              "path": ["api", "Admin", "health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Art (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{adminServiceBase}}/api/Admin/art/{{artId}}/approve",
+              "host": ["{{adminServiceBase}}"],
+              "path": ["api", "Admin", "art", "{{artId}}", "approve"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Art (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\"Not matching quality guidelines\""
+            },
+            "url": {
+              "raw": "{{adminServiceBase}}/api/Admin/art/{{artId}}/reject",
+              "host": ["{{adminServiceBase}}"],
+              "path": ["api", "Admin", "art", "{{artId}}", "reject"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ArtService",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{authToken}}" }]
+      },
+      "item": [
+        {
+          "name": "List Published & Verified",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art"],
+              "query": [
+                { "key": "status", "value": "Published", "disabled": true },
+                { "key": "featured", "value": "true", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/{{artId}}",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "{{artId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create (Seller)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sunset\",\n  \"description\": \"Oil on canvas\",\n  \"price\": 199.99,\n  \"artist\": \"A. Painter\"\n}"
+            },
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let a={}; try{ a = pm.response.json(); }catch(e){}",
+                  "if(a && a.id){ pm.collectionVariables.set('artId', a.id); }",
+                  "if(a && a.price!=null){ pm.collectionVariables.set('artPrice', a.price); }",
+                  "if(a && a.title){ pm.collectionVariables.set('artTitle', a.title); }",
+                  "if(a && a.imageUrl){ pm.collectionVariables.set('artImageUrl', a.imageUrl); }",
+                  "pm.test('Created art and captured artId', function(){ pm.expect(Boolean(pm.collectionVariables.get('artId'))).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Update (Seller)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sunset 2\",\n  \"description\": \"Updated desc\",\n  \"imageUrl\": \"https://example.com/x.jpg\",\n  \"price\": 249.99,\n  \"artist\": \"A. Painter\"\n}"
+            },
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/{{artId}}",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "{{artId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Image (Seller)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": "" }]
+            },
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/{{artId}}/upload",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "{{artId}}", "upload"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Publish (Seller)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/{{artId}}/publish",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "{{artId}}", "publish"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/{{artId}}/verify",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "{{artId}}", "verify"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "\"Insufficient quality\"" },
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/{{artId}}/reject",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "{{artId}}", "reject"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Feature (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/{{artId}}/feature",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "{{artId}}", "feature"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unfeature (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/{{artId}}/feature",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "{{artId}}", "feature"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Featured List (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/featured?limit=5",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "featured"],
+              "query": [{ "key": "limit", "value": "5" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{artServiceBase}}/api/Art/{{artId}}",
+              "host": ["{{artServiceBase}}"],
+              "path": ["api", "Art", "{{artId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AuctionService",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{authToken}}" }]
+      },
+      "item": [
+        {
+          "name": "List Auctions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{auctionServiceBase}}/api/Auctions",
+              "host": ["{{auctionServiceBase}}"],
+              "path": ["api", "Auctions"],
+              "query": [{ "key": "status", "value": "Open", "disabled": true }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Auction By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{auctionServiceBase}}/api/Auctions/{{auctionId}}",
+              "host": ["{{auctionServiceBase}}"],
+              "path": ["api", "Auctions", "{{auctionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Auction",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Art Auction\",\n  \"startingPrice\": 100.0,\n  \"startsAt\": \"2025-01-01T00:00:00Z\",\n  \"endsAt\": \"2025-01-02T00:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{auctionServiceBase}}/api/Auctions",
+              "host": ["{{auctionServiceBase}}"],
+              "path": ["api", "Auctions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Place Bid",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "123.45" },
+            "url": {
+              "raw": "{{auctionServiceBase}}/api/Auctions/{{auctionId}}/bid",
+              "host": ["{{auctionServiceBase}}"],
+              "path": ["api", "Auctions", "{{auctionId}}", "bid"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Close Auction",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{auctionServiceBase}}/api/Auctions/{{auctionId}}/close",
+              "host": ["{{auctionServiceBase}}"],
+              "path": ["api", "Auctions", "{{auctionId}}", "close"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PaymentService",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{authToken}}" }]
+      },
+      "item": [
+        {
+          "name": "Create Checkout Session",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"artId\": \"{{artId}}\",\n  \"auctionId\": null,\n  \"amount\": {{artPrice}},\n  \"currency\": \"usd\"\n}"
+            },
+            "url": {
+              "raw": "{{paymentServiceBase}}/api/Payments/checkout-session",
+              "host": ["{{paymentServiceBase}}"],
+              "path": ["api", "Payments", "checkout-session"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let r={}; try{ r = pm.response.json(); }catch(e){}",
+                  "if(r && r.sessionId){ pm.collectionVariables.set('checkoutSessionId', r.sessionId); }",
+                  "if(r && r.url){ pm.collectionVariables.set('checkoutUrl', r.url); }",
+                  "pm.test('Created checkout session', function(){ pm.expect(pm.response.code).to.be.oneOf([200]); pm.expect(Boolean(pm.collectionVariables.get('checkoutSessionId'))).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Webhook (Stripe)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Stripe-Signature",
+                "value": "<set in env or interceptor>",
+                "type": "text"
+              },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{paymentServiceBase}}/api/Payments/webhook",
+              "host": ["{{paymentServiceBase}}"],
+              "path": ["api", "Payments", "webhook"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Login (Keycloak/OIDC)",
+      "description": "Obtain and manage tokens from Keycloak and automatically set {{authToken}} and related variables.",
+      "item": [
+        {
+          "name": "Password Grant: Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "password" },
+                { "key": "client_id", "value": "{{kcClientId}}" },
+                {
+                  "key": "client_secret",
+                  "value": "{{kcClientSecret}}",
+                  "disabled": false
+                },
+                { "key": "username", "value": "{{kcUsername}}" },
+                { "key": "password", "value": "{{kcPassword}}" },
+                { "key": "scope", "value": "{{kcScope}}" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": [
+                "realms",
+                "{{keycloakRealm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let data = {};",
+                  "try { data = pm.response.json(); } catch(e) { pm.test('Response is JSON', function(){ pm.expect.fail('Non-JSON token response'); }); }",
+                  "if (data.access_token) { pm.collectionVariables.set('authToken', data.access_token); }",
+                  "if (data.refresh_token) { pm.collectionVariables.set('refreshToken', data.refresh_token); }",
+                  "if (data.id_token) { pm.collectionVariables.set('idToken', data.id_token); }",
+                  "if (data.token_type) { pm.collectionVariables.set('tokenType', data.token_type); }",
+                  "if (data.expires_in) { pm.collectionVariables.set('expiresIn', data.expires_in.toString()); }",
+                  "// Decode JWT to capture user info",
+                  "function b64urlToUtf8(str){ try{str=str.replace(/-/g,'+').replace(/_/g,'/'); const pad = str.length % 4; if(pad){ str += '='.repeat(4-pad);} return decodeURIComponent(escape(atob(str))); }catch(e){ try{return atob(str);}catch(e2){return '';}} }",
+                  "function parseJwt(t){ try{ const p=t.split('.')[1]; const json=b64urlToUtf8(p); return JSON.parse(json); }catch(e){ return {}; } }",
+                  "const access = data.access_token || '';",
+                  "const idt = data.id_token || '';",
+                  "const claims = access ? parseJwt(access) : (idt ? parseJwt(idt) : {});",
+                  "const sub = claims.sub || '';",
+                  "const email = (claims.email || pm.collectionVariables.get('kcUsername') || '').toString();",
+                  "pm.collectionVariables.set('currentUserId', sub);",
+                  "// Infer role from token roles or email mapping",
+                  "let role = '';",
+                  "try { const roles = (claims.realm_access && claims.realm_access.roles) || []; if (roles.includes('seller')) role = 'seller'; else if (roles.includes('buyer')) role = 'buyer'; else if (roles.includes('admin')) role = 'admin'; } catch(e){}",
+                  "const sellerEmail = (pm.collectionVariables.get('sellerEmail')||'').toLowerCase();",
+                  "const buyerEmail = (pm.collectionVariables.get('buyerEmail')||'').toLowerCase();",
+                  "if (!role && email) { const em = email.toLowerCase(); if (sellerEmail && em===sellerEmail) role='seller'; if (buyerEmail && em===buyerEmail) role='buyer'; }",
+                  "pm.collectionVariables.set('lastLoginRole', role);",
+                  "if (role==='seller' || (email && sellerEmail && email.toLowerCase()===sellerEmail)) { if (sub) pm.collectionVariables.set('sellerUserId', sub); if (!pm.collectionVariables.get('sellerEmail') && email) pm.collectionVariables.set('sellerEmail', email); }",
+                  "if (role==='buyer' || (email && buyerEmail && email.toLowerCase()===buyerEmail)) { if (sub) pm.collectionVariables.set('buyerUserId', sub); if (!pm.collectionVariables.get('buyerEmail') && email) pm.collectionVariables.set('buyerEmail', email); }",
+                  "pm.test('Got access token', function(){ pm.expect(Boolean(data.access_token)).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Client Credentials: Login Service",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "client_credentials" },
+                { "key": "client_id", "value": "{{kcClientId}}" },
+                { "key": "client_secret", "value": "{{kcClientSecret}}" },
+                { "key": "scope", "value": "{{kcScope}}", "disabled": true }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": [
+                "realms",
+                "{{keycloakRealm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let data = {}; try { data = pm.response.json(); } catch(e) {}",
+                  "if (data.access_token) pm.collectionVariables.set('authToken', data.access_token);",
+                  "pm.test('Got service access token', function(){ pm.expect(Boolean(data.access_token)).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "refresh_token" },
+                { "key": "client_id", "value": "{{kcClientId}}" },
+                {
+                  "key": "client_secret",
+                  "value": "{{kcClientSecret}}",
+                  "disabled": false
+                },
+                { "key": "refresh_token", "value": "{{refreshToken}}" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": [
+                "realms",
+                "{{keycloakRealm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let data = {}; try { data = pm.response.json(); } catch(e) {}",
+                  "if (data.access_token) pm.collectionVariables.set('authToken', data.access_token);",
+                  "if (data.refresh_token) pm.collectionVariables.set('refreshToken', data.refresh_token);",
+                  "if (data.id_token) pm.collectionVariables.set('idToken', data.id_token);",
+                  "pm.test('Refreshed access token', function(){ pm.expect(Boolean(data.access_token)).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "UserInfo (requires token)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/userinfo",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": [
+                "realms",
+                "{{keycloakRealm}}",
+                "protocol",
+                "openid-connect",
+                "userinfo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout (end-session)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "client_id", "value": "{{kcClientId}}" },
+                {
+                  "key": "client_secret",
+                  "value": "{{kcClientSecret}}",
+                  "disabled": false
+                },
+                { "key": "refresh_token", "value": "{{refreshToken}}" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/logout",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": [
+                "realms",
+                "{{keycloakRealm}}",
+                "protocol",
+                "openid-connect",
+                "logout"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.unset('authToken');",
+                  "pm.collectionVariables.unset('refreshToken');",
+                  "pm.collectionVariables.unset('idToken');",
+                  "pm.test('Logged out (server accepted request)', function(){ pm.expect(pm.response.code).to.be.oneOf([200,204]); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Keycloak Frontend Actions (Admin API)",
+      "description": "Administrative actions typically triggered by the frontend, performed via Keycloak Admin REST API. Requires a confidential client with service account roles (realm-management).",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{adminAuthToken}}" }]
+      },
+      "item": [
+        {
+          "name": "Admin Login (Client Credentials)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/x-www-form-urlencoded" } ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "client_credentials" },
+                { "key": "client_id", "value": "{{kcAdminClientId}}" },
+                { "key": "client_secret", "value": "{{kcAdminClientSecret}}" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["realms","{{keycloakRealm}}","protocol","openid-connect","token"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let data={};try{data=pm.response.json();}catch(e){}",
+                  "if(data.access_token){ pm.environment.set('adminAuthToken', data.access_token); }",
+                  "pm.test('Got admin access token', function(){ pm.expect(Boolean(data.access_token)).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Users: Find by Email",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" } ],
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/users?email={{kcUserEmail}}",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","users"],
+              "query": [ { "key": "email", "value": "{{kcUserEmail}}" } ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let arr=[];try{arr=pm.response.json();}catch(e){}",
+                  "if(Array.isArray(arr) && arr.length>0 && arr[0].id){ pm.environment.set('kcUserId', arr[0].id); }",
+                  "pm.test('Fetched users list', function(){ pm.expect(pm.response.code).to.be.oneOf([200]); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Users: Create (Register)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{kcUserEmail}}\",\n  \"email\": \"{{kcUserEmail}}\",\n  \"firstName\": \"\",\n  \"lastName\": \"\",\n  \"enabled\": true,\n  \"emailVerified\": false\n}"
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/users",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Created (or conflict)', function(){ pm.expect([201,409]).to.include(pm.response.code); });",
+                  "var loc = pm.response.headers.get('Location'); if(loc){ var id=loc.split('/').pop(); if(id){ pm.environment.set('kcUserId', id); } }"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Users: Set Password",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"password\",\n  \"value\": \"{{kcNewUserPassword}}\",\n  \"temporary\": false\n}" },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/users/{{kcUserId}}/reset-password",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","users","{{kcUserId}}","reset-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users: Send Verify Email",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" } ],
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/users/{{kcUserId}}/send-verify-email?client_id={{kcClientId}}&redirect_uri={{kcRedirectUri}}",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","users","{{kcUserId}}","send-verify-email"],
+              "query": [ {"key":"client_id","value":"{{kcClientId}}"}, {"key":"redirect_uri","value":"{{kcRedirectUri}}"} ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users: Forgot Password (Execute Actions Email)",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "[\n  \"UPDATE_PASSWORD\"\n]" },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/users/{{kcUserId}}/execute-actions-email?client_id={{kcClientId}}&redirect_uri={{kcRedirectUri}}",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","users","{{kcUserId}}","execute-actions-email"],
+              "query": [ {"key":"client_id","value":"{{kcClientId}}"}, {"key":"redirect_uri","value":"{{kcRedirectUri}}"} ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users: Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" } ],
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/users/{{kcUserId}}",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","users","{{kcUserId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Roles: List Realm Roles",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" } ],
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/roles",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","roles"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Roles: Assign Realm Role to User (example: Seller)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  { \n    \"id\": \"<PUT_ROLE_ID_HERE>\", \n    \"name\": \"{{kcRoleSeller}}\" \n  }\n]"
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/users/{{kcUserId}}/role-mappings/realm",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","users","{{kcUserId}}","role-mappings","realm"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Roles: List User Realm Roles",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" } ],
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/users/{{kcUserId}}/role-mappings/realm",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","users","{{kcUserId}}","role-mappings","realm"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Roles: Remove Realm Role from User",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminAuthToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  { \n    \"id\": \"<PUT_ROLE_ID_HERE>\", \n    \"name\": \"{{kcRoleSeller}}\" \n  }\n]"
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/admin/realms/{{keycloakRealm}}/users/{{kcUserId}}/role-mappings/realm",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["admin","realms","{{keycloakRealm}}","users","{{kcUserId}}","role-mappings","realm"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "OIDC Protocol (PKCE)",
+      "description": "End-to-end Authorization Code with PKCE flow and token utilities.",
+      "item": [
+        {
+          "name": "Helper: Init PKCE variables",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "https://postman-echo.com/get", "host": ["postman-echo","com"], "path": ["get"] }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function base64UrlEncode(arrayBuffer) {",
+                  "  let str = Buffer.from(arrayBuffer).toString('base64');",
+                  "  return str.replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/,'');",
+                  "}",
+                  "function randomString(bytes){ return base64UrlEncode(crypto.getRandomValues(new Uint8Array(bytes))); }",
+                  "const verifier = randomString(32);",
+                  "pm.environment.set('pkceCodeVerifier', verifier);",
+                  "const hash = crypto.subtle.digest ? await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)) : null;",
+                  "let challenge = verifier;",
+                  "if(hash){ challenge = base64UrlEncode(await hash); }",
+                  "pm.environment.set('pkceCodeChallenge', challenge);",
+                  "pm.environment.set('kcState', randomString(16));",
+                  "pm.environment.set('kcNonce', randomString(16));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Authorize (open in browser, then paste code)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/auth?response_type=code&client_id={{kcClientId}}&redirect_uri={{kcRedirectUri}}&scope={{kcScope}}&code_challenge={{pkceCodeChallenge}}&code_challenge_method=S256&state={{kcState}}&nonce={{kcNonce}}",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["realms","{{keycloakRealm}}","protocol","openid-connect","auth"],
+              "query": [
+                {"key":"response_type","value":"code"},
+                {"key":"client_id","value":"{{kcClientId}}"},
+                {"key":"redirect_uri","value":"{{kcRedirectUri}}"},
+                {"key":"scope","value":"{{kcScope}}"},
+                {"key":"code_challenge","value":"{{pkceCodeChallenge}}"},
+                {"key":"code_challenge_method","value":"S256"},
+                {"key":"state","value":"{{kcState}}"},
+                {"key":"nonce","value":"{{kcNonce}}"}
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Token: Exchange Auth Code",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/x-www-form-urlencoded" } ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {"key":"grant_type","value":"authorization_code"},
+                {"key":"client_id","value":"{{kcClientId}}"},
+                {"key":"code_verifier","value":"{{pkceCodeVerifier}}"},
+                {"key":"code","value":"{{kcAuthCode}}"},
+                {"key":"redirect_uri","value":"{{kcRedirectUri}}"}
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["realms","{{keycloakRealm}}","protocol","openid-connect","token"]
+            }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "let data={};try{data=pm.response.json();}catch(e){}",
+              "if(data.access_token) pm.environment.set('authToken', data.access_token);",
+              "if(data.refresh_token) pm.environment.set('refreshToken', data.refresh_token);",
+              "if(data.id_token) pm.environment.set('idToken', data.id_token);",
+              "pm.test('Exchanged code for tokens', function(){ pm.expect(Boolean(data.access_token)).to.be.true; });"
+            ] } }
+          ],
+          "response": []
+        },
+        {
+          "name": "Token: Introspect",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/x-www-form-urlencoded" } ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {"key":"client_id","value":"{{kcClientId}}"},
+                {"key":"client_secret","value":"{{kcClientSecret}}"},
+                {"key":"token","value":"{{authToken}}"}
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token/introspect",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["realms","{{keycloakRealm}}","protocol","openid-connect","token","introspect"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Token: Revoke Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/x-www-form-urlencoded" } ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {"key":"client_id","value":"{{kcClientId}}"},
+                {"key":"client_secret","value":"{{kcClientSecret}}"},
+                {"key":"token","value":"{{refreshToken}}"}
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/revoke",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["realms","{{keycloakRealm}}","protocol","openid-connect","revoke"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Flows",
+      "description": "Guided end-to-end scenarios. Run steps from top to bottom; variables captured automatically (artId, artPrice, profileId, checkoutSessionId, checkoutUrl).",
+      "item": [
+        {
+          "name": "Reset Flow Variables",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "https://postman-echo.com/get", "host": ["postman-echo","com"], "path": ["get"] }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "['artId','artPrice','artTitle','artImageUrl','profileId','userId','checkoutSessionId','checkoutUrl','currentUserId','currentProfileId','lastLoginRole','sellerUserId','sellerProfileId','buyerUserId','buyerProfileId','sellerEmail','buyerEmail'].forEach(k=>pm.collectionVariables.unset(k));",
+              "pm.test('Flow variables reset', function(){ pm.expect(true).to.be.true; });"
+            ] } }
+          ]
+        },
+        {
+          "name": "1) Login Seller (Password Grant)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/x-www-form-urlencoded" } ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "password" },
+                { "key": "client_id", "value": "{{kcClientId}}" },
+                { "key": "client_secret", "value": "{{kcClientSecret}}", "disabled": false },
+                { "key": "username", "value": "{{kcUsername}}" },
+                { "key": "password", "value": "{{kcPassword}}" },
+                { "key": "scope", "value": "{{kcScope}}" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["realms","{{keycloakRealm}}","protocol","openid-connect","token"]
+            }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "let data={}; try{ data = pm.response.json(); }catch(e){}",
+              "if(data.access_token) pm.collectionVariables.set('authToken', data.access_token);",
+              "if(data.refresh_token) pm.collectionVariables.set('refreshToken', data.refresh_token);",
+              "if(data.id_token) pm.collectionVariables.set('idToken', data.id_token);",
+              "// Decode JWT and set seller/current IDs",
+              "function b64urlToUtf8(str){ try{str=str.replace(/-/g,'+').replace(/_/g,'/'); const pad = str.length % 4; if(pad){ str += '='.repeat(4-pad);} return decodeURIComponent(escape(atob(str))); }catch(e){ try{return atob(str);}catch(e2){return '';}} }",
+              "function parseJwt(t){ try{ const p=t.split('.')[1]; const json=b64urlToUtf8(p); return JSON.parse(json); }catch(e){ return {}; } }",
+              "const access = data.access_token || ''; const idt = data.id_token || '';",
+              "const claims = access ? parseJwt(access) : (idt ? parseJwt(idt) : {});",
+              "const sub = claims.sub || ''; const email = (claims.email || pm.collectionVariables.get('kcUsername') || '').toString();",
+              "pm.collectionVariables.set('currentUserId', sub);",
+              "pm.collectionVariables.set('lastLoginRole', 'seller');",
+              "if (sub) pm.collectionVariables.set('sellerUserId', sub);",
+              "if (!pm.collectionVariables.get('sellerEmail') && (pm.collectionVariables.get('kcUserEmail')||email)) pm.collectionVariables.set('sellerEmail', (pm.collectionVariables.get('kcUserEmail')||email));",
+              "pm.test('Seller logged in', function(){ pm.expect(Boolean(pm.collectionVariables.get('authToken'))).to.be.true; });"
+            ] } }
+          ]
+        },
+        {
+          "name": "2) Register Seller Profile",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{kcUserEmail}}\",\n  \"fullName\": \"Seller User\",\n  \"displayName\": \"Seller\",\n  \"userType\": \"seller\"\n}" },
+            "url": { "raw": "{{userServiceBase}}/api/Profile/register", "host": ["{{userServiceBase}}"], "path": ["api","Profile","register"] }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "let p={}; try{ p = pm.response.json(); }catch(e){}",
+              "if(p && p.id){ pm.collectionVariables.set('profileId', p.id); pm.collectionVariables.set('currentProfileId', p.id); pm.collectionVariables.set('sellerProfileId', p.id); }",
+              "if(p && p.userId){ pm.collectionVariables.set('userId', p.userId); pm.collectionVariables.set('currentUserId', p.userId); pm.collectionVariables.set('sellerUserId', p.userId); }",
+              "if (!pm.collectionVariables.get('sellerEmail') && pm.collectionVariables.get('kcUserEmail')) pm.collectionVariables.set('sellerEmail', pm.collectionVariables.get('kcUserEmail'));",
+              "pm.test('Seller profile ready', function(){ pm.expect(Boolean(pm.collectionVariables.get('profileId'))).to.be.true; });"
+            ] } }
+          ]
+        },
+        {
+          "name": "3) Create Art",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Sunset\",\n  \"description\": \"Oil on canvas\",\n  \"price\": 199.99,\n  \"artist\": \"A. Painter\"\n}" },
+            "url": { "raw": "{{artServiceBase}}/api/Art", "host": ["{{artServiceBase}}"], "path": ["api","Art"] }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "let a={}; try{ a = pm.response.json(); }catch(e){}",
+              "if(a && a.id){ pm.collectionVariables.set('artId', a.id); }",
+              "if(a && a.price!=null){ pm.collectionVariables.set('artPrice', a.price); }",
+              "if(a && a.title){ pm.collectionVariables.set('artTitle', a.title); }",
+              "if(a && a.imageUrl){ pm.collectionVariables.set('artImageUrl', a.imageUrl); }",
+              "pm.test('Art created', function(){ pm.expect(Boolean(pm.collectionVariables.get('artId'))).to.be.true; });"
+            ] } }
+          ]
+        },
+        {
+          "name": "4) Update Art",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Sunset (Updated)\",\n  \"description\": \"Updated description\",\n  \"imageUrl\": \"https://example.com/image.jpg\",\n  \"price\": 249.99,\n  \"artist\": \"A. Painter\"\n}" },
+            "url": { "raw": "{{artServiceBase}}/api/Art/{{artId}}", "host": ["{{artServiceBase}}"], "path": ["api","Art","{{artId}}"] }
+          }
+        },
+        {
+          "name": "4b) Get Art (capture fields)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{artServiceBase}}/api/Art/{{artId}}", "host": ["{{artServiceBase}}"], "path": ["api","Art","{{artId}}"] }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "let a={}; try{ a = pm.response.json(); }catch(e){}",
+              "if(a && a.price!=null){ pm.collectionVariables.set('artPrice', a.price); }",
+              "if(a && a.title){ pm.collectionVariables.set('artTitle', a.title); }",
+              "if(a && a.imageUrl){ pm.collectionVariables.set('artImageUrl', a.imageUrl); }",
+              "pm.test('Captured updated art fields', function(){ pm.expect(pm.response.code).to.be.oneOf([200]); });"
+            ] } }
+          ]
+        },
+        {
+          "name": "5) Publish Art",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{artServiceBase}}/api/Art/{{artId}}/publish", "host": ["{{artServiceBase}}"], "path": ["api","Art","{{artId}}","publish"] }
+          }
+        },
+        {
+          "name": "6) Login Buyer (Password Grant)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/x-www-form-urlencoded" } ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "password" },
+                { "key": "client_id", "value": "{{kcClientId}}" },
+                { "key": "client_secret", "value": "{{kcClientSecret}}", "disabled": false },
+                { "key": "username", "value": "{{kcUsername}}" },
+                { "key": "password", "value": "{{kcPassword}}" },
+                { "key": "scope", "value": "{{kcScope}}" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakBaseUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakBaseUrl}}"],
+              "path": ["realms","{{keycloakRealm}}","protocol","openid-connect","token"]
+            }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "let data={}; try{ data = pm.response.json(); }catch(e){}",
+              "if(data.access_token) pm.collectionVariables.set('authToken', data.access_token);",
+              "if(data.refresh_token) pm.collectionVariables.set('refreshToken', data.refresh_token);",
+              "if(data.id_token) pm.collectionVariables.set('idToken', data.id_token);",
+              "// Decode JWT and set buyer/current IDs",
+              "function b64urlToUtf8(str){ try{str=str.replace(/-/g,'+').replace(/_/g,'/'); const pad = str.length % 4; if(pad){ str += '='.repeat(4-pad);} return decodeURIComponent(escape(atob(str))); }catch(e){ try{return atob(str);}catch(e2){return '';}} }",
+              "function parseJwt(t){ try{ const p=t.split('.')[1]; const json=b64urlToUtf8(p); return JSON.parse(json); }catch(e){ return {}; } }",
+              "const access = data.access_token || ''; const idt = data.id_token || '';",
+              "const claims = access ? parseJwt(access) : (idt ? parseJwt(idt) : {});",
+              "const sub = claims.sub || ''; const email = (claims.email || pm.collectionVariables.get('kcUsername') || '').toString();",
+              "pm.collectionVariables.set('currentUserId', sub);",
+              "pm.collectionVariables.set('lastLoginRole', 'buyer');",
+              "if (sub) pm.collectionVariables.set('buyerUserId', sub);",
+              "if (!pm.collectionVariables.get('buyerEmail') && (pm.collectionVariables.get('kcUserEmail')||email)) pm.collectionVariables.set('buyerEmail', (pm.collectionVariables.get('kcUserEmail')||email));",
+              "pm.test('Buyer logged in', function(){ pm.expect(Boolean(pm.collectionVariables.get('authToken'))).to.be.true; });"
+            ] } }
+          ]
+        },
+        {
+          "name": "7) Create Checkout Session (Buyer)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"artId\": \"{{artId}}\",\n  \"auctionId\": null,\n  \"amount\": {{artPrice}},\n  \"currency\": \"usd\"\n}" },
+            "url": { "raw": "{{paymentServiceBase}}/api/Payments/checkout-session", "host": ["{{paymentServiceBase}}"], "path": ["api","Payments","checkout-session"] }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "let r={}; try{ r = pm.response.json(); }catch(e){}",
+              "if(r && r.sessionId){ pm.collectionVariables.set('checkoutSessionId', r.sessionId); }",
+              "if(r && r.url){ pm.collectionVariables.set('checkoutUrl', r.url); }",
+              "pm.test('Checkout ready', function(){ pm.expect(Boolean(pm.collectionVariables.get('checkoutSessionId'))).to.be.true; });"
+            ] } }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+<a [routerLink]="['/art', art.id]" class="kb-art-link" aria-label="View art details">
+  <mat-card appearance="outlined">
+  @if (!isHydrated() || !imageLoaded()) {
+    <div class="image-skeleton">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  }
+  <img mat-card-image
+       [src]="art.image || fallbackImage"
+       [alt]="art.titleEn"
+       [attr.loading]="priority ? 'eager' : 'lazy'"
+       [class.hidden]="!imageLoaded()"
+       (error)="handleBrokenImage($event)"
+       (load)="onImageLoad()">
+  <mat-card-header>
+    <mat-card-title>{{ art.titleNb }}</mat-card-title>
+    <mat-card-subtitle>{{ art.artist || ('art.unknownArtist' | translate) }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p><strong>{{ art.price | number:'1.0-0' }} {{ 'art.currency' | translate }}</strong></p>
+  </mat-card-content>
+  </mat-card>
+</a>
