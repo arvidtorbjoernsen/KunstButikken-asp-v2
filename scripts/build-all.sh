@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# build-all.sh
+# build-all.sh (centralized canonical)
 # Usage:
 #   ./build-all.sh           -> dry-run (shows commands that would run)
 #   ./build-all.sh --run     -> actually execute restore/build/test for each solution
@@ -20,16 +20,20 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Compute repo root (one level up from scripts directory)
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
 echo "build-all: repo root = $ROOT_DIR"
 
 # Find solution files (prefer KunstButikken.All.sln then any .sln)
-SOLNS=( $(find . -maxdepth 2 -type f -name '*.sln' | sort) )
+# Exclude aggregate solutions that include other projects (avoid double-building):
+# - KunstButikken.All.sln (umbrella)
+# - KunstButikken.sln (contains AppHost but duplicates project refs)
+SOLNS=( $(find . -maxdepth 2 -type f -name '*.sln' | sort | grep -v -E 'KunstButikken(\.All)?\.sln') )
 if [ ${#SOLNS[@]} -eq 0 ]; then
   echo "No .sln files found in repo root. Searching recursively..."
-  SOLNS=( $(find . -type f -name '*.sln' | sort) )
+  SOLNS=( $(find . -type f -name '*.sln' | sort | grep -v -E 'KunstButikken(\.All)?\.sln') )
 fi
 
 if [ ${#SOLNS[@]} -eq 0 ]; then
