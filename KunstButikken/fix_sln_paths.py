@@ -18,7 +18,10 @@ Heuristics:
 - If multiple hits, prefer match where directory or file path contains the project name tokens.
 - Falls back to the first sensible match if --yes passed, otherwise asks (prints choices).
 
-Produces a backup of the original SOLN file with a '.bak' suffix when applying changes.
+This variant improves discovery when the repo root is the parent directory (for example
+when the working repo is 'KunstButikken-asp' and the solution lives in the 'KunstButikken'
+subfolder). It tries a few sensible fallback locations for the .sln and sets the search
+root accordingly.
 
 """
 
@@ -29,7 +32,7 @@ import sys
 from pathlib import Path
 
 PROJECT_RE = re.compile(
-    r'^Project\("\{(?P<typeguid>[0-9A-Fa-f\-]+)\}"\)\s*=\s*"(?P<name>[^"]+)",\s*"(?P<path>[^"]+)",\s*"(?P<guid>[^"]+)"',
+    r'^Project\("\{(?P<typeguid>[0-9A-Fa-f\-]+)\}"\)\s*=\s*"(?P<name>[^\"]+)",\s*"(?P<path>[^\"]+)",\s*"(?P<guid>[^\"]+)"',
     re.MULTILINE,
 )
 
@@ -65,6 +68,30 @@ def relative_sln_path(sln_dir: Path, target: Path):
     return rel.replace('\\', '/')
 
 
+def locate_solution(sln_arg: str) -> Path:
+    """Try several sensible locations to find the .sln file.
+
+    Order:
+      1) Path(sln_arg) as provided (absolute or relative to cwd)
+      2) script_dir / sln_arg
+      3) script_dir / 'KunstButikken' / sln_arg
+      4) script_dir.parent / sln_arg (if script is inside a subfolder)
+
+    Returns resolved Path or raises FileNotFoundError.
+    """
+    cand = Path(sln_arg)
+    if cand.exists():
+        return cand.resolve()
+
+    script_dir = Path(__file__).resolve().parent
+    checks = [script_dir / sln_arg, script_dir / 'KunstButikken' / sln_arg, script_dir.parent / sln_arg]
+    for c in checks:
+        if c.exists():
+            return c.resolve()
+
+    raise FileNotFoundError(sln_arg)
+
+
 def main():
     ap = argparse.ArgumentParser(description='Fix .sln Project references to point to actual .csproj files in the repo')
     ap.add_argument('--sln', '-s', default='KunstButikken.All.sln', help='Solution file to fix (default: KunstButikken.All.sln)')
@@ -74,21 +101,24 @@ def main():
     ap.add_argument('--backup', action='store_true', help='Create .bak backup even in dry-run')
     args = ap.parse_args()
 
-    sln_path = Path(args.sln).resolve()
-    if not sln_path.exists():
-        # try relative to script dir
-        script_dir = Path(__file__).resolve().parent
-        alt = script_dir / args.sln
-        if alt.exists():
-            sln_path = alt
-        else:
-            print(f'ERROR: solution file not found: {args.sln}', file=sys.stderr)
-            sys.exit(2)
+    try:
+        sln_path = locate_solution(args.sln)
+    except FileNotFoundError:
+        print(f'ERROR: solution file not found: {args.sln}', file=sys.stderr)
+        sys.exit(2)
 
+    # Determine repo root heuristically if user left default '.'
     repo_root = Path(args.root).resolve()
-    # if user left default '.' and sln is in a subfolder, use sln parent as root candidate
-    if args.root == '.' and sln_path.parent.name.lower() == 'kunstbutikken':
-        repo_root = sln_path.parent.parent.resolve()
+    if args.root == '.':
+        # If the solution lives in a 'KunstButikken' subfolder (repo split), use its parent
+        if sln_path.parent.name.lower() == 'kunstbutikken':
+            repo_root = sln_path.parent.parent.resolve()
+        # If the solution lives directly in the repository root (script dir parent), prefer script parent
+        elif sln_path.parent.name.lower().endswith('kunstbutikken-asp'):
+            repo_root = sln_path.parent.resolve()
+        else:
+            # fallback to sln parent
+            repo_root = sln_path.parent.resolve()
 
     print(f'Using solution: {sln_path}')
     print(f'Search root: {repo_root}')
