@@ -5,6 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>31935926-3bc6-42ee-8981-3d516bdef037</UserSecretsId>
     </PropertyGroup>
+    <PropertyGroup>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.OpenApi"/>
         <PackageReference Include="Azure.Core"/>
@@ -16,6 +20,7 @@
     <ItemGroup>
         <ProjectReference Include="../Application/KunstButikken.ArtService.Application.csproj" />
         <ProjectReference Include="../Infrastructure/KunstButikken.ArtService.Infrastructure.csproj" />
+        <ProjectReference Include="../../KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj" />
         <ProjectReference Include="../../KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj" />
         <ProjectReference Include="../../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj" />
     </ItemGroup>

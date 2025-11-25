@@ -2,45 +2,45 @@
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AppHost", "KunstButikken.AppHost/KunstButikken.AppHost.csproj", "{0B21407B-A6ED-41FE-A005-F57AB0A47C56}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AppHost", "KunstButikken.AppHost\KunstButikken.AppHost.csproj", "{0B21407B-A6ED-41FE-A005-F57AB0A47C56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ServiceDefaults", "../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj", "{A9B7D9D1-D2B1-4DA6-B21B-31F34FE69F9F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ServiceDefaults", "..\KunstButikken.ServiceDefaults\KunstButikken.ServiceDefaults.csproj", "{A9B7D9D1-D2B1-4DA6-B21B-31F34FE69F9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.PaymentService", "../KunstButikken.PaymentService/KunstButikken.PaymentService/KunstButikken.PaymentService.csproj", "{DB6C1950-D636-4E38-AB82-30359FDF7A71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.PaymentService", "..\KunstButikken.PaymentService\KunstButikken.PaymentService\KunstButikken.PaymentService.csproj", "{DB6C1950-D636-4E38-AB82-30359FDF7A71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ArtService", "../KunstButikken.ArtService/KunstButikken.ArtService/KunstButikken.ArtService.csproj", "{983AEF44-B1F8-46DC-8F01-05E98B1DF286}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ArtService", "..\KunstButikken.ArtService\KunstButikken.ArtService\KunstButikken.ArtService.csproj", "{983AEF44-B1F8-46DC-8F01-05E98B1DF286}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ArtService.Domain", "../KunstButikken.ArtService/KunstButikken.ArtService/Domain/KunstButikken.ArtService.Domain.csproj", "{319A3F44-12C4-410D-AC18-05ABABFE8B56}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ArtService.Domain", "..\KunstButikken.ArtService\KunstButikken.ArtService\Domain\KunstButikken.ArtService.Domain.csproj", "{319A3F44-12C4-410D-AC18-05ABABFE8B56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ArtService.Application", "../KunstButikken.ArtService/KunstButikken.ArtService/Application/KunstButikken.ArtService.Application.csproj", "{8E826526-DBED-48D6-B20E-52AF2B622E54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ArtService.Application", "..\KunstButikken.ArtService\KunstButikken.ArtService\Application\KunstButikken.ArtService.Application.csproj", "{8E826526-DBED-48D6-B20E-52AF2B622E54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ArtService.Infrastructure", "../KunstButikken.ArtService/KunstButikken.ArtService/Infrastructure/KunstButikken.ArtService.Infrastructure.csproj", "{7C3E5D6A-2CAA-4359-8651-34464C6E05BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.ArtService.Infrastructure", "..\KunstButikken.ArtService\KunstButikken.ArtService\Infrastructure\KunstButikken.ArtService.Infrastructure.csproj", "{7C3E5D6A-2CAA-4359-8651-34464C6E05BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuthGateway", "../KunstButikken.AuthGateway/KunstButikken.AuthGateway/KunstButikken.AuthGateway.csproj", "{49ECBA33-748D-4117-BD0F-89147AB61E7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuthGateway", "..\KunstButikken.AuthGateway\KunstButikken.AuthGateway\KunstButikken.AuthGateway.csproj", "{49ECBA33-748D-4117-BD0F-89147AB61E7E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".tmp", ".tmp", "{8171D0AE-4262-3EAB-52BD-BB021CE126C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nullblobtest", ".tmp/nullblobtest/nullblobtest.csproj", "{C8321AF1-A5EE-45E3-8A99-4464C81AA763}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nullblobtest", ".tmp\nullblobtest\nullblobtest.csproj", "{C8321AF1-A5EE-45E3-8A99-4464C81AA763}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AdminService", "../KunstButikken.AdminService/KunstButikken.AdminService/KunstButikken.AdminService.csproj", "{8C542E34-F1CE-4022-B2D0-EF9F13BFE834}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AdminService", "..\KunstButikken.AdminService\KunstButikken.AdminService\KunstButikken.AdminService.csproj", "{8C542E34-F1CE-4022-B2D0-EF9F13BFE834}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AdminService.Infrastructure", "../KunstButikken.AdminService/KunstButikken.AdminService/Infrastructure/Infrastructure.csproj", "{70F06FAF-413F-4AC4-B6D9-50D16D9B0389}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AdminService.Infrastructure", "..\KunstButikken.AdminService\KunstButikken.AdminService\Infrastructure\KunstButikken.AdminService.Infrastructure.csproj", "{70F06FAF-413F-4AC4-B6D9-50D16D9B0389}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService", "../KunstButikken.AuctionService/KunstButikken.AuctionService/KunstButikken.AuctionService.csproj", "{1527C4D3-3CC9-4ABD-A957-15840B5737C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService", "..\KunstButikken.AuctionService\KunstButikken.AuctionService\KunstButikken.AuctionService.csproj", "{1527C4D3-3CC9-4ABD-A957-15840B5737C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService.Domain", "../KunstButikken.AuctionService/KunstButikken.AuctionService/Domain/KunstButikken.AuctionService.Domain.csproj", "{6BF4C6FE-DEA1-476F-84AC-8C052E69AFB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService.Domain", "..\KunstButikken.AuctionService\KunstButikken.AuctionService\Domain\KunstButikken.AuctionService.Domain.csproj", "{6BF4C6FE-DEA1-476F-84AC-8C052E69AFB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService.Infrastructure", "../KunstButikken.AuctionService/KunstButikken.AuctionService/Infrastructure/KunstButikken.AuctionService.Infrastructure.csproj", "{C0466A06-66BB-44E4-AE42-445F377938BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService.Infrastructure", "..\KunstButikken.AuctionService\KunstButikken.AuctionService\Infrastructure\KunstButikken.AuctionService.Infrastructure.csproj", "{C0466A06-66BB-44E4-AE42-445F377938BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService.Application", "../KunstButikken.AuctionService/KunstButikken.AuctionService/Application/KunstButikken.AuctionService.Application.csproj", "{95C8EACA-5D16-42B9-A93B-49BBD7EDBC79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService.Application", "..\KunstButikken.AuctionService\KunstButikken.AuctionService\Application\KunstButikken.AuctionService.Application.csproj", "{95C8EACA-5D16-42B9-A93B-49BBD7EDBC79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.UserService.Application", "../KunstButikken.UserService/KunstButikken.UserService/Application/KunstButikken.UserService.Application.csproj", "{FB18E9F1-70E7-448E-B7B5-342D336C1C73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.UserService.Application", "..\KunstButikken.UserService\KunstButikken.UserService\Application\KunstButikken.UserService.Application.csproj", "{FB18E9F1-70E7-448E-B7B5-342D336C1C73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.UserService.Domain", "../KunstButikken.UserService/KunstButikken.UserService/Domain/KunstButikken.UserService.Domain.csproj", "{7A2637D3-1CC1-4914-BFE6-042053B27316}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.UserService.Domain", "..\KunstButikken.UserService\KunstButikken.UserService\Domain\KunstButikken.UserService.Domain.csproj", "{7A2637D3-1CC1-4914-BFE6-042053B27316}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.UserService.Infrastructure", "../KunstButikken.UserService/KunstButikken.UserService/Infrastructure/KunstButikken.UserService.Infrastructure.csproj", "{81CA44B2-AAAE-49EA-9444-12342E7DE6AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.UserService.Infrastructure", "..\KunstButikken.UserService\KunstButikken.UserService\Infrastructure\KunstButikken.UserService.Infrastructure.csproj", "{81CA44B2-AAAE-49EA-9444-12342E7DE6AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.UserService", "../KunstButikken.UserService/KunstButikken.UserService/KunstButikken.UserService.csproj", "{0E7FEEAF-CF0F-43D9-8D50-D496F3EEDFA8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.UserService", "..\KunstButikken.UserService\KunstButikken.UserService\KunstButikken.UserService.csproj", "{0E7FEEAF-CF0F-43D9-8D50-D496F3EEDFA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
