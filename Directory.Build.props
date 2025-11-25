@@ -1,23 +1,8 @@
 <Project>
-    <PropertyGroup>
-        <!-- Use preview language features (C# 12+ as needed). Adjust to '12' if you prefer explicit version. -->
-        <LangVersion>14</LangVersion>
-        <!-- Enable .NET analyzers across the repo so we can collect diagnostics during build -->
-        <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-        <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
-        <!-- Don't escalate warnings to errors globally here -->
-        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-        <!-- Keep AnalysisMode/Level in place for editors; they will run during build now. -->
-        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-        <AnalysisLevel>latest</AnalysisLevel>
-        <!-- Remove repo-wide NoWarn entries so individual issues surface and can be fixed. -->
-        <NoWarn>$(NoWarn)</NoWarn>
-        <!-- Avoid SDK auto-generation of TargetFrameworkAttribute to prevent duplicates when projects are compiled together -->
-        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-    </PropertyGroup>
-    <ItemGroup>
-        <!-- Add analyzer package so editorconfig rules like primary constructors are recognized by editors. Central package versions are in Directory.Packages.props -->
-        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" PrivateAssets="all"/>
-    </ItemGroup>
+  <PropertyGroup>
+    <!-- Repository root directory where this file lives. Use $(RepoRoot) in projects to build repo-root absolute paths. -->
+    <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
+    <!-- You can add shared props here (company, versioning, analyzer settings etc.) -->
+  </PropertyGroup>
 </Project>
+

@@ -61,13 +61,13 @@ var eventBus = builder.AddRabbitMQ("eventbus");
 // Microservices
 var userService = builder.AddProject("user-service", "../../KunstButikken.UserService/KunstButikken.UserService/KunstButikken.UserService.csproj")
     .WithReference(usersDb)
-    .WithReference(keycloak.GetEndpoint("http"))
+    .WithReference(keycloak.GetEndpoint("http")!)
     .WithReference(postgres)
     .WithReference(eventBus)
     .WithEnvironment("ConnectionStrings__Default", usersDb)
-    .WithEnvironment("KEYCLOAK_ISSUER", $"{keycloak.GetEndpoint("http")}/realms/{realmName}")
+    .WithEnvironment("KEYCLOAK_ISSUER", $"{keycloak.GetEndpoint("http")!}/realms/{realmName}")
     .WithEnvironment("KEYCLOAK_REALM", realmName)
-    .WithEnvironment("KEYCLOAK_BASE", keycloak.GetEndpoint("http"))
+    .WithEnvironment("KEYCLOAK_BASE", keycloak.GetEndpoint("http")!)
     .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", keycloakAdminUser)
     .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", keycloakAdminPassword)
     // Pin the host port for the user-service to avoid collisions with macOS system services.
@@ -82,13 +82,13 @@ var userService = builder.AddProject("user-service", "../../KunstButikken.UserSe
 var artService = builder.AddProject("art-service", "../../KunstButikken.ArtService/KunstButikken.ArtService/KunstButikken.ArtService.csproj")
     .WithReference(artDb)
     .WithReference(eventBus)
-    .WithReference(azurite.GetEndpoint("blob"))
+    .WithReference(azurite.GetEndpoint("blob")!)
     .WithReference(postgres)
     .WithEnvironment("ConnectionStrings__Default", artDb)
     .WithEnvironment("AzureBlob__Container", azureBlobContainer)
-    .WithEnvironment("AzureBlob__PublicUrl", azurite.GetEndpoint("blob"))
+    .WithEnvironment("AzureBlob__PublicUrl", azurite.GetEndpoint("blob")!)
     .WithEnvironment("AzureBlob__ConnectionString", "UseDevelopmentStorage=true")
-    .WithEnvironment("USER_SERVICE_URL", userService.GetEndpoint("api"))
+    .WithEnvironment("USER_SERVICE_URL", userService.GetEndpoint("api")!)
     .WithHttpEndpoint(name: "api")
     .WithExternalHttpEndpoints()
     .WaitFor(userService)
@@ -222,6 +222,7 @@ try
             {
                 // This extension method is provided by the ModelContextProtocol package
                 // Use positional null for the optional configuration Action to match available overloads.
+                // AddMcpServer may return null for some package versions; allow null assignment explicitly.
                 var mcpBuilder = Microsoft.Extensions.DependencyInjection.McpServerServiceCollectionExtensions.AddMcpServer(services, null);
 
                 // Note: ASP.NET HTTP transport is wired when MapMcp is invoked on the WebApplication's
@@ -268,11 +269,11 @@ catch (Exception ex)
 var nextJsFrontend = builder.AddNpmApp("frontend", nextFrontendPath, "dev")
     .WithHttpEndpoint(targetPort: 3000, port: 3000, name: "web", isProxied: false)
     .WithEnvironment("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? "")
-    .WithEnvironment("NEXT_PUBLIC_API_GATEWAY", authGateway.GetEndpoint("gateway"))
-    .WithEnvironment("NEXT_PUBLIC_AUCTION_SIGNALR_URL", $"{authGateway.GetEndpoint("gateway")}/hubs/auctions")
-    .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_BASE_URL", keycloak.GetEndpoint("http"))
+    .WithEnvironment("NEXT_PUBLIC_API_GATEWAY", authGateway.GetEndpoint("gateway")!)
+    .WithEnvironment("NEXT_PUBLIC_AUCTION_SIGNALR_URL", $"{authGateway.GetEndpoint("gateway")!}/hubs/auctions")
+    .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_BASE_URL", keycloak.GetEndpoint("http")!)
     .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_REALM", realmName)
-    .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_ISSUER", $"{keycloak.GetEndpoint("http")}/realms/{realmName}")
+    .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_ISSUER", $"{keycloak.GetEndpoint("http")!}/realms/{realmName}")
     .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_CLIENT_ID", keycloakClientId)
     .WaitFor(keycloak)
     .WaitFor(postgres)
@@ -282,10 +283,10 @@ var nextJsFrontend = builder.AddNpmApp("frontend", nextFrontendPath, "dev")
 var angularFrontend = builder.AddNpmApp("frontend-ang", angularFrontendPath, "start")
     .WithHttpEndpoint(targetPort: 4200, port: 4200, name: "web", isProxied: false)
     .WithEnvironment("NG_APP_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? "")
-    .WithEnvironment("NG_APP_API_GATEWAY", authGateway.GetEndpoint("gateway"))
-    .WithEnvironment("NG_APP_KEYCLOAK_BASE_URL", keycloak.GetEndpoint("http"))
+    .WithEnvironment("NG_APP_API_GATEWAY", authGateway.GetEndpoint("gateway")!)
+    .WithEnvironment("NG_APP_KEYCLOAK_BASE_URL", keycloak.GetEndpoint("http")!)
     .WithEnvironment("NG_APP_KEYCLOAK_REALM", realmName)
-    .WithEnvironment("NG_APP_KEYCLOAK_ISSUER", $"{keycloak.GetEndpoint("http")}/realms/{realmName}")
+    .WithEnvironment("NG_APP_KEYCLOAK_ISSUER", $"{keycloak.GetEndpoint("http")!}/realms/{realmName}")
     .WithEnvironment("NG_APP_KEYCLOAK_CLIENT_ID", keycloakAngularClientId)
     .WaitFor(keycloak)
     .WaitFor(postgres)
@@ -327,7 +328,7 @@ try
                     if (m == null) continue;
                     Console.WriteLine($"[AppHost] Invoking targeted MCP extension {kv.TypeName}.{kv.Method} from {asmName}");
                     var ps = m.GetParameters();
-                    if (ps.Length == 2 && ps[0].ParameterType.Name.IndexOf("IServiceCollection", StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (ps.Length == 2 && ps[0].ParameterType.Name.Contains("IServiceCollection", StringComparison.OrdinalIgnoreCase))
                     {
                         var servicesProp = builder.GetType().GetProperty("Services");
                         if (servicesProp != null)
@@ -349,12 +350,12 @@ try
                             }
                         }
                     }
-                    if (ps.Length == 2 && ps[0].ParameterType.Name.IndexOf("DistributedApplication", StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (ps.Length == 2 && ps[0].ParameterType.Name.Contains("DistributedApplication", StringComparison.OrdinalIgnoreCase))
                     {
                         m.Invoke(null, new object[] { builder, builder.Configuration });
                         configured = true; break;
                     }
-                    if (ps.Length == 1 && ps[0].ParameterType.Name.IndexOf("DistributedApplication", StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (ps.Length == 1 && ps[0].ParameterType.Name.Contains("DistributedApplication", StringComparison.OrdinalIgnoreCase))
                     {
                         m.Invoke(null, new object[] { builder });
                         configured = true; break;
@@ -394,10 +395,10 @@ try
                     {
                         // Heuristics: method name contains Configure, Add, Use or Map and mentions ModelContext or MCP
                         var mn = m.Name ?? string.Empty;
-                        if (!(mn.IndexOf("Configure", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                              mn.IndexOf("Add", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                              mn.IndexOf("Use", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                              mn.IndexOf("Map", StringComparison.OrdinalIgnoreCase) >= 0))
+                        if (!(mn.Contains("Configure", StringComparison.OrdinalIgnoreCase) ||
+                              mn.Contains("Add", StringComparison.OrdinalIgnoreCase) ||
+                              mn.Contains("Use", StringComparison.OrdinalIgnoreCase) ||
+                              mn.Contains("Map", StringComparison.OrdinalIgnoreCase)))
                             continue;
 
                         var sig = string.Join(",", m.GetParameters().Select(p => p.ParameterType.Name));
@@ -407,14 +408,14 @@ try
                         var ps = m.GetParameters();
                         try
                         {
-                            if (ps.Length == 2 && ps[0].ParameterType.Name.IndexOf("DistributedApplication", StringComparison.OrdinalIgnoreCase) >= 0)
+                            if (ps.Length == 2 && ps[0].ParameterType.Name.Contains("DistributedApplication", StringComparison.OrdinalIgnoreCase))
                             {
                                 m.Invoke(null, new object[] { builder, builder.Configuration });
                                 Console.WriteLine($"[AppHost] Invoked {m.Name} on {name} (DistributedApplication signature)");
                                 configured = true;
                                 break;
                             }
-                            if (ps.Length == 2 && ps[0].ParameterType.Name.IndexOf("IServiceCollection", StringComparison.OrdinalIgnoreCase) >= 0)
+                            if (ps.Length == 2 && ps[0].ParameterType.Name.Contains("IServiceCollection", StringComparison.OrdinalIgnoreCase))
                             {
                                 // try to get IServiceCollection from builder if available via property Services
                                 var servicesProp = builder.GetType().GetProperty("Services");
@@ -427,7 +428,7 @@ try
                                     break;
                                 }
                             }
-                            if (ps.Length == 1 && ps[0].ParameterType.Name.IndexOf("DistributedApplication", StringComparison.OrdinalIgnoreCase) >= 0)
+                            if (ps.Length == 1 && ps[0].ParameterType.Name.Contains("DistributedApplication", StringComparison.OrdinalIgnoreCase))
                             {
                                 m.Invoke(null, new object[] { builder });
                                 Console.WriteLine($"[AppHost] Invoked {m.Name} on {name} (single DistributedApplication param)");
