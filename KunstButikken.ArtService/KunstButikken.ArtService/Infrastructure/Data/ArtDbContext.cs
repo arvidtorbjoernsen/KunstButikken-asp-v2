@@ -7,4 +7,3 @@ public class ArtDbContext(DbContextOptions<ArtDbContext> options) : DbContext(op
 {
     public DbSet<Art> Arts => Set<Art>();
 }
-

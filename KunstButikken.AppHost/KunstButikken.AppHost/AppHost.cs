@@ -176,7 +176,8 @@ static string FindRepoRoot()
             return dir.FullName;
         }
         // If we find the inner solution, use it as candidate but keep searching upward for top-level markers
-        if (System.IO.File.Exists(System.IO.Path.Combine(dir.FullName, "KunstButikken.sln")))
+        if (System.IO.File.Exists(System.IO.Path.Combine(dir.FullName, "KunstButikken.sln")) ||
+            System.IO.File.Exists(System.IO.Path.Combine(dir.FullName, "KunstButikken.AppHost.sln")))
         {
             var candidate = dir.FullName;
             var up = dir.Parent;

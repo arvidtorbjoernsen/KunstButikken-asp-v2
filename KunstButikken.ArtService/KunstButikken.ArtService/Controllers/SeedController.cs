@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using KunstButikken.ArtService.Data;
+using KunstButikken.ArtService.Infrastructure.Data;
 using KunstButikken.ArtService.Domain.Models;
 using KunstButikken.ArtService.Services;
 using KunstButikken.ServiceDefaults;
@@ -17,7 +17,7 @@ namespace KunstButikken.ArtService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class SeedController(
-    ArtDbContext db,
+    KunstButikken.ArtService.Infrastructure.Data.ArtDbContext db,
     IBlobStorage blob,
     IWebHostEnvironment env,
     IConfiguration cfg,

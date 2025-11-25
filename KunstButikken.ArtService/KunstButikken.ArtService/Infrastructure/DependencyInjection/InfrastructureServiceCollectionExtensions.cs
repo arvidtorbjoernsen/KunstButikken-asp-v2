@@ -1,4 +1,3 @@
-// new file content
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +15,9 @@ public static class InfrastructureServiceCollectionExtensions
 
         if (!string.IsNullOrWhiteSpace(cs) && !cs.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
         {
+            // Register the concrete Infrastructure.Data.ArtDbContext so components that request
+            // KunstButikken.ArtService.Infrastructure.Data.ArtDbContext will be satisfied. Use the same
+            // migrations assembly as the concrete type.
             services.AddDbContext<ArtDbContext>(options =>
             {
                 options.UseNpgsql(cs, b => b.MigrationsAssembly(typeof(ArtDbContext).Assembly.FullName));
@@ -30,4 +32,3 @@ public static class InfrastructureServiceCollectionExtensions
         return services;
     }
 }
-
