@@ -20,11 +20,11 @@
         <PackageReference Include="Polly"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../Application/KunstButikken.AdminService.Application.csproj"/>
-        <ProjectReference Include="../Infrastructure/KunstButikken.AdminService.Infrastructure.csproj"/>
-        <ProjectReference Include="../../KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>
-        <ProjectReference Include="../../KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj"/>
-        <ProjectReference Include="../../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>
+        <ProjectReference Include="Application/KunstButikken.AdminService.Application.csproj"/>
+        <ProjectReference Include="Infrastructure/KunstButikken.AdminService.Infrastructure.csproj"/>
+        <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>
+        <ProjectReference Include="$(RepoRoot)KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj"/>
+        <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <!-- Exclude Domain/Application/Infrastructure source files from the Web project to avoid duplicate compilation -->

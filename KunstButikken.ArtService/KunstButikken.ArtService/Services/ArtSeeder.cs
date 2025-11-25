@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using KunstButikken.ArtService.Data;
+using KunstButikken.ArtService.Infrastructure.Data;
 using KunstButikken.ArtService.Domain.Models;
 using KunstButikken.Common.Logging;
 using KunstButikken.ServiceDefaults;
@@ -37,7 +37,7 @@ public class ArtSeeder(
     {
         // Reuse serializer options from class field
         using var scope = serviceProvider.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ArtDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<KunstButikken.ArtService.Infrastructure.Data.ArtDbContext>();
 
         // Ensure database is migrated/created before seeding
         await EnsureDatabaseMigratedAsync(db, cancellationToken).ConfigureAwait(false);
@@ -243,7 +243,7 @@ public class ArtSeeder(
     public async Task EnsureDatabaseMigratedAsync(CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ArtDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<KunstButikken.ArtService.Infrastructure.Data.ArtDbContext>();
         await EnsureDatabaseMigratedAsync(db, cancellationToken).ConfigureAwait(false);
     }
 

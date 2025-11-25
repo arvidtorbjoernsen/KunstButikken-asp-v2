@@ -1,3 +1,4 @@
+using KunstButikken.ArtService.Infrastructure.Data;
 using KunstButikken.ArtService.Domain.Interfaces;
 using KunstButikken.ArtService.Domain.Models;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
@@ -8,10 +9,10 @@ namespace KunstButikken.ArtService.Infrastructure.Repositories;
 
 public class ArtRepository : IArtRepository
 {
-    private readonly Data.ArtDbContext _db;
+    private readonly ArtDbContext _db;
     private readonly IEventBus _eventBus;
 
-    public ArtRepository(Data.ArtDbContext db, IEventBus eventBus)
+    public ArtRepository(ArtDbContext db, IEventBus eventBus)
     {
         _db = db;
         _eventBus = eventBus;
@@ -53,4 +54,3 @@ public class ArtRepository : IArtRepository
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) =>
         _db.SaveChangesAsync(cancellationToken);
 }
-

@@ -18,7 +18,7 @@
         <PackageReference Include="ModelContextProtocol.AspNetCore" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj">
+        <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj">
             <IsAspireProjectResource>false</IsAspireProjectResource>
         </ProjectReference>
     </ItemGroup>

@@ -13,16 +13,19 @@
         <PackageReference Include="Microsoft.OpenApi"/>
         <PackageReference Include="Azure.Core"/>
         <PackageReference Include="Azure.Identity"/>
+        <PackageReference Include="Aspire.Azure.Storage.Blobs" />
+        <PackageReference Include="Polly" />
+        <PackageReference Include="Scalar.AspNetCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../Application/KunstButikken.ArtService.Application.csproj" />
-        <ProjectReference Include="../Infrastructure/KunstButikken.ArtService.Infrastructure.csproj" />
-        <ProjectReference Include="../../KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj" />
-        <ProjectReference Include="../../KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj" />
-        <ProjectReference Include="../../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj" />
+        <ProjectReference Include="Application/KunstButikken.ArtService.Application.csproj" />
+        <ProjectReference Include="Infrastructure/KunstButikken.ArtService.Infrastructure.csproj" />
+        <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj" />
+        <ProjectReference Include="$(RepoRoot)KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj" />
+        <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj" />
     </ItemGroup>
     <ItemGroup>
         <Compile Remove="Application\**\*.cs"/>

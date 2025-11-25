@@ -1,17 +1,26 @@
 #!/bin/bash
 
-# Quick setup script for user secrets
-# Run this from the project root
+# Centralized setup-user-secrets.sh
+# Usage: run from anywhere; the script locates the repository root and operates on the AppHost project.
 
-cd "$(dirname "$0")/KunstButikken.AppHost"
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+APPHOST_DIR="$REPO_ROOT/KunstButikken/KunstButikken.AppHost"
+
+if [ ! -d "$APPHOST_DIR" ]; then
+  echo "Error: AppHost directory not found: $APPHOST_DIR"
+  exit 1
+fi
+
+cd "$APPHOST_DIR"
 
 echo "🔐 Setting up user secrets for KunstButikken..."
-echo ""
 
-# Initialize user secrets
+echo "Initializing user secrets (dotnet user-secrets init)..."
 dotnet user-secrets init
 
-# Add all secrets
+# Add all secrets (tweak values as needed for local development)
 echo "Adding Keycloak admin credentials..."
 dotnet user-secrets set "KEYCLOAK_ADMIN_USER" "admin"
 dotnet user-secrets set "KEYCLOAK_ADMIN_PASSWORD" "admin"
@@ -31,6 +40,6 @@ dotnet user-secrets list
 
 echo ""
 echo "🚀 You can now start the application:"
-echo "   cd KunstButikken.AppHost"
+echo "   cd KunstButikken.KunstButikken.AppHost"
 echo "   dotnet run"
 

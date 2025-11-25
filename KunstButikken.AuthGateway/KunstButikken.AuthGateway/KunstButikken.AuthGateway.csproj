@@ -16,8 +16,8 @@
         <PackageReference Include="Scalar.AspNetCore"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>
-        <ProjectReference Include="../../KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>
-        <ProjectReference Include="../../KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj"/>
+        <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>
+        <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>
+        <ProjectReference Include="$(RepoRoot)KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj"/>
     </ItemGroup>
 </Project>
