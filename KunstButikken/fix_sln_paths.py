@@ -203,7 +203,8 @@ def main():
         new_rel = relative_sln_path(sln_dir, best_path)
         print(f"  Selected: {best_path} -> will write: {new_rel}")
 
-        changes.append((p['path'], new_rel, p['typeguid'], p['name'], p['guid']))
+        # include the full original Project(...) line so we can safely replace it later
+        changes.append((p['path'], new_rel, p['typeguid'], p['name'], p['guid'], p['full_match']))
 
     if not changes:
         print('\nNo changes to apply.')
@@ -214,6 +215,7 @@ def main():
         bak = sln_path.with_suffix(sln_path.suffix + '.bak')
         if args.backup or not bak.exists():
             print(f'Creating backup: {bak}')
+            # rename original to bak so we keep a safe copy in case of failure
             sln_path.rename(bak)
             original = bak.read_text(encoding='utf-8')
             sln_text = original
@@ -222,14 +224,12 @@ def main():
             original = sln_text
 
         new_text = sln_text
-        for old_path, new_rel, typeguid, name, guid in changes:
-            # Replace only the first occurrence of the old path in a Project(...) line
-            # Build a regex that matches the specific Project line and capture groups
-            esc_old = re.escape(old_path)
-            pattern = re.compile(r'(Project\("\{' + re.escape(typeguid) + r'\}"\)\s*=\s*"' + re.escape(name) + r'",\s*")' + esc_old + r'("\s*,\s*"' + re.escape(guid) + r'"))', re.MULTILINE)
-            # If pattern matches, replace the middle path with new_rel
-            if pattern.search(new_text):
-                new_text = pattern.sub(r"\1" + new_rel.replace('\\', '/') + r"\2", new_text, count=1)
+        for old_path, new_rel, typeguid, name, guid, full_match in changes:
+            # Safely replace the specific Project(...) line by substituting the quoted path
+            # inside the captured full_match rather than constructing a risky regex.
+            replacement_line = full_match.replace(f'"{old_path}"', f'"{new_rel}"', 1)
+            if full_match in new_text:
+                new_text = new_text.replace(full_match, replacement_line, 1)
             else:
                 # Fallback: naive replace of the quoted old_path
                 new_text = new_text.replace(f'"{old_path}"', f'"{new_rel}"', 1)
@@ -238,7 +238,7 @@ def main():
         print(f'Applied {len(changes)} changes to {sln_path}')
     else:
         print('\nDry-run mode (no file changes). To apply the changes run with --apply and optionally --yes')
-        for old_path, new_rel, _, _, _ in changes:
+        for old_path, new_rel, _, _, _, _ in changes:
             print(f'  {old_path} -> {new_rel}')
 
 
