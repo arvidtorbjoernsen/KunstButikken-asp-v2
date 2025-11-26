@@ -43,22 +43,22 @@ internal static partial class AppCompositionBuilder
         azurite.WaitForHttp("/", "blob");
 
         // Keycloak configuration (inlined to preserve types)
+
         var keycloakClientId = builder.Configuration["keycloak-client-id"] ?? "kunstbutikken-frontend-nextjs";
         var keycloakAngularClientId = builder.Configuration["keycloak-angular-client-id"] ?? "kunstbutikken-frontend-ang";
         const string realmName = "kunstbutikken";
         var keycloakAdminUser = builder.Configuration["keycloak-admin-user"] ?? "admin";
         var keycloakAdminPassword = builder.Configuration["keycloak-admin-password"] ?? "admin";
 
-        var keycloak = builder.AddContainer("keycloak", "quay.io/keycloak/keycloak", "latest")
+        var repoRoot = AppHostHelpers.FindRepoRoot();
+        var keycloakRealmPath = Path.Combine(repoRoot, "tools", "keycloak", "kunstbutikken-realm.json");
+
+        var keycloak = builder.AddKeycloak("keycloak", 8080)
+            .WithRealmImport(keycloakRealmPath)
             .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", keycloakAdminUser)
             .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", keycloakAdminPassword)
-            .WithEnvironment("KC_DB", "dev-file")
-            .WithBindMount("../../.data/keycloak", "/opt/keycloak/data")
-            .WithBindMount("../../tools/keycloak", "/opt/keycloak/data/import")
-            .WithArgs("start-dev", "--import-realm")
-            .WithHttpEndpoint(targetPort: 8080, name: "http");
-
-        keycloak.WaitForHttp("/realms/" + realmName + "/.well-known/openid-configuration", "http");
+            .WithBindMount("../../.data/keycloak", "/opt/keycloak/data") // optional for persistence
+            .WaitForHttp($"/realms/{realmName}/.well-known/openid-configuration", "http");
 
         var keycloakHttpEndpoint = keycloak.GetEndpointString("http");
 
@@ -93,14 +93,38 @@ internal static partial class AppCompositionBuilder
         SetupFrontends();
 
         // Explicit null-checks with clear messages instead of nullable-forgiving operators.
-        if (authGateway is null) throw new InvalidOperationException("AuthGateway composition failed - authGateway is null");
-        if (userService is null) throw new InvalidOperationException("UserService composition failed - userService is null");
-        if (artService is null) throw new InvalidOperationException("ArtService composition failed - artService is null");
-        if (auctionService is null) throw new InvalidOperationException("AuctionService composition failed - auctionService is null");
-        if (paymentService is null) throw new InvalidOperationException("PaymentService composition failed - paymentService is null");
-        if (adminService is null) throw new InvalidOperationException("AdminService composition failed - adminService is null");
-        if (nextJsFrontend is null) throw new InvalidOperationException("NextJsFrontend composition failed - nextJsFrontend is null");
-        if (angularFrontend is null) throw new InvalidOperationException("AngularFrontend composition failed - angularFrontend is null");
+        if (authGateway is null)
+        {
+            throw new InvalidOperationException("AuthGateway composition failed - authGateway is null");
+        }
+        if (userService is null)
+        {
+            throw new InvalidOperationException("UserService composition failed - userService is null");
+        }
+        if (artService is null)
+        {
+            throw new InvalidOperationException("ArtService composition failed - artService is null");
+        }
+        if (auctionService is null)
+        {
+            throw new InvalidOperationException("AuctionService composition failed - auctionService is null");
+        }
+        if (paymentService is null)
+        {
+            throw new InvalidOperationException("PaymentService composition failed - paymentService is null");
+        }
+        if (adminService is null)
+        {
+            throw new InvalidOperationException("AdminService composition failed - adminService is null");
+        }
+        if (nextJsFrontend is null)
+        {
+            throw new InvalidOperationException("NextJsFrontend composition failed - nextJsFrontend is null");
+        }
+        if (angularFrontend is null)
+        {
+            throw new InvalidOperationException("AngularFrontend composition failed - angularFrontend is null");
+        }
 
         return new AppComposition(
             authGateway,
@@ -113,10 +137,8 @@ internal static partial class AppCompositionBuilder
             angularFrontend
         );
 
-        void SetupUserService()
-        {
-            (userService, userServiceLocalBuilder) = SetupUserServiceHelper(builder, usersDb, keycloak, postgres, eventBus, keycloakHttpEndpoint, realmName, keycloakAdminUser, keycloakAdminPassword);
-        }
+        void SetupUserService() =>
+            (userService, userServiceLocalBuilder) = SetupUserServiceHelper(builder, usersDb, keycloak, eventBus, keycloakHttpEndpoint, realmName, keycloakAdminUser, keycloakAdminPassword);
 
         void SetupArtService()
         {
@@ -128,9 +150,9 @@ internal static partial class AppCompositionBuilder
                 .WithReference(postgres)
                 .WithEnvironment("ConnectionStrings__Default", artDb)
                 .WithEnvironment("AzureBlob__Container", azureBlobContainer)
-                .WithEnvironment("AzureBlob__PublicUrl", KunstButikken.ServiceDefaults.ResourceBuilderExtensions.GetEndpointString(azurite, "blob"))
+                .WithEnvironment("AzureBlob__PublicUrl", azurite.GetEndpointString("blob"))
                 .WithEnvironment("AzureBlob__ConnectionString", "UseDevelopmentStorage=true")
-                .WithEnvironment("USER_SERVICE_URL", KunstButikken.ServiceDefaults.ResourceBuilderExtensions.GetEndpointString(userService, "api"))
+                .WithEnvironment("USER_SERVICE_URL", userService.GetEndpointString("api"))
                 .WithHttpEndpoint(name: "api")
                 .WithExternalHttpEndpoints()
                 .WaitFor(userService ?? throw new InvalidOperationException("userService is null"))
@@ -139,9 +161,12 @@ internal static partial class AppCompositionBuilder
                 .WaitFor(eventBus ?? throw new InvalidOperationException("eventBus is null"))
                 .WaitForHttp("/api/health");
 
-            if (art is null) throw new InvalidOperationException("art service builder creation failed");
+            if (art is null)
+            {
+                throw new InvalidOperationException("art service builder creation failed");
+            }
             artServiceLocalBuilder = art;
-            artService = (IResourceBuilder<IResourceWithEnvironment>)art;
+            artService = art;
         }
 
         void SetupAuctionService()
@@ -160,9 +185,12 @@ internal static partial class AppCompositionBuilder
                 .WaitFor(eventBus ?? throw new InvalidOperationException("eventBus is null"))
                 .WaitForHttp("/api/health");
 
-            if (auc is null) throw new InvalidOperationException("auction service builder creation failed");
+            if (auc is null)
+            {
+                throw new InvalidOperationException("auction service builder creation failed");
+            }
             auctionServiceLocalBuilder = auc;
-            auctionService = (IResourceBuilder<IResourceWithEnvironment>)auc;
+            auctionService = auc;
         }
 
         void SetupPaymentService()
@@ -180,9 +208,12 @@ internal static partial class AppCompositionBuilder
                 .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
                 .WaitFor(eventBus ?? throw new InvalidOperationException("eventBus is null"));
 
-            if (pay is null) throw new InvalidOperationException("payment service builder creation failed");
+            if (pay is null)
+            {
+                throw new InvalidOperationException("payment service builder creation failed");
+            }
             paymentServiceLocalBuilder = pay;
-            paymentService = (IResourceBuilder<IResourceWithEnvironment>)pay;
+            paymentService = pay;
             paymentService.WaitForHttp("/api/health");
         }
 
@@ -199,9 +230,12 @@ internal static partial class AppCompositionBuilder
                 .WaitFor(eventBus ?? throw new InvalidOperationException("eventBus is null"))
                 .WaitForHttp("/api/health");
 
-            if (adm is null) throw new InvalidOperationException("admin service builder creation failed");
+            if (adm is null)
+            {
+                throw new InvalidOperationException("admin service builder creation failed");
+            }
             adminServiceLocalBuilder = adm;
-            adminService = (IResourceBuilder<IResourceWithEnvironment>)adm;
+            adminService = adm;
         }
 
         void SetupAuthGateway()
@@ -221,8 +255,11 @@ internal static partial class AppCompositionBuilder
                 .WaitFor(adminService ?? throw new InvalidOperationException("adminService is null"))
                 .WaitForHttp("/health", "gateway");
 
-            if (ag is null) throw new InvalidOperationException("auth gateway builder creation failed");
-            authGateway = (IResourceBuilder<IResourceWithEnvironment>)ag;
+            if (ag is null)
+            {
+                throw new InvalidOperationException("auth gateway builder creation failed");
+            }
+            authGateway = ag;
         }
 
         void SetupFrontends()
@@ -256,6 +293,5 @@ internal static partial class AppCompositionBuilder
                 .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
                 .WaitFor(authGateway ?? throw new InvalidOperationException("authGateway is null"));
         }
-
     }
 }
