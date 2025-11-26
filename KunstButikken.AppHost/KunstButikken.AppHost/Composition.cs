@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 
+using Scalar.Aspire;
+
 namespace KunstButikken.AppHost;
 
 internal record AppComposition(
@@ -124,6 +126,43 @@ internal static partial class AppCompositionBuilder
         if (angularFrontend is null)
         {
             throw new InvalidOperationException("AngularFrontend composition failed - angularFrontend is null");
+        }
+
+        // Try registering Scalar API Reference centrally from AppHost so services don't need per-service mapping.
+        try
+        {
+            // Prefer the strongly-typed API if available
+            var scalarApi = builder.AddScalarApiReference(options => { options.WithTheme(ScalarTheme.Purple); });
+            if (scalarApi != null)
+            {
+                // Register project-level API references when local project builders are available
+                if (userServiceLocalBuilder != null)
+                {
+                    scalarApi.WithApiReference(userServiceLocalBuilder);
+                }
+                if (artServiceLocalBuilder != null)
+                {
+                    scalarApi.WithApiReference(artServiceLocalBuilder);
+                }
+                if (auctionServiceLocalBuilder != null)
+                {
+                    scalarApi.WithApiReference(auctionServiceLocalBuilder);
+                }
+                if (paymentServiceLocalBuilder != null)
+                {
+                    scalarApi.WithApiReference(paymentServiceLocalBuilder);
+                }
+                if (adminServiceLocalBuilder != null)
+                {
+                    scalarApi.WithApiReference(adminServiceLocalBuilder);
+                }
+                Console.WriteLine("[AppHost] Registered Scalar API references for services.");
+            }
+        }
+        catch (Exception ex)
+        {
+            // If Scalar isn't available or the strongly-typed API changed, don't fail the composition — AppHost will still run.
+            Console.WriteLine($"[AppHost] Scalar API registration skipped: {ex.Message}");
         }
 
         return new AppComposition(
@@ -264,7 +303,7 @@ internal static partial class AppCompositionBuilder
 
         void SetupFrontends()
         {
-            var repoRoot = AppHostHelpers.FindRepoRoot();
+            // var repoRoot = AppHostHelpers.FindRepoRoot();
             var nextFrontendPath = Path.Combine(repoRoot, "KunstButikken.Frontend");
             var angularFrontendPath = Path.Combine(repoRoot, "KunstButikken.Frontend-Ang");
 

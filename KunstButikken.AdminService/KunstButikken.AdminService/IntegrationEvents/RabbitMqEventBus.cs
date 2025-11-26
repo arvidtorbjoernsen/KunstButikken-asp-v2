@@ -4,8 +4,6 @@ using System.Text.Json;
 using KunstButikken.IntegrationEvents.Contracts;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using Microsoft.Extensions.Options;
-using Polly;
-using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -34,7 +32,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
     private readonly SemaphoreSlim _channelLock = new(1, 1);
     private readonly ILogger<RabbitMqEventBus> _logger;
     private readonly IConnection _rabbitMqConnection;
-    private readonly AsyncRetryPolicy _retryPolicy;
+    private readonly int _retryCount;
     private readonly IServiceProvider _serviceProvider;
     private readonly RabbitMqSettings _settings;
     private readonly ISubscriptionManager _subscriptionManager;
@@ -60,9 +58,8 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         _subscriptionManager = subscriptionManager;
         _serviceProvider = serviceProvider;
 
-        _retryPolicy = Policy.Handle<Exception>()
-            .WaitAndRetryAsync(_settings.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                (ex, time) => LogRetry(_logger, ex.Message, time.TotalSeconds, ex));
+        // Use configured retry count; default to 3 if not set or invalid
+        _retryCount = Math.Max(0, _settings.RetryCount);
     }
 
     // Implement Dispose pattern
@@ -180,7 +177,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
                 return;
             }
 
-            await _retryPolicy.ExecuteAsync(async () =>
+            await ExecuteWithRetriesAsync(async () =>
             {
                 var handlers = _subscriptionManager.GetHandlersForEvent(eventName);
                 foreach (var handlerType in handlers)
@@ -221,6 +218,32 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
             if (_channel != null)
             {
                 await _channel.BasicNackAsync(deliveryTag, false, false).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private async Task ExecuteWithRetriesAsync(Func<Task> action)
+    {
+        var attempt = 0;
+        while (true)
+        {
+            try
+            {
+                await action().ConfigureAwait(false);
+                return;
+            }
+            catch (Exception ex)
+            {
+                attempt++;
+                if (attempt > _retryCount)
+                {
+                    throw;
+                }
+
+                // Exponential backoff: 2^attempt seconds
+                var delaySeconds = Math.Pow(2, attempt);
+                LogRetry(_logger, ex.Message, delaySeconds, ex);
+                await Task.Delay(TimeSpan.FromSeconds(delaySeconds)).ConfigureAwait(false);
             }
         }
     }

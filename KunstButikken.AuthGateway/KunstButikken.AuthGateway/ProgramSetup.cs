@@ -2,13 +2,15 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text.Json;
 using KunstButikken.ServiceDefaults;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.ServiceDiscovery;
 using Microsoft.IdentityModel.Tokens;
 using Yarp.ReverseProxy.Forwarder;
-using Scalar.AspNetCore;
+using Scalar.Aspire;
+using Aspire.Keycloak.Authentication;
 
 namespace KunstButikken.AuthGateway;
 
@@ -75,48 +77,71 @@ public static class ProgramSetup
         // Controllers
         builder.Services.AddControllers().AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; });
 
-        // Authentication (JWT Bearer via Keycloak)
-        var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
-        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? builder.Configuration["Authentication:ClientId"];
+        // Authentication (Keycloak via Aspire helper)
+        var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
+        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
 
-        if (!string.IsNullOrWhiteSpace(authority) && !string.IsNullOrWhiteSpace(audience))
+        try
         {
             builder.Services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+                .AddAuthentication()
+                .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
                 {
-                    options.Authority = authority.TrimEnd('/');
                     options.Audience = audience;
-                    options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ClockSkew = TimeSpan.FromMinutes(2),
-                        RoleClaimType = "roles"
-                    };
-
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
-                        OnTokenValidated = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; },
-                        OnChallenge = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Authentication challenge: {context.Error}, {context.ErrorDescription}"); return Task.CompletedTask; }
-                    };
+                    // Additional token validation customization can be applied here via options.TokenValidationParameters
                 });
 
             builder.Services.AddAuthorization();
+            Console.WriteLine("[AuthGateway] Configured Keycloak JWT Bearer via Aspire helper.");
         }
-        else
+        catch (Exception ex)
         {
-            builder.Services.AddAuthentication(options =>
+            // If the Aspire helper isn't available for some reason, fall back to manual JwtBearer setup
+            Console.WriteLine("[AuthGateway] Aspire Keycloak helper unavailable, falling back to JwtBearer: " + ex.Message);
+
+            var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
+            var aud = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? builder.Configuration["Authentication:ClientId"];
+
+            if (!string.IsNullOrWhiteSpace(authority) && !string.IsNullOrWhiteSpace(aud))
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            });
-            builder.Services.AddAuthorization();
+                builder.Services
+                    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.Authority = authority.TrimEnd('/');
+                        options.Audience = aud;
+                        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ClockSkew = TimeSpan.FromMinutes(2),
+                            RoleClaimType = "roles"
+                        };
+
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
+                            OnTokenValidated = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; },
+                            OnChallenge = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Authentication challenge: {context.Error}, {context.ErrorDescription}"); return Task.CompletedTask; }
+                        };
+                    });
+
+                builder.Services.AddAuthorization();
+            }
+            else
+            {
+                builder.Services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                });
+                builder.Services.AddAuthorization();
+            }
         }
+
     }
 
     public static async Task ConfigureApp(WebApplication app)
@@ -202,4 +227,3 @@ public static class ProgramSetup
     }
 }
 // ...existing code...
-

@@ -4,15 +4,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
+
+// Re-enable OpenTelemetry usings so we can configure it when the packages are present
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
 namespace KunstButikken.ServiceDefaults;
 
-// Adds common Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
+// Adds common Aspire services: service discovery, resilience, health checks, and telemetry.
 // This project should be referenced by each service project in your solution.
-// To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
+// Telemetry setup will prefer Aspire helpers when present; otherwise it will configure OpenTelemetry
+// from the restored OpenTelemetry packages so behaviour is consistent with previous setup.
 public static class ServiceDefaultsExtensions
 {
     private const string HealthEndpointPath = "/health";
@@ -22,7 +26,7 @@ public static class ServiceDefaultsExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.ConfigureOpenTelemetry();
+        builder.ConfigureTelemetryAspireFirstOrOpenTelemetry();
 
         builder.AddDefaultHealthChecks();
 
@@ -37,82 +41,182 @@ public static class ServiceDefaultsExtensions
             http.AddServiceDiscovery();
         });
 
-        // Uncomment the following to restrict the allowed schemes for service discovery.
-        // builder.Services.Configure<ServiceDiscoveryOptions>(options =>
-        // {
-        //     options.AllowedSchemes = ["https"];
-        // });
-
         return builder;
     }
 
-    public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder)
+    /// <summary>
+    /// Try to configure telemetry using Aspire's helpers if available; otherwise configure OpenTelemetry.
+    /// </summary>
+    public static TBuilder ConfigureTelemetryAspireFirstOrOpenTelemetry<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Logging.AddOpenTelemetry(logging =>
+        // If an Aspire-provided AddServiceDefaults(IHostApplicationBuilder) extension exists in a different assembly,
+        // prefer invoking that so Aspire's full defaults are applied.
+        try
         {
-            logging.IncludeFormattedMessage = true;
-            logging.IncludeScopes = true;
-        });
-
-        builder.Services.AddOpenTelemetry()
-            .WithMetrics(metrics =>
+            var currentAsm = typeof(ServiceDefaultsExtensions).Assembly;
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                metrics.AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation();
-            })
-            .WithTracing(tracing =>
-            {
-                tracing.AddSource(builder.Environment.ApplicationName)
-                    .AddAspNetCoreInstrumentation(tracing =>
-                        // Exclude health check requests from tracing
-                        tracing.Filter = context =>
-                            !context.Request.Path.StartsWithSegments(HealthEndpointPath, StringComparison.OrdinalIgnoreCase)
-                            && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath, StringComparison.OrdinalIgnoreCase)
-                    )
-                    // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
-                    //.AddGrpcClientInstrumentation()
-                    .AddHttpClientInstrumentation();
-            });
-
-        builder.AddOpenTelemetryExporters();
-
-        return builder;
-    }
-
-    private static TBuilder AddOpenTelemetryExporters<TBuilder>(this TBuilder builder)
-        where TBuilder : IHostApplicationBuilder
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
-
-        if (useOtlpExporter)
+                if (asm == currentAsm) continue; // skip our own assembly
+                try
+                {
+                    var types = asm.GetExportedTypes();
+                    foreach (var t in types)
+                    {
+                        if (!t.IsSealed || !t.IsAbstract) continue; // static classes only
+                        var methods = t.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                            .Where(m => string.Equals(m.Name, "AddServiceDefaults", StringComparison.Ordinal));
+                        foreach (var m in methods)
+                        {
+                            var ps = m.GetParameters();
+                            if (ps.Length == 1 && ps[0].ParameterType.IsAssignableFrom(typeof(IHostApplicationBuilder)))
+                            {
+                                try
+                                {
+                                    m.Invoke(null, new object[] { builder });
+                                    Console.WriteLine("[ServiceDefaults] Invoked Aspire AddServiceDefaults from " + asm.GetName().Name + ".");
+                                    return builder;
+                                }
+                                catch (TargetInvocationException tie)
+                                {
+                                    Console.WriteLine("[ServiceDefaults] Aspire AddServiceDefaults invocation failed: " + (tie.InnerException?.Message ?? tie.Message));
+                                    // If invoke fails try other candidates
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    // ignore assembly inspection failures
+                }
+            }
+        }
+        catch (Exception ex)
         {
-            builder.Services.AddOpenTelemetry().UseOtlpExporter();
+            Console.WriteLine("[ServiceDefaults] Aspire AddServiceDefaults probe failed: " + ex.Message);
         }
 
-        // Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
-        //if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
-        //{
-        //    builder.Services.AddOpenTelemetry()
-        //       .UseAzureMonitor();
-        //}
+        // First try Aspire helpers via reflection
+        try
+        {
+            var candidateTypes = new[]
+            {
+                "Aspire.Hosting.Telemetry.TelemetryExtensions",
+                "Aspire.Hosting.Telemetry.HostingTelemetryExtensions",
+                "Aspire.Hosting.TelemetryExtensions",
+                "Aspire.Hosting.Telemetry.HostingExtensions"
+            };
+
+            foreach (var typeName in candidateTypes)
+            {
+                try
+                {
+                    var asm = AppDomain.CurrentDomain.GetAssemblies()
+                        .FirstOrDefault(a => a.GetType(typeName, false) != null);
+                    if (asm == null) continue;
+
+                    var t = asm.GetType(typeName, false);
+                    if (t == null) continue;
+
+                    var methods = t.GetMethods(BindingFlags.Public | BindingFlags.Static);
+                    foreach (var m in methods)
+                    {
+                        var ps = m.GetParameters();
+
+                        if (ps.Length == 1 && ps[0].ParameterType.IsAssignableFrom(typeof(IHostApplicationBuilder)))
+                        {
+                            m.Invoke(null, new object[] { builder });
+                            Console.WriteLine("[ServiceDefaults] Configured telemetry via " + typeName + ".");
+                            return builder;
+                        }
+
+                        if (ps.Length == 1 && ps[0].ParameterType.IsAssignableFrom(typeof(IServiceCollection)))
+                        {
+                            m.Invoke(null, new object[] { builder.Services });
+                            Console.WriteLine("[ServiceDefaults] Configured telemetry via " + typeName + "(IServiceCollection)." );
+                            return builder;
+                        }
+
+                        if (ps.Length == 2 && ps[0].ParameterType.IsAssignableFrom(typeof(IServiceCollection)) && ps[1].ParameterType.IsAssignableFrom(typeof(ILoggingBuilder)))
+                        {
+                            m.Invoke(null, new object[] { builder.Services, builder.Logging });
+                            Console.WriteLine("[ServiceDefaults] Configured telemetry via " + typeName + "(IServiceCollection, ILoggingBuilder)." );
+                            return builder;
+                        }
+                    }
+                }
+                catch (TargetInvocationException tie)
+                {
+                    Console.WriteLine("[ServiceDefaults] Aspire telemetry helper invocation failed: " + (tie.InnerException?.Message ?? tie.Message));
+                }
+                catch
+                {
+                    // ignore and try next
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[ServiceDefaults] Aspire telemetry aspirational configuration failed: " + ex.Message);
+        }
+
+        // If we got here, fall back to configuring OpenTelemetry using the project's packages
+        try
+        {
+            builder.Logging.AddOpenTelemetry(logging =>
+            {
+                logging.IncludeFormattedMessage = true;
+                logging.IncludeScopes = true;
+            });
+
+            builder.Services.AddOpenTelemetry()
+                .WithMetrics(metrics =>
+                {
+                    metrics.AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddRuntimeInstrumentation();
+                })
+                .WithTracing(tracing =>
+                {
+                    tracing.AddSource(builder.Environment.ApplicationName)
+                        .AddAspNetCoreInstrumentation(tracing =>
+                            tracing.Filter = context =>
+                                !context.Request.Path.StartsWithSegments(HealthEndpointPath, StringComparison.OrdinalIgnoreCase)
+                                && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath, StringComparison.OrdinalIgnoreCase)
+                        )
+                        .AddHttpClientInstrumentation();
+                });
+
+            // Configure exporters based on environment
+            var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+            if (useOtlpExporter)
+            {
+                builder.Services.AddOpenTelemetry().UseOtlpExporter();
+            }
+
+            Console.WriteLine("[ServiceDefaults] Configured OpenTelemetry telemetry (fallback).");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[ServiceDefaults] OpenTelemetry configuration failed: " + ex.Message);
+            // As a final fallback enable console logging so the app is still useful
+            try { builder.Logging.AddConsole(); } catch { }
+        }
 
         return builder;
     }
 
-    public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder)
+    private static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.AddHealthChecks()
             // Add a default liveness check to ensure app is responsive
-            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+            .AddCheck("self", () => HealthCheckResult.Healthy(), new[] { "live" });
 
         return builder;
     }

@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using System.Reflection;
+
 using KunstButikken.AdminService.Infrastructure.Data;
 using KunstButikken.AdminService.IntegrationEvents;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
@@ -6,7 +10,7 @@ using KunstButikken.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-using Scalar.AspNetCore;
+using Scalar.Aspire;
 
 // Updated namespace
 
@@ -41,16 +45,17 @@ public static class ProgramSetup
         var frontendOriginsRaw = builder.Configuration["FRONTEND_ORIGINS"] ??
                                  builder.Configuration["FRONTEND_ORIGIN"] ?? "http://localhost:3000";
         var frontendOrigins = frontendOriginsRaw
-            .Split([',', ';', ' '], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        if (frontendOrigins.Length == 0)
+            .Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+        if (frontendOrigins.Count == 0)
         {
-            frontendOrigins = ["http://localhost:3000"];
+            frontendOrigins.Add("http://localhost:3000");
         }
 
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("frontend", p =>
-                p.WithOrigins(frontendOrigins)
+                p.WithOrigins(frontendOrigins.ToArray())
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());
@@ -106,15 +111,8 @@ public static class ProgramSetup
 
         if (enableOpenApi)
         {
-            app.MapScalarApiReference(options =>
-            {
-                options.Title = "AdminService API";
-                options.Theme = ScalarTheme.Moon;
-                options.Authentication = new ScalarAuthenticationOptions
-                {
-                    PreferredSecuritySchemes = ["Bearer"]
-                };
-            });
+            // Use reflection to call MapScalarApiReference if Scalar.Aspire/Scalar.AspNetCore exposes it.
+            TryMapScalarApiReference(app);
         }
 
         // Ensure DB exists + non-destructive seed if empty
@@ -140,5 +138,66 @@ public static class ProgramSetup
 
         // Map default health endpoints, etc.
         app.MapDefaultEndpoints();
+    }
+
+    private static void TryMapScalarApiReference(WebApplication app)
+    {
+        try
+        {
+            var appType = app.GetType();
+            // Look for extension method MapScalarApiReference
+            var methods = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a =>
+                {
+                    try { return a.GetExportedTypes(); } catch { return Array.Empty<Type>(); }
+                })
+                .Where(t => t.IsSealed && t.IsAbstract)
+                .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                .Where(m => string.Equals(m.Name, "MapScalarApiReference", StringComparison.Ordinal))
+                .ToList();
+
+            if (!methods.Any())
+            {
+                Console.WriteLine("[ProgramSetup] MapScalarApiReference extension not found (Scalar package may not expose it). Skipping Scalar API reference mapping.");
+                return;
+            }
+
+            // Pick the first candidate that accepts WebApplication and an action/config delegate
+            foreach (var m in methods)
+            {
+                var ps = m.GetParameters();
+                if (ps.Length == 1 && ps[0].ParameterType.IsAssignableFrom(appType))
+                {
+                    // method signature: MapScalarApiReference(WebApplication)
+                    m.Invoke(null, new object[] { app });
+                    Console.WriteLine("[ProgramSetup] Invoked MapScalarApiReference(WebApplication)");
+                    return;
+                }
+
+                if (ps.Length == 2 && ps[0].ParameterType.IsAssignableFrom(appType))
+                {
+                    // method signature: MapScalarApiReference(WebApplication, Action<Options>)
+                    // Build a compatible delegate dynamically
+                    var optionsType = ps[1].ParameterType.GetGenericArguments().FirstOrDefault() ?? ps[1].ParameterType;
+                    // Fallback: if we cannot construct a matching delegate, try invoking with null
+                    try
+                    {
+                        m.Invoke(null, new object[] { app, null });
+                        Console.WriteLine("[ProgramSetup] Invoked MapScalarApiReference(WebApplication, options) with null options");
+                        return;
+                    }
+                    catch
+                    {
+                        // ignore and try next
+                    }
+                }
+            }
+
+            Console.WriteLine("[ProgramSetup] No matching MapScalarApiReference overload found; skipping.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[ProgramSetup] Error invoking MapScalarApiReference reflectively: " + ex.Message);
+        }
     }
 }

@@ -14,6 +14,7 @@
         <PackageReference Include="Aspire.Hosting.NodeJS"/>
         <PackageReference Include="Aspire.Hosting.Keycloak"/>
         <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
+        <PackageReference Include="Scalar.Aspire"/>
         <!-- ModelContextProtocol packages: core + AspNetCore integration -->
         <PackageReference Include="ModelContextProtocol.Core"/>
         <PackageReference Include="ModelContextProtocol.AspNetCore"/>
