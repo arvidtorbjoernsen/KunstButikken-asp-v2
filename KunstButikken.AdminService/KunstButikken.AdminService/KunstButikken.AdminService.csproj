@@ -9,30 +9,30 @@
         <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.OpenApi"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all"/>
-        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory"/>
-        <PackageReference Include="Aspire.Keycloak.Authentication"/>
-        <PackageReference Include="Scalar.Aspire"/>
-        <PackageReference Include="Aspire.RabbitMQ.Client"/>
-        <PackageReference Include="RabbitMQ.Client"/>
-        <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
+        <PackageReference Include="Microsoft.OpenApi" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+        <PackageReference Include="Aspire.Keycloak.Authentication" />
+        <PackageReference Include="Scalar.Aspire" />
+        <PackageReference Include="Aspire.RabbitMQ.Client" />
+        <PackageReference Include="RabbitMQ.Client" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="Application/KunstButikken.AdminService.Application.csproj"/>
-        <ProjectReference Include="Domain/KunstButikken.AdminService.Domain.csproj"/>
-        <ProjectReference Include="Infrastructure/KunstButikken.AdminService.Infrastructure.csproj"/>
-        <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>
-        <ProjectReference Include="$(RepoRoot)KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj"/>
-        <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>
+        <ProjectReference Include="Application/KunstButikken.AdminService.Application.csproj" />
+        <ProjectReference Include="Domain/KunstButikken.AdminService.Domain.csproj" />
+        <ProjectReference Include="Infrastructure/KunstButikken.AdminService.Infrastructure.csproj" />
+        <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj" />
+        <ProjectReference Include="$(RepoRoot)KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj" />
+        <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj" />
     </ItemGroup>
     <ItemGroup>
         <!-- Exclude Domain/Application/Infrastructure source files from the Web project to avoid duplicate compilation -->
-        <Compile Remove="Domain\**\*.cs"/>
-        <Compile Remove="Application\**\*.cs"/>
-        <Compile Remove="Infrastructure\**\*.cs"/>
+        <Compile Remove="Domain\**\*.cs" />
+        <Compile Remove="Application\**\*.cs" />
+        <Compile Remove="Infrastructure\**\*.cs" />
     </ItemGroup>
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
