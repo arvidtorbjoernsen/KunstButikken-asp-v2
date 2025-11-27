@@ -1,0 +1,34 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU" />
+        <Platform Name="x64" />
+        <Platform Name="x86" />
+    </Configurations>
+    <Project Path="KunstButikken.AppHost/KunstButikken.AppHost/KunstButikken.AppHost.csproj" />
+
+    <Project Path="KunstButikken.AdminService/KunstButikken.AdminService/KunstButikken.AdminService.csproj" />
+    <Project Path="KunstButikken.AdminService/KunstButikken.AdminService/Application/KunstButikken.AdminService.Application.csproj" />
+    <Project Path="KunstButikken.AdminService/KunstButikken.AdminService/Domain/KunstButikken.AdminService.Domain.csproj" />
+    <Project Path="KunstButikken.AdminService/KunstButikken.AdminService/Infrastructure/KunstButikken.AdminService.Infrastructure.csproj" />
+
+    <Project Path="KunstButikken.ArtService/KunstButikken.ArtService/KunstButikken.ArtService.csproj" />
+    <Project Path="KunstButikken.ArtService/KunstButikken.ArtService/Application/KunstButikken.ArtService.Application.csproj" />
+    <Project Path="KunstButikken.ArtService/KunstButikken.ArtService/Domain/KunstButikken.ArtService.Domain.csproj" />
+    <Project Path="KunstButikken.ArtService/KunstButikken.ArtService/Infrastructure/KunstButikken.ArtService.Infrastructure.csproj" />
+
+    <Project Path="KunstButikken.AuctionService/KunstButikken.AuctionService/KunstButikken.AuctionService.csproj" />
+    <Project Path="KunstButikken.AuctionService/KunstButikken.AuctionService/Application/KunstButikken.AuctionService.Application.csproj" />
+    <Project Path="KunstButikken.AuctionService/KunstButikken.AuctionService/Domain/KunstButikken.AuctionService.Domain.csproj" />
+    <Project Path="KunstButikken.AuctionService/KunstButikken.AuctionService/Infrastructure/KunstButikken.AuctionService.Infrastructure.csproj" />
+
+    <Project Path="KunstButikken.AuthGateway/KunstButikken.AuthGateway/KunstButikken.AuthGateway.csproj" />
+
+    <Project Path="KunstButikken.PaymentService/KunstButikken.PaymentService/KunstButikken.PaymentService.csproj" />
+
+    <Project Path="KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj" />
+
+    <Project Path="KunstButikken.UserService/KunstButikken.UserService/KunstButikken.UserService.csproj" />
+    <Project Path="KunstButikken.UserService/KunstButikken.UserService/Application/KunstButikken.UserService.Application.csproj" />
+    <Project Path="KunstButikken.UserService/KunstButikken.UserService/Domain/KunstButikken.UserService.Domain.csproj" />
+    <Project Path="KunstButikken.UserService/KunstButikken.UserService/Infrastructure/KunstButikken.UserService.Infrastructure.csproj" />
+</Solution>

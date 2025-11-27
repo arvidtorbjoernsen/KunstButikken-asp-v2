@@ -1,11 +1,11 @@
-using KunstButikken.PaymentService.Models;
+using KunstButikken.PaymentService.Domain.Models;
+using KunstButikken.PaymentService.Domain.Repositories;
 
-namespace KunstButikken.PaymentService.Data;
+namespace KunstButikken.PaymentService.Infrastructure.Data;
 
 public class PaymentRepository(PaymentDbContext db) : IPaymentRepository
 {
-    public IQueryable<Transaction> Query() =>
-        db.Transactions.AsQueryable();
+    public IQueryable<Transaction> Query() => db.Transactions.AsQueryable();
 
     public Task<Transaction?> FindAsync(Guid id, CancellationToken cancellationToken = default) =>
         db.Transactions.FindAsync([id], cancellationToken).AsTask();

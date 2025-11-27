@@ -12,16 +12,19 @@
         <PackageReference Include="Microsoft.OpenApi"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="All"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
         <PackageReference Include="Stripe.net"/>
-        <PackageReference Include="Scalar.AspNetCore"/>
+        <PackageReference Include="Aspire.Keycloak.Authentication"/>
+        <PackageReference Include="Scalar.Aspire"/>
         <PackageReference Include="Aspire.RabbitMQ.Client"/>
         <PackageReference Include="RabbitMQ.Client"/>
-        <PackageReference Include="Polly"/>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="Application/KunstButikken.PaymentService.Application.csproj"/>
+        <ProjectReference Include="Domain/KunstButikken.PaymentService.Domain.csproj"/>
+        <ProjectReference Include="Infrastructure/KunstButikken.PaymentService.Infrastructure.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj"/>
@@ -30,5 +33,10 @@
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>KunstButikken.Tests</_Parameter1>
         </AssemblyAttribute>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Application\**\*.cs"/>
+        <Compile Remove="Domain\**\*.cs"/>
+        <Compile Remove="Infrastructure\**\*.cs"/>
     </ItemGroup>
 </Project>

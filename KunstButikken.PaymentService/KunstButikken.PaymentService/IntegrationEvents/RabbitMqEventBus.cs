@@ -4,8 +4,6 @@ using System.Text.Json;
 using KunstButikken.IntegrationEvents.Contracts;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using Microsoft.Extensions.Options;
-using Polly;
-using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -34,7 +32,6 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
     private readonly SemaphoreSlim _channelLock = new(1, 1);
     private readonly ILogger<RabbitMqEventBus> _logger;
     private readonly IConnection _rabbitMqConnection;
-    private readonly AsyncRetryPolicy _retryPolicy;
     private readonly IServiceProvider _serviceProvider;
     private readonly RabbitMqSettings _settings;
     private readonly ISubscriptionManager _subscriptionManager;
@@ -58,10 +55,6 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         _settings = options.Value;
         _subscriptionManager = subscriptionManager;
         _serviceProvider = serviceProvider;
-
-        _retryPolicy = Policy.Handle<Exception>()
-            .WaitAndRetryAsync(_settings.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                (ex, time) => _logRetry(_logger, ex.Message, time.TotalSeconds, ex));
     }
 
     // Implement Dispose pattern
@@ -77,14 +70,12 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         {
             _channel ??= await _rabbitMqConnection.CreateChannelAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             var eventName = integrationEvent.GetType().Name;
-            await _channel.ExchangeDeclareAsync(_settings.ExchangeName, ExchangeType.Fanout, true, false,
-                cancellationToken: cancellationToken).ConfigureAwait(false);
+            await _channel.ExchangeDeclareAsync(_settings.ExchangeName, ExchangeType.Fanout, true, false).ConfigureAwait(false);
 
             var json = JsonSerializer.Serialize(integrationEvent, integrationEvent.GetType());
             var body = Encoding.UTF8.GetBytes(json);
 
-            await _channel.BasicPublishAsync(_settings.ExchangeName, eventName, body, cancellationToken)
-                .ConfigureAwait(false);
+            await _channel.BasicPublishAsync(_settings.ExchangeName, eventName, body, cancellationToken).ConfigureAwait(false);
             _logPublished(_logger, eventName, null);
         }
         finally
@@ -101,9 +92,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         _ = SubscribeAsync<T, TH>();
     }
 
-    public async Task SubscribeAsync<T, TH>()
-        where T : IntegrationEvent
-        where TH : IIntegrationEventConsumer<T>
+    public async Task SubscribeAsync<T, TH>() where T : IntegrationEvent where TH : IIntegrationEventConsumer<T>
     {
         var eventName = typeof(T).Name;
         // Use generic subscription manager API
@@ -113,8 +102,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         try
         {
             _channel ??= await _rabbitMqConnection.CreateChannelAsync().ConfigureAwait(false);
-            await _channel.ExchangeDeclareAsync(_settings.ExchangeName, ExchangeType.Fanout, true, false)
-                .ConfigureAwait(false);
+            await _channel.ExchangeDeclareAsync(_settings.ExchangeName, ExchangeType.Fanout, true, false).ConfigureAwait(false);
 
             var queueArgs = new Dictionary<string, object?>
             {
@@ -123,18 +111,24 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
             await _channel.QueueDeclareAsync(_settings.QueueName, true, false, false, queueArgs).ConfigureAwait(false);
             await _channel.QueueBindAsync(_settings.QueueName, _settings.ExchangeName, eventName).ConfigureAwait(false);
 
-            await _channel.ExchangeDeclareAsync(_settings.DeadLetterExchangeName, ExchangeType.Fanout, true, false)
-                .ConfigureAwait(false);
+            await _channel.ExchangeDeclareAsync(_settings.DeadLetterExchangeName, ExchangeType.Fanout, true, false).ConfigureAwait(false);
             var deadLetterQueueName = $"{_settings.QueueName}_deadletter";
             await _channel.QueueDeclareAsync(deadLetterQueueName, true, false, false).ConfigureAwait(false);
-            await _channel.QueueBindAsync(deadLetterQueueName, _settings.DeadLetterExchangeName, "").ConfigureAwait(false);
+            await _channel.QueueBindAsync(deadLetterQueueName, _settings.DeadLetterExchangeName, string.Empty).ConfigureAwait(false);
 
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (_, ea) =>
             {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                await ProcessEvent(ea.RoutingKey, message, ea.DeliveryTag).ConfigureAwait(false);
+                try
+                {
+                    var body = ea.Body.ToArray();
+                    var message = Encoding.UTF8.GetString(body);
+                    await ProcessEvent(ea.RoutingKey, message, ea.DeliveryTag).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // swallow
+                }
             };
 
             await _channel.BasicConsumeAsync(_settings.QueueName, false, consumer).ConfigureAwait(false);
@@ -160,8 +154,8 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
     {
         if (_channel != null)
         {
-            await _channel.CloseAsync().ConfigureAwait(false);
-            await _channel.DisposeAsync().ConfigureAwait(false);
+            try { await _channel.CloseAsync().ConfigureAwait(false); } catch { }
+            try { await _channel.DisposeAsync().ConfigureAwait(false); } catch { }
             _channel = null;
         }
 
@@ -197,7 +191,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
                 return;
             }
 
-            await _retryPolicy.ExecuteAsync(async () =>
+            await ExecuteWithRetriesAsync(async () =>
             {
                 var handlers = _subscriptionManager.GetHandlersForEvent(eventName);
                 foreach (var handlerType in handlers)
@@ -215,7 +209,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
                         continue;
                     }
 
-                    var result = handleMethod.Invoke(handler, [integrationEvent]);
+                    var result = handleMethod.Invoke(handler, new object[] { integrationEvent });
                     if (result is Task task)
                     {
                         await task.ConfigureAwait(false);
@@ -242,7 +236,31 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         }
     }
 
+    private async Task ExecuteWithRetriesAsync(Func<Task> action)
+    {
+        var retries = Math.Max(1, _settings.RetryCount);
+        for (var attempt = 1; attempt <= retries; attempt++)
+        {
+            try
+            {
+                await action().ConfigureAwait(false);
+                return;
+            }
+            catch (Exception ex) when (attempt < retries)
+            {
+                var backoffSeconds = Math.Pow(2, attempt);
+                _logRetry(_logger, ex.Message, backoffSeconds, ex);
+                await Task.Delay(TimeSpan.FromSeconds(backoffSeconds)).ConfigureAwait(false);
+            }
+        }
+
+        throw new Exception("Operation failed after retries");
+    }
+
     // Internal test hook
     internal Task ProcessEventForTest(string eventName, string message, ulong deliveryTag) =>
         ProcessEvent(eventName, message, deliveryTag);
+
+    internal async Task InitializeChannelForTest() =>
+        _channel ??= await _rabbitMqConnection.CreateChannelAsync().ConfigureAwait(false);
 }

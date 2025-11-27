@@ -1,14 +1,12 @@
-// ...existing code...
 using System;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text.Json;
 using KunstButikken.ServiceDefaults;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.ServiceDiscovery;
-using Microsoft.IdentityModel.Tokens;
 using Yarp.ReverseProxy.Forwarder;
-using Scalar.AspNetCore;
+using Scalar.Aspire;
 
 namespace KunstButikken.AuthGateway;
 
@@ -75,30 +73,23 @@ public static class ProgramSetup
         // Controllers
         builder.Services.AddControllers().AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; });
 
-        // Authentication (JWT Bearer via Keycloak)
+        // Authentication (Keycloak via Aspire helper)
+        var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
+        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
+
         var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
-        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? builder.Configuration["Authentication:ClientId"];
 
-        if (!string.IsNullOrWhiteSpace(authority) && !string.IsNullOrWhiteSpace(audience))
+        // If Keycloak is configured (authority or realm present) use Aspire's Keycloak helper
+        if (!string.IsNullOrWhiteSpace(authority) || !string.IsNullOrWhiteSpace(realm))
         {
+            // Register JwtBearer using the Keycloak helper which configures authority/audience/validation
             builder.Services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+                .AddAuthentication()
+                .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
                 {
-                    options.Authority = authority.TrimEnd('/');
                     options.Audience = audience;
-                    options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ClockSkew = TimeSpan.FromMinutes(2),
-                        RoleClaimType = "roles"
-                    };
-
-                    options.Events = new JwtBearerEvents
+                    // propagate same dev-time logging hooks as before
+                    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
                     {
                         OnAuthenticationFailed = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
                         OnTokenValidated = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; },
@@ -110,13 +101,11 @@ public static class ProgramSetup
         }
         else
         {
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            });
+            // Fallback: register authentication system without specific scheme — keep authorization enabled
+            builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();
         }
+
     }
 
     public static async Task ConfigureApp(WebApplication app)
@@ -201,5 +190,3 @@ public static class ProgramSetup
         await Task.CompletedTask;
     }
 }
-// ...existing code...
-

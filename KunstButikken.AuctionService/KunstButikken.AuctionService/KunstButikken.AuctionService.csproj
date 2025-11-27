@@ -12,12 +12,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.OpenApi" />
-    <PackageReference Include="Polly" />
-    <PackageReference Include="Scalar.AspNetCore" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Scalar.Aspire" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="All" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Aspire.Keycloak.Authentication" />
+    <PackageReference Include="RabbitMQ.Client" />
+    <PackageReference Include="Aspire.RabbitMQ.Client" />
   </ItemGroup>
 
   <ItemGroup>

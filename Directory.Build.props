@@ -4,5 +4,12 @@
     <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
     <!-- You can add shared props here (company, versioning, analyzer settings etc.) -->
   </PropertyGroup>
-</Project>
 
+  <ItemGroup>
+    <!-- Emit repo root as assembly metadata so runtime code can read it via reflection -->
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>RepoRoot</_Parameter1>
+      <_Parameter2>$(RepoRoot)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>

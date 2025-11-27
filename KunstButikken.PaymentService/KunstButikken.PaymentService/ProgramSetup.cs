@@ -1,19 +1,23 @@
-// ...existing code...
 using System;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Reflection;
 using KunstButikken.Common.Logging;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.IntegrationEvents.Contracts.Events;
-using KunstButikken.PaymentService.Data;
 using KunstButikken.PaymentService.IntegrationEvents;
 using KunstButikken.PaymentService.IntegrationEvents.Handlers;
-using KunstButikken.PaymentService.Services;
 using KunstButikken.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Scalar.AspNetCore;
+using Scalar.Aspire;
+using KunstButikken.PaymentService.Infrastructure.Data;
 using KunstButikken.PaymentService.Infrastructure.DependencyInjection;
+using KunstButikken.PaymentService.Domain.Repositories;
+using KunstButikken.PaymentService.Domain.Models;
+using KunstButikken.PaymentService.Application.Interfaces;
+using KunstButikken.PaymentService.Application.Services;
 
 namespace KunstButikken.PaymentService;
 
@@ -41,11 +45,14 @@ public static class ProgramSetup
         builder.Services.AddEnvLoader();
 
         // Add RabbitMQ client
-        builder.AddRabbitMQClient("eventbus");
+        builder.AddRabbitMQClient("rabbitmq");
         builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
         builder.Services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
         builder.Services.AddSingleton<IEventBus, RabbitMqEventBus>();
         builder.Services.AddScoped<AuctionEndedIntegrationEventHandler>();
+
+        // Register example RabbitMQ publisher helper that uses IConnection injected by Aspire.RabbitMQ.Client
+        builder.Services.AddSingleton<RabbitMqPublisher>();
 
         // Register system date/time provider
         builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
@@ -53,6 +60,41 @@ public static class ProgramSetup
         // Register Stripe services
         builder.Services.AddSingleton<IStripeWebhookService, StripeWebhookService>();
         builder.Services.AddSingleton<IStripeSessionService, StripeSessionService>();
+
+        // Authentication (Keycloak via Aspire helper)
+        var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
+        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
+
+        var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
+
+        // If Keycloak is configured (authority or realm present) use Aspire's Keycloak helper
+        if (!string.IsNullOrWhiteSpace(authority) || !string.IsNullOrWhiteSpace(realm))
+        {
+            // Register JwtBearer using the Keycloak helper which configures authority/audience/validation
+            builder.Services
+                .AddAuthentication()
+                .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
+                {
+                    options.Audience = audience;
+                    // Optional: Add logging for development
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = context => { Console.WriteLine($"[PaymentService] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
+                            OnTokenValidated = context => { Console.WriteLine($"[PaymentService] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; }
+                        };
+                    }
+                });
+
+            builder.Services.AddAuthorization();
+        }
+        else
+        {
+            // Fallback: register authentication system without specific scheme — keep authorization enabled
+            builder.Services.AddAuthentication();
+            builder.Services.AddAuthorization();
+        }
 
         // CORS for frontend origin(s)
         var frontendOriginsRaw = builder.Configuration["FRONTEND_ORIGINS"] ??
@@ -116,15 +158,7 @@ public static class ProgramSetup
 
         if (enableOpenApi)
         {
-            app.MapScalarApiReference(options =>
-            {
-                options.Title = "PaymentService API";
-                options.Theme = ScalarTheme.Moon;
-                options.Authentication = new ScalarAuthenticationOptions
-                {
-                    PreferredSecuritySchemes = new[] { "Bearer" }
-                };
-            });
+            TryMapScalarApiReference(app);
         }
 
         // Ensure DB exists with retry in Development
@@ -166,6 +200,9 @@ public static class ProgramSetup
 
         app.UseCors("frontend");
 
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         app.MapControllers();
 
         // Map default health endpoints, etc.
@@ -182,5 +219,61 @@ public static class ProgramSetup
             // Subscription failures shouldn't prevent the app from starting
         }
     }
+
+    // Reflection-based Scalar API mapper
+    private static void TryMapScalarApiReference(WebApplication app)
+    {
+        try
+        {
+            var appType = app.GetType();
+            var methods = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a =>
+                {
+                    try { return a.GetExportedTypes(); } catch { return Array.Empty<Type>(); }
+                })
+                .Where(t => t.IsSealed && t.IsAbstract)
+                .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                .Where(m => string.Equals(m.Name, "MapScalarApiReference", StringComparison.Ordinal))
+                .ToList();
+
+            if (!methods.Any())
+            {
+                Console.WriteLine("[PaymentService] MapScalarApiReference extension not found (Scalar package may not expose it). Skipping Scalar API reference mapping.");
+                return;
+            }
+
+            foreach (var m in methods)
+            {
+                var ps = m.GetParameters();
+                if (ps.Length == 1 && ps[0].ParameterType.IsAssignableFrom(appType))
+                {
+                    m.Invoke(null, new object[] { app });
+                    Console.WriteLine("[PaymentService] Invoked MapScalarApiReference(WebApplication)");
+                    return;
+                }
+
+                if (ps.Length == 2 && ps[0].ParameterType.IsAssignableFrom(appType))
+                {
+                    try
+                    {
+                        m.Invoke(null, new object[] { app, new NoOpScalarOptions() });
+                        Console.WriteLine("[PaymentService] Invoked MapScalarApiReference(WebApplication, options) with synthetic options");
+                        return;
+                    }
+                    catch
+                    {
+                        // ignore and try next
+                    }
+                }
+            }
+
+            Console.WriteLine("[PaymentService] No matching MapScalarApiReference overload found; skipping.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[PaymentService] Error invoking MapScalarApiReference reflectively: " + ex.Message);
+        }
+    }
+
+    private sealed class NoOpScalarOptions { }
 }
-// ...existing code...

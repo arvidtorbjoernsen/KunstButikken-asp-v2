@@ -1,4 +1,3 @@
 {
-  "appHostPath": "KunstButikken.AppHost/KunstButikken.AppHost/KunstButikken.AppHost.csproj"
+  "appHostPath": "../KunstButikken.AppHost/KunstButikken.AppHost/KunstButikken.AppHost.csproj"
 }
-

@@ -1,7 +1,9 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using KunstButikken.ArtService.Domain.Interfaces;
+using Microsoft.Extensions.Configuration;
 
-namespace KunstButikken.ArtService.Services;
+namespace KunstButikken.ArtService.Infrastructure.Storage;
 
 internal sealed class BlobStorage : IBlobStorage
 {

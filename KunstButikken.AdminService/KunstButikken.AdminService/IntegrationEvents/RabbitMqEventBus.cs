@@ -4,8 +4,6 @@ using System.Text.Json;
 using KunstButikken.IntegrationEvents.Contracts;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using Microsoft.Extensions.Options;
-using Polly;
-using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -34,7 +32,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
     private readonly SemaphoreSlim _channelLock = new(1, 1);
     private readonly ILogger<RabbitMqEventBus> _logger;
     private readonly IConnection _rabbitMqConnection;
-    private readonly AsyncRetryPolicy _retryPolicy;
+    private readonly int _retryCount;
     private readonly IServiceProvider _serviceProvider;
     private readonly RabbitMqSettings _settings;
     private readonly ISubscriptionManager _subscriptionManager;
@@ -60,9 +58,8 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         _subscriptionManager = subscriptionManager;
         _serviceProvider = serviceProvider;
 
-        _retryPolicy = Policy.Handle<Exception>()
-            .WaitAndRetryAsync(_settings.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                (ex, time) => LogRetry(_logger, ex.Message, time.TotalSeconds, ex));
+        // Use configured retry count; default to 3 if not set or invalid
+        _retryCount = Math.Max(0, _settings.RetryCount);
     }
 
     // Implement Dispose pattern
@@ -84,8 +81,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
             var json = JsonSerializer.Serialize(integrationEvent, integrationEvent.GetType());
             var body = Encoding.UTF8.GetBytes(json);
 
-            await _channel.BasicPublishAsync(_settings.ExchangeName, eventName, body, cancellationToken)
-                .ConfigureAwait(false);
+            await _channel.BasicPublishAsync(_settings.ExchangeName, eventName, body, cancellationToken).ConfigureAwait(false);
             LogPublished(_logger, eventName, null);
         }
         finally
@@ -106,28 +102,34 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         try
         {
             _channel ??= await _rabbitMqConnection.CreateChannelAsync().ConfigureAwait(false);
-            await _channel.ExchangeDeclareAsync(_settings.ExchangeName, ExchangeType.Fanout, true, false)
-                .ConfigureAwait(false);
+            await _channel.ExchangeDeclareAsync(_settings.ExchangeName, ExchangeType.Fanout, true, false).ConfigureAwait(false);
 
             var queueArgs = new Dictionary<string, object?>
             {
                 { "x-dead-letter-exchange", _settings.DeadLetterExchangeName }
             };
+
             await _channel.QueueDeclareAsync(_settings.QueueName, true, false, false, queueArgs).ConfigureAwait(false);
             await _channel.QueueBindAsync(_settings.QueueName, _settings.ExchangeName, eventName).ConfigureAwait(false);
 
-            await _channel.ExchangeDeclareAsync(_settings.DeadLetterExchangeName, ExchangeType.Fanout, true, false)
-                .ConfigureAwait(false);
+            await _channel.ExchangeDeclareAsync(_settings.DeadLetterExchangeName, ExchangeType.Fanout, true, false).ConfigureAwait(false);
             var deadLetterQueueName = $"{_settings.QueueName}_deadletter";
             await _channel.QueueDeclareAsync(deadLetterQueueName, true, false, false).ConfigureAwait(false);
-            await _channel.QueueBindAsync(deadLetterQueueName, _settings.DeadLetterExchangeName, "").ConfigureAwait(false);
+            await _channel.QueueBindAsync(deadLetterQueueName, _settings.DeadLetterExchangeName, string.Empty).ConfigureAwait(false);
 
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (_, ea) =>
             {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                await ProcessEvent(ea.RoutingKey, message, ea.DeliveryTag).ConfigureAwait(false);
+                try
+                {
+                    var body = ea.Body.ToArray();
+                    var message = Encoding.UTF8.GetString(body);
+                    await ProcessEvent(ea.RoutingKey, message, ea.DeliveryTag).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // swallow to keep the consumer alive; ProcessEvent will nack on failure
+                }
             };
 
             await _channel.BasicConsumeAsync(_settings.QueueName, false, consumer).ConfigureAwait(false);
@@ -180,7 +182,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
                 return;
             }
 
-            await _retryPolicy.ExecuteAsync(async () =>
+            await ExecuteWithRetriesAsync(async () =>
             {
                 var handlers = _subscriptionManager.GetHandlersForEvent(eventName);
                 foreach (var handlerType in handlers)
@@ -225,12 +227,39 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         }
     }
 
+    private async Task ExecuteWithRetriesAsync(Func<Task> action)
+    {
+        var attempt = 0;
+        while (true)
+        {
+            try
+            {
+                await action().ConfigureAwait(false);
+                return;
+            }
+            catch (Exception ex)
+            {
+                attempt++;
+                if (attempt > _retryCount)
+                {
+                    throw;
+                }
+
+                // Exponential backoff: 2^attempt seconds
+                var delaySeconds = Math.Pow(2, attempt);
+                LogRetry(_logger, ex.Message, delaySeconds, ex);
+                await Task.Delay(TimeSpan.FromSeconds(delaySeconds)).ConfigureAwait(false);
+            }
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_channel != null)
         {
-            await _channel.CloseAsync().ConfigureAwait(false);
-            await _channel.DisposeAsync().ConfigureAwait(false);
+            try { await _channel.CloseAsync().ConfigureAwait(false); } catch { }
+            try { await _channel.DisposeAsync().ConfigureAwait(false); } catch { }
+            _channel = null;
         }
 
         _channelLock.Dispose();
@@ -240,7 +269,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
     internal Task ProcessEventForTest(string eventName, string message, ulong deliveryTag) =>
         ProcessEvent(eventName, message, deliveryTag);
 
-    // Internal test hook to initialize the channel
+    // Internal test hook to initialize the channel (sync CreateModel from RabbitMQ.Client)
     internal async Task InitializeChannelForTest() =>
         _channel ??= await _rabbitMqConnection.CreateChannelAsync().ConfigureAwait(false);
 }

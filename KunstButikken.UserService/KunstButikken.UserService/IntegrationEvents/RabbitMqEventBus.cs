@@ -4,8 +4,6 @@ using System.Text.Json;
 using KunstButikken.IntegrationEvents.Contracts;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using Microsoft.Extensions.Options;
-using Polly;
-using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -32,7 +30,6 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
     private readonly SemaphoreSlim _channelLock = new(1, 1);
     private readonly ILogger<RabbitMqEventBus> _logger;
     private readonly IConnection _rabbitMqConnection;
-    private readonly AsyncRetryPolicy _retryPolicy;
     private readonly IServiceProvider _serviceProvider;
     private readonly RabbitMqSettings _settings;
     private readonly ISubscriptionManager _subscriptionManager;
@@ -56,10 +53,6 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         _settings = options.Value;
         _subscriptionManager = subscriptionManager;
         _serviceProvider = serviceProvider;
-
-        _retryPolicy = Policy.Handle<Exception>()
-            .WaitAndRetryAsync(_settings.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                (ex, time) => _logRetry(_logger, ex.Message, time.TotalSeconds, ex));
     }
 
     public void Dispose() => Dispose(true);
@@ -138,8 +131,8 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
     {
         if (_channel != null)
         {
-            await _channel.CloseAsync().ConfigureAwait(false);
-            await _channel.DisposeAsync().ConfigureAwait(false);
+            try { await _channel.CloseAsync().ConfigureAwait(false); } catch { }
+            try { await _channel.DisposeAsync().ConfigureAwait(false); } catch { }
             _channel = null;
         }
 
@@ -174,7 +167,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
                 return;
             }
 
-            await _retryPolicy.ExecuteAsync(async () =>
+            await ExecuteWithRetriesAsync(async () =>
             {
                 var handlers = _subscriptionManager.GetHandlersForEvent(eventName);
                 foreach (var handlerType in handlers)
@@ -186,7 +179,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
                     var handleMethod = concreteType.GetMethod("Handle");
                     if (handleMethod == null) continue;
 
-                    var result = handleMethod.Invoke(handler, new[] { integrationEvent });
+                    var result = handleMethod.Invoke(handler, new object[] { integrationEvent });
                     if (result is Task task)
                     {
                         await task.ConfigureAwait(false);
@@ -211,6 +204,27 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
                 await _channel.BasicNackAsync(deliveryTag, false, false).ConfigureAwait(false);
             }
         }
+    }
+
+    private async Task ExecuteWithRetriesAsync(Func<Task> action)
+    {
+        var retries = Math.Max(1, _settings.RetryCount);
+        for (var attempt = 1; attempt <= retries; attempt++)
+        {
+            try
+            {
+                await action().ConfigureAwait(false);
+                return;
+            }
+            catch (Exception ex) when (attempt < retries)
+            {
+                var backoffSeconds = Math.Pow(2, attempt);
+                _logRetry(_logger, ex.Message, backoffSeconds, ex);
+                await Task.Delay(TimeSpan.FromSeconds(backoffSeconds)).ConfigureAwait(false);
+            }
+        }
+
+        throw new Exception("Operation failed after retries");
     }
 
     // Internal test hook

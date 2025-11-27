@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\KunstButikken.PaymentService.Domain.csproj" />
+    <ProjectReference Include="..\..\..\KunstButikken.IntegrationEvents.Contracts\KunstButikken.IntegrationEvents.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\KunstButikken.Common.Logging\KunstButikken.Common.Logging.csproj" />
+    <ProjectReference Include="..\..\..\KunstButikken.ServiceDefaults\KunstButikken.ServiceDefaults.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Stripe.net" />
+  </ItemGroup>
+</Project>

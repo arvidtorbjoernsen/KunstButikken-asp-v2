@@ -7,4 +7,3 @@ public interface IBlobStorage
     /// </summary>
     Task<string> UploadAsync(string blobName, Stream data, string? contentType, CancellationToken cancellationToken = default);
 }
-

@@ -11,14 +11,13 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design"/>
-        <PackageReference Include="Microsoft.Data.SqlClient"/>
+        <PackageReference Include="Aspire.Microsoft.Data.SqlClient"/>
         <PackageReference Include="Microsoft.OpenApi"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
-        <PackageReference Include="Scalar.AspNetCore"/>
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="Aspire.Keycloak.Authentication"/>
+        <PackageReference Include="Scalar.Aspire"/>
         <PackageReference Include="Aspire.RabbitMQ.Client"/>
         <PackageReference Include="RabbitMQ.Client"/>
-        <PackageReference Include="Polly"/>
     </ItemGroup>
     <ItemGroup>
         <!-- Project references must point to the correct top-level project paths from this folder -->

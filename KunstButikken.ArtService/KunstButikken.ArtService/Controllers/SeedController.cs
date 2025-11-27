@@ -8,6 +8,7 @@ using KunstButikken.ArtService.Infrastructure.Data;
 using KunstButikken.ArtService.Domain.Models;
 using KunstButikken.ArtService.Services;
 using KunstButikken.ServiceDefaults;
+using KunstButikken.ArtService.Domain.Interfaces;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
