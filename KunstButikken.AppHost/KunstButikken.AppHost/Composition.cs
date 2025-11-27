@@ -65,7 +65,7 @@ internal static partial class AppCompositionBuilder
         var keycloakHttpEndpoint = keycloak.GetEndpointString("http");
 
         // RabbitMQ
-        var eventBus = builder.AddRabbitMQ("eventbus");
+        var eventBus = builder.AddRabbitMQ("rabbitmq");
 
         // declare service variables with explicit builder interface types so extension overloads resolve
         IResourceBuilder<IResourceWithEnvironment>? userService;
@@ -285,6 +285,7 @@ internal static partial class AppCompositionBuilder
                 .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>?)auctionServiceLocalBuilder ?? throw new InvalidOperationException("auction service builder is null"))
                 .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>?)paymentServiceLocalBuilder ?? throw new InvalidOperationException("payment service builder is null"))
                 .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>?)adminServiceLocalBuilder ?? throw new InvalidOperationException("admin service builder is null"))
+                .WithReference(keycloak)
                 .WithHttpEndpoint(5100, name: "gateway")
                 .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
                 .WaitFor(userService ?? throw new InvalidOperationException("userService is null"))

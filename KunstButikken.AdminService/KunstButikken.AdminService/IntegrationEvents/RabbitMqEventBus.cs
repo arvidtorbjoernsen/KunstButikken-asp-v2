@@ -81,8 +81,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
             var json = JsonSerializer.Serialize(integrationEvent, integrationEvent.GetType());
             var body = Encoding.UTF8.GetBytes(json);
 
-            await _channel.BasicPublishAsync(_settings.ExchangeName, eventName, body, cancellationToken)
-                .ConfigureAwait(false);
+            await _channel.BasicPublishAsync(_settings.ExchangeName, eventName, body, cancellationToken).ConfigureAwait(false);
             LogPublished(_logger, eventName, null);
         }
         finally
@@ -103,28 +102,34 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
         try
         {
             _channel ??= await _rabbitMqConnection.CreateChannelAsync().ConfigureAwait(false);
-            await _channel.ExchangeDeclareAsync(_settings.ExchangeName, ExchangeType.Fanout, true, false)
-                .ConfigureAwait(false);
+            await _channel.ExchangeDeclareAsync(_settings.ExchangeName, ExchangeType.Fanout, true, false).ConfigureAwait(false);
 
             var queueArgs = new Dictionary<string, object?>
             {
                 { "x-dead-letter-exchange", _settings.DeadLetterExchangeName }
             };
+
             await _channel.QueueDeclareAsync(_settings.QueueName, true, false, false, queueArgs).ConfigureAwait(false);
             await _channel.QueueBindAsync(_settings.QueueName, _settings.ExchangeName, eventName).ConfigureAwait(false);
 
-            await _channel.ExchangeDeclareAsync(_settings.DeadLetterExchangeName, ExchangeType.Fanout, true, false)
-                .ConfigureAwait(false);
+            await _channel.ExchangeDeclareAsync(_settings.DeadLetterExchangeName, ExchangeType.Fanout, true, false).ConfigureAwait(false);
             var deadLetterQueueName = $"{_settings.QueueName}_deadletter";
             await _channel.QueueDeclareAsync(deadLetterQueueName, true, false, false).ConfigureAwait(false);
-            await _channel.QueueBindAsync(deadLetterQueueName, _settings.DeadLetterExchangeName, "").ConfigureAwait(false);
+            await _channel.QueueBindAsync(deadLetterQueueName, _settings.DeadLetterExchangeName, string.Empty).ConfigureAwait(false);
 
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (_, ea) =>
             {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                await ProcessEvent(ea.RoutingKey, message, ea.DeliveryTag).ConfigureAwait(false);
+                try
+                {
+                    var body = ea.Body.ToArray();
+                    var message = Encoding.UTF8.GetString(body);
+                    await ProcessEvent(ea.RoutingKey, message, ea.DeliveryTag).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // swallow to keep the consumer alive; ProcessEvent will nack on failure
+                }
             };
 
             await _channel.BasicConsumeAsync(_settings.QueueName, false, consumer).ConfigureAwait(false);
@@ -252,8 +257,9 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
     {
         if (_channel != null)
         {
-            await _channel.CloseAsync().ConfigureAwait(false);
-            await _channel.DisposeAsync().ConfigureAwait(false);
+            try { await _channel.CloseAsync().ConfigureAwait(false); } catch { }
+            try { await _channel.DisposeAsync().ConfigureAwait(false); } catch { }
+            _channel = null;
         }
 
         _channelLock.Dispose();
@@ -263,7 +269,7 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
     internal Task ProcessEventForTest(string eventName, string message, ulong deliveryTag) =>
         ProcessEvent(eventName, message, deliveryTag);
 
-    // Internal test hook to initialize the channel
+    // Internal test hook to initialize the channel (sync CreateModel from RabbitMQ.Client)
     internal async Task InitializeChannelForTest() =>
         _channel ??= await _rabbitMqConnection.CreateChannelAsync().ConfigureAwait(false);
 }

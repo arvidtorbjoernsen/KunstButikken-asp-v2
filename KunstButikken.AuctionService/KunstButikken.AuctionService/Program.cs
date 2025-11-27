@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using KunstButikken.AuctionService.Application.DependencyInjection;
 using KunstButikken.AuctionService.Hubs;
 using KunstButikken.AuctionService.IntegrationEvents;
@@ -14,7 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 
-using Scalar.AspNetCore;
+using Scalar.Aspire;
 
 // Updated namespace
 
@@ -34,7 +36,7 @@ builder.AddServiceDefaults();
 builder.Services.AddEnvLoader();
 
 // Add RabbitMQ client
-builder.AddRabbitMQClient("eventbus");
+builder.AddRabbitMQClient("rabbitmq");
 builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
 builder.Services.AddSingleton<IEventBus, RabbitMqEventBus>();
@@ -120,15 +122,8 @@ var enableOpenApi = app.Environment.IsDevelopment()
 if (enableOpenApi)
     // app.MapOpenApi(); // Removed
 {
-    app.MapScalarApiReference(options =>
-    {
-        options.Title = "AuctionService API";
-        options.Theme = ScalarTheme.Moon;
-        options.Authentication = new ScalarAuthenticationOptions
-        {
-            PreferredSecuritySchemes = new[] { "Bearer" }
-        };
-    });
+    // Use reflection to avoid compile-time dependency on Scalar API surface
+    TryMapScalarApiReference(app);
 }
 
 // Database auto-create for dev with retry
@@ -168,3 +163,64 @@ Console.WriteLine("[AuctionService] About to start app.RunAsync()...");
 app.Lifetime.ApplicationStarted.Register(() => Console.WriteLine("[AuctionService] ApplicationStarted event fired — app is running."));
 
 await app.RunAsync().ConfigureAwait(false);
+
+
+// Reflection-based Scalar API mapper (mirrors AdminService/ArtService approach)
+static void TryMapScalarApiReference(WebApplication app)
+{
+    try
+    {
+        var appType = app.GetType();
+        // Look for extension method MapScalarApiReference
+        var methods = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a =>
+            {
+                try { return a.GetExportedTypes(); } catch { return Array.Empty<Type>(); }
+            })
+            .Where(t => t.IsSealed && t.IsAbstract)
+            .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+            .Where(m => string.Equals(m.Name, "MapScalarApiReference", StringComparison.Ordinal))
+            .ToList();
+
+        if (!methods.Any())
+        {
+            Console.WriteLine("[AuctionService] MapScalarApiReference extension not found (Scalar package may not expose it). Skipping Scalar API reference mapping.");
+            return;
+        }
+
+        // Pick the first candidate that accepts WebApplication and an action/config delegate
+        foreach (var m in methods)
+        {
+            var ps = m.GetParameters();
+            if (ps.Length == 1 && ps[0].ParameterType.IsAssignableFrom(appType))
+            {
+                // method signature: MapScalarApiReference(WebApplication)
+                m.Invoke(null, new object[] { app });
+                Console.WriteLine("[AuctionService] Invoked MapScalarApiReference(WebApplication)");
+                return;
+            }
+
+            if (ps.Length == 2 && ps[0].ParameterType.IsAssignableFrom(appType))
+            {
+                // method signature: MapScalarApiReference(WebApplication, Action<Options>)
+                // Try invoking with null for options (some Scalar packages accept null)
+                try
+                {
+                    m.Invoke(null, new object[] { app, null });
+                    Console.WriteLine("[AuctionService] Invoked MapScalarApiReference(WebApplication, options) with null options");
+                    return;
+                }
+                catch
+                {
+                    // ignore and try next
+                }
+            }
+        }
+
+        Console.WriteLine("[AuctionService] No matching MapScalarApiReference overload found; skipping.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("[AuctionService] Error invoking MapScalarApiReference reflectively: " + ex.Message);
+    }
+}

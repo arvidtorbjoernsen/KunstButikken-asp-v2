@@ -1,7 +1,12 @@
+using Aspire.Hosting;
+
 #pragma warning disable CS8604,CS8601,CS8625
 // Top-level program: compose resources and run
 
 var builder = DistributedApplication.CreateBuilder(args);
+
+// Register top-level RabbitMQ resource for AppHost (user requested Aspire.Hosting + RabbitMQ at AppHost level)
+var rabbitmq = builder.AddRabbitMQ("rabbitmq");
 
 // Compose the application resources (databases, services, frontends)
 var composition = AppCompositionBuilder.Configure(builder);

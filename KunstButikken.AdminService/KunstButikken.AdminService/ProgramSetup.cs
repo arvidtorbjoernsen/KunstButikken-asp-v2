@@ -30,7 +30,7 @@ public static class ProgramSetup
         builder.AddServiceDefaults();
 
         // Add RabbitMQ client for integration events
-        builder.AddRabbitMQClient("eventbus");
+        builder.AddRabbitMQClient("rabbitmq");
         builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
         builder.Services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
         builder.Services.AddSingleton<IEventBus, RabbitMqEventBus>();

@@ -5,7 +5,7 @@ using KunstButikken.ServiceDefaults;
 
 using Microsoft.Extensions.Azure;
 
-using Scalar.AspNetCore;
+using Scalar.Aspire;
 
 using IBlobStorage = KunstButikken.ArtService.Domain.Interfaces.IBlobStorage;
 
@@ -13,6 +13,11 @@ using IBlobStorage = KunstButikken.ArtService.Domain.Interfaces.IBlobStorage;
 using KunstButikken.ArtService.Application.DependencyInjection;
 using KunstButikken.ArtService.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+// Reflection helpers
+using System;
+using System.Linq;
+using System.Reflection;
 
 // Updated namespace
 
@@ -41,8 +46,8 @@ builder.AddServiceDefaults();
 // Register injectable .env loader for tests/DI
 builder.Services.AddEnvLoader();
 
-// Add RabbitMQ client
-builder.AddRabbitMQClient("eventbus");
+// Add RabbitMQ client that connects to the resource declared by AppHost
+builder.AddRabbitMQClient("rabbitmq");
 builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
 builder.Services.AddSingleton<IEventBus, RabbitMqEventBus>();
@@ -60,7 +65,7 @@ builder.Services.AddHttpClient();
 var frontendOriginsRaw = builder.Configuration["FRONTEND_ORIGINS"] ??
                          builder.Configuration["FRONTEND_ORIGIN"] ?? "http://localhost:3000";
 var frontendOrigins = frontendOriginsRaw
-    .Split([',', ';', ' '], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    .Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
     .ToList();
 
 // In development, always include localhost:4200 (Angular) and localhost:3000 (Next.js) to prevent CORS issues
@@ -129,15 +134,8 @@ var enableOpenApi = app.Environment.IsDevelopment()
 if (enableOpenApi)
     // app.MapOpenApi(); // Removed
 {
-    app.MapScalarApiReference(options =>
-    {
-        options.Title = "ArtService API";
-        options.Theme = ScalarTheme.Moon;
-        options.Authentication = new ScalarAuthenticationOptions
-        {
-            PreferredSecuritySchemes = ["Bearer"]
-        };
-    });
+    // Use reflective mapper to avoid compile-time dependency on Scalar API surface
+    TryMapScalarApiReference(app);
 }
 
 app.UseCors("frontend");
@@ -152,3 +150,64 @@ Console.WriteLine("[ArtService] About to start app.RunAsync()...");
 app.Lifetime.ApplicationStarted.Register(() => Console.WriteLine("[ArtService] ApplicationStarted event fired — app is running."));
 
 await app.RunAsync().ConfigureAwait(false);
+
+
+// Reflection-based Scalar API mapper (mirrors AdminService approach)
+static void TryMapScalarApiReference(WebApplication app)
+{
+    try
+    {
+        var appType = app.GetType();
+        // Look for extension method MapScalarApiReference
+        var methods = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a =>
+            {
+                try { return a.GetExportedTypes(); } catch { return Array.Empty<Type>(); }
+            })
+            .Where(t => t.IsSealed && t.IsAbstract)
+            .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+            .Where(m => string.Equals(m.Name, "MapScalarApiReference", StringComparison.Ordinal))
+            .ToList();
+
+        if (!methods.Any())
+        {
+            Console.WriteLine("[ArtService] MapScalarApiReference extension not found (Scalar package may not expose it). Skipping Scalar API reference mapping.");
+            return;
+        }
+
+        // Pick the first candidate that accepts WebApplication and an action/config delegate
+        foreach (var m in methods)
+        {
+            var ps = m.GetParameters();
+            if (ps.Length == 1 && ps[0].ParameterType.IsAssignableFrom(appType))
+            {
+                // method signature: MapScalarApiReference(WebApplication)
+                m.Invoke(null, new object[] { app });
+                Console.WriteLine("[ArtService] Invoked MapScalarApiReference(WebApplication)");
+                return;
+            }
+
+            if (ps.Length == 2 && ps[0].ParameterType.IsAssignableFrom(appType))
+            {
+                // method signature: MapScalarApiReference(WebApplication, Action<Options>)
+                // Try invoking with null for options (some Scalar packages accept null)
+                try
+                {
+                    m.Invoke(null, new object[] { app, null });
+                    Console.WriteLine("[ArtService] Invoked MapScalarApiReference(WebApplication, options) with null options");
+                    return;
+                }
+                catch
+                {
+                    // ignore and try next
+                }
+            }
+        }
+
+        Console.WriteLine("[ArtService] No matching MapScalarApiReference overload found; skipping.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("[ArtService] Error invoking MapScalarApiReference reflectively: " + ex.Message);
+    }
+}

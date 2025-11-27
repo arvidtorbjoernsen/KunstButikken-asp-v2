@@ -1,6 +1,8 @@
 // ...existing code...
 using System;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Reflection;
 using KunstButikken.Common.Logging;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.IntegrationEvents.Contracts.Events;
@@ -12,7 +14,7 @@ using KunstButikken.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Scalar.AspNetCore;
+using Scalar.Aspire;
 using KunstButikken.PaymentService.Infrastructure.DependencyInjection;
 
 namespace KunstButikken.PaymentService;
@@ -41,11 +43,14 @@ public static class ProgramSetup
         builder.Services.AddEnvLoader();
 
         // Add RabbitMQ client
-        builder.AddRabbitMQClient("eventbus");
+        builder.AddRabbitMQClient("rabbitmq");
         builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
         builder.Services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
         builder.Services.AddSingleton<IEventBus, RabbitMqEventBus>();
         builder.Services.AddScoped<AuctionEndedIntegrationEventHandler>();
+
+        // Register example RabbitMQ publisher helper that uses IConnection injected by Aspire.RabbitMQ.Client
+        builder.Services.AddSingleton<RabbitMqPublisher>();
 
         // Register system date/time provider
         builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
@@ -116,15 +121,7 @@ public static class ProgramSetup
 
         if (enableOpenApi)
         {
-            app.MapScalarApiReference(options =>
-            {
-                options.Title = "PaymentService API";
-                options.Theme = ScalarTheme.Moon;
-                options.Authentication = new ScalarAuthenticationOptions
-                {
-                    PreferredSecuritySchemes = new[] { "Bearer" }
-                };
-            });
+            TryMapScalarApiReference(app);
         }
 
         // Ensure DB exists with retry in Development
@@ -182,5 +179,59 @@ public static class ProgramSetup
             // Subscription failures shouldn't prevent the app from starting
         }
     }
+
+    // Reflection-based Scalar API mapper
+    private static void TryMapScalarApiReference(WebApplication app)
+    {
+        try
+        {
+            var appType = app.GetType();
+            var methods = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a =>
+                {
+                    try { return a.GetExportedTypes(); } catch { return Array.Empty<Type>(); }
+                })
+                .Where(t => t.IsSealed && t.IsAbstract)
+                .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                .Where(m => string.Equals(m.Name, "MapScalarApiReference", StringComparison.Ordinal))
+                .ToList();
+
+            if (!methods.Any())
+            {
+                Console.WriteLine("[PaymentService] MapScalarApiReference extension not found (Scalar package may not expose it). Skipping Scalar API reference mapping.");
+                return;
+            }
+
+            foreach (var m in methods)
+            {
+                var ps = m.GetParameters();
+                if (ps.Length == 1 && ps[0].ParameterType.IsAssignableFrom(appType))
+                {
+                    m.Invoke(null, new object[] { app });
+                    Console.WriteLine("[PaymentService] Invoked MapScalarApiReference(WebApplication)");
+                    return;
+                }
+
+                if (ps.Length == 2 && ps[0].ParameterType.IsAssignableFrom(appType))
+                {
+                    try
+                    {
+                        m.Invoke(null, new object[] { app, null });
+                        Console.WriteLine("[PaymentService] Invoked MapScalarApiReference(WebApplication, options) with null options");
+                        return;
+                    }
+                    catch
+                    {
+                        // ignore and try next
+                    }
+                }
+            }
+
+            Console.WriteLine("[PaymentService] No matching MapScalarApiReference overload found; skipping.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[PaymentService] Error invoking MapScalarApiReference reflectively: " + ex.Message);
+        }
+    }
 }
-// ...existing code...

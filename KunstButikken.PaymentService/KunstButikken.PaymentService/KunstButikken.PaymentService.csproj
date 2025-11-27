@@ -12,14 +12,13 @@
         <PackageReference Include="Microsoft.OpenApi"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="All"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
         <PackageReference Include="Stripe.net"/>
-        <PackageReference Include="Scalar.AspNetCore"/>
+        <PackageReference Include="Scalar.Aspire"/>
         <PackageReference Include="Aspire.RabbitMQ.Client"/>
         <PackageReference Include="RabbitMQ.Client"/>
-        <PackageReference Include="Polly"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>

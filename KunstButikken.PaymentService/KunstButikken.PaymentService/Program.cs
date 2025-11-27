@@ -1,7 +1,7 @@
 using KunstButikken.Common.Logging;
 using KunstButikken.PaymentService;
 using KunstButikken.ServiceDefaults;
-using Scalar.AspNetCore;
+using Scalar.Aspire;
 
 // Load .env when running the service directly
 EnvLoader.LoadEnv();
