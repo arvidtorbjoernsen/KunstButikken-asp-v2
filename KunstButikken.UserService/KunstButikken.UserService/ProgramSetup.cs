@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Reflection;
+using Aspire.Keycloak.Authentication;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.ServiceDefaults;
 using KunstButikken.UserService.Data;
@@ -93,6 +94,41 @@ public static class ProgramSetup
         builder.Services.AddControllers()
             .AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase; });
 
+        // Authentication (Keycloak via Aspire helper)
+        var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
+        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
+
+        var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
+
+        // If Keycloak is configured (authority or realm present) use Aspire's Keycloak helper
+        if (!string.IsNullOrWhiteSpace(authority) || !string.IsNullOrWhiteSpace(realm))
+        {
+            // Register JwtBearer using the Keycloak helper which configures authority/audience/validation
+            builder.Services
+                .AddAuthentication()
+                .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
+                {
+                    options.Audience = audience;
+                    // Optional: Add logging for development
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = context => { Console.WriteLine($"[UserService] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
+                            OnTokenValidated = context => { Console.WriteLine($"[UserService] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; }
+                        };
+                    }
+                });
+
+            builder.Services.AddAuthorization();
+        }
+        else
+        {
+            // Fallback: register authentication system without specific scheme — keep authorization enabled
+            builder.Services.AddAuthentication();
+            builder.Services.AddAuthorization();
+        }
+
         builder.Services.AddHttpClient();
 
         // Register Keycloak seeder and hosted service so seeding runs on startup (development flows)
@@ -145,7 +181,7 @@ public static class ProgramSetup
                 }
             }
             catch
-            {
+{
                 // DbContext not registered in this environment; ignore
             }
         }

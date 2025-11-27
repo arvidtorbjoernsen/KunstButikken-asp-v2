@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
-
+using Aspire.Keycloak.Authentication;
 using KunstButikken.AdminService.Infrastructure.Data;
 using KunstButikken.AdminService.IntegrationEvents;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
@@ -40,6 +40,41 @@ public static class ProgramSetup
 
         // Register system date/time provider
         builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+
+        // Authentication (Keycloak via Aspire helper)
+        var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
+        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
+
+        var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
+
+        // If Keycloak is configured (authority or realm present) use Aspire's Keycloak helper
+        if (!string.IsNullOrWhiteSpace(authority) || !string.IsNullOrWhiteSpace(realm))
+        {
+            // Register JwtBearer using the Keycloak helper which configures authority/audience/validation
+            builder.Services
+                .AddAuthentication()
+                .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
+                {
+                    options.Audience = audience;
+                    // Optional: Add logging for development
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = context => { Console.WriteLine($"[AdminService] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
+                            OnTokenValidated = context => { Console.WriteLine($"[AdminService] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; }
+                        };
+                    }
+                });
+
+            builder.Services.AddAuthorization();
+        }
+        else
+        {
+            // Fallback: register authentication system without specific scheme — keep authorization enabled
+            builder.Services.AddAuthentication();
+            builder.Services.AddAuthorization();
+        }
 
         // CORS for frontend origin(s)
         var frontendOriginsRaw = builder.Configuration["FRONTEND_ORIGINS"] ??

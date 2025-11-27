@@ -18,6 +18,8 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory"/>
+
+        <PackageReference Include="Aspire.Keycloak.Authentication"/>
         <PackageReference Include="RabbitMQ.Client"/>
         <PackageReference Include="Aspire.RabbitMQ.Client"/>
     </ItemGroup>

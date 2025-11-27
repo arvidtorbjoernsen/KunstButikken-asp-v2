@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Reflection;
+using Aspire.Keycloak.Authentication;
 using KunstButikken.Common.Logging;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.IntegrationEvents.Contracts.Events;
@@ -58,6 +59,41 @@ public static class ProgramSetup
         // Register Stripe services
         builder.Services.AddSingleton<IStripeWebhookService, StripeWebhookService>();
         builder.Services.AddSingleton<IStripeSessionService, StripeSessionService>();
+
+        // Authentication (Keycloak via Aspire helper)
+        var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
+        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
+
+        var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
+
+        // If Keycloak is configured (authority or realm present) use Aspire's Keycloak helper
+        if (!string.IsNullOrWhiteSpace(authority) || !string.IsNullOrWhiteSpace(realm))
+        {
+            // Register JwtBearer using the Keycloak helper which configures authority/audience/validation
+            builder.Services
+                .AddAuthentication()
+                .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
+                {
+                    options.Audience = audience;
+                    // Optional: Add logging for development
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = context => { Console.WriteLine($"[PaymentService] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
+                            OnTokenValidated = context => { Console.WriteLine($"[PaymentService] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; }
+                        };
+                    }
+                });
+
+            builder.Services.AddAuthorization();
+        }
+        else
+        {
+            // Fallback: register authentication system without specific scheme — keep authorization enabled
+            builder.Services.AddAuthentication();
+            builder.Services.AddAuthorization();
+        }
 
         // CORS for frontend origin(s)
         var frontendOriginsRaw = builder.Configuration["FRONTEND_ORIGINS"] ??
@@ -162,6 +198,9 @@ public static class ProgramSetup
         }
 
         app.UseCors("frontend");
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapControllers();
 
