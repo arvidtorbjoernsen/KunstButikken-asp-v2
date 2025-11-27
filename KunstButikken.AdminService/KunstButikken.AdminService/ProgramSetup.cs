@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Aspire.Keycloak.Authentication;
 using KunstButikken.AdminService.Infrastructure.Data;
 using KunstButikken.AdminService.IntegrationEvents;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;

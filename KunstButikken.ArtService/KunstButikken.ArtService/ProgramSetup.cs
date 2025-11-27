@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Aspire.Keycloak.Authentication;
 using KunstButikken.ArtService.Application.DependencyInjection;
 using KunstButikken.ArtService.Domain.Interfaces;
 using KunstButikken.ArtService.Infrastructure.DependencyInjection;

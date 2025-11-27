@@ -6,7 +6,6 @@ using System.Text.Json;
 using KunstButikken.ServiceDefaults;
 using Microsoft.Extensions.ServiceDiscovery;
 using Yarp.ReverseProxy.Forwarder;
-using Aspire.Keycloak.Authentication;
 using Scalar.Aspire;
 
 namespace KunstButikken.AuthGateway;

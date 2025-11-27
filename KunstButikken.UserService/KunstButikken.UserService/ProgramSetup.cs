@@ -1,9 +1,7 @@
-// ...existing code...
 using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Reflection;
-using Aspire.Keycloak.Authentication;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.ServiceDefaults;
 using KunstButikken.UserService.Data;

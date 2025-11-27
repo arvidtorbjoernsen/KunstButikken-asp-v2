@@ -5,9 +5,6 @@ using Aspire.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-// Register top-level RabbitMQ resource for AppHost (user requested Aspire.Hosting + RabbitMQ at AppHost level)
-var rabbitmq = builder.AddRabbitMQ("rabbitmq");
-
 // Compose the application resources (databases, services, frontends)
 var composition = AppCompositionBuilder.Configure(builder);
 
