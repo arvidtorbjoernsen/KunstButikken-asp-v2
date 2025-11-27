@@ -8,10 +8,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
-    <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Domain\KunstButikken.ArtService.Domain.csproj" />
-    <ProjectReference Include="..\..\..\KunstButikken.IntegrationEvents.Contracts\KunstButikken.IntegrationEvents.Contracts.csproj" />
+    <ProjectReference Include="..\Domain\KunstButikken.PaymentService.Domain.csproj" />
+    <ProjectReference Include="..\Application\KunstButikken.PaymentService.Application.csproj" />
   </ItemGroup>
 </Project>

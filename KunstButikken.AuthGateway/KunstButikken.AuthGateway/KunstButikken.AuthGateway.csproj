@@ -16,8 +16,14 @@
         <PackageReference Include="Scalar.Aspire"/>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="Application/KunstButikken.AuthGateway.Application.csproj"/>
+        <ProjectReference Include="Domain/KunstButikken.AuthGateway.Domain.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Application\**\*.cs"/>
+        <Compile Remove="Domain\**\*.cs"/>
     </ItemGroup>
 </Project>

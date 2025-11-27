@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 
 using KunstButikken.ArtService.Infrastructure.Data;
 using KunstButikken.ArtService.Domain.Models;
+using KunstButikken.ArtService.Domain.Interfaces;
 using KunstButikken.Common.Logging;
 using KunstButikken.ServiceDefaults;
 

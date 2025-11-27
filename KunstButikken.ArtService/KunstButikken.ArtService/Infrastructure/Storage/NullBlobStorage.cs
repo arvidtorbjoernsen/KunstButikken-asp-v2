@@ -1,4 +1,6 @@
-namespace KunstButikken.ArtService.Services;
+using KunstButikken.ArtService.Domain.Interfaces;
+
+namespace KunstButikken.ArtService.Infrastructure.Storage;
 
 internal sealed class NullBlobStorage : IBlobStorage
 {

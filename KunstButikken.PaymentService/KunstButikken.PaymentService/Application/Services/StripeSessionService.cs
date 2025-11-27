@@ -1,7 +1,8 @@
+using KunstButikken.PaymentService.Application.Interfaces;
 using Stripe;
 using Stripe.Checkout;
 
-namespace KunstButikken.PaymentService.Services;
+namespace KunstButikken.PaymentService.Application.Services;
 
 public class StripeSessionService : IStripeSessionService
 {

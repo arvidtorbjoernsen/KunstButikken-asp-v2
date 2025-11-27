@@ -24,6 +24,7 @@
         <PackageReference Include="Aspire.RabbitMQ.Client"/>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="Domain/KunstButikken.ArtService.Domain.csproj"/>
         <ProjectReference Include="Application/KunstButikken.ArtService.Application.csproj"/>
         <ProjectReference Include="Infrastructure/KunstButikken.ArtService.Infrastructure.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>

@@ -5,16 +5,19 @@ using System.Reflection;
 using KunstButikken.Common.Logging;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.IntegrationEvents.Contracts.Events;
-using KunstButikken.PaymentService.Data;
 using KunstButikken.PaymentService.IntegrationEvents;
 using KunstButikken.PaymentService.IntegrationEvents.Handlers;
-using KunstButikken.PaymentService.Services;
 using KunstButikken.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Scalar.Aspire;
+using KunstButikken.PaymentService.Infrastructure.Data;
 using KunstButikken.PaymentService.Infrastructure.DependencyInjection;
+using KunstButikken.PaymentService.Domain.Repositories;
+using KunstButikken.PaymentService.Domain.Models;
+using KunstButikken.PaymentService.Application.Interfaces;
+using KunstButikken.PaymentService.Application.Services;
 
 namespace KunstButikken.PaymentService;
 
@@ -253,8 +256,8 @@ public static class ProgramSetup
                 {
                     try
                     {
-                        m.Invoke(null, new object[] { app, null });
-                        Console.WriteLine("[PaymentService] Invoked MapScalarApiReference(WebApplication, options) with null options");
+                        m.Invoke(null, new object[] { app, new NoOpScalarOptions() });
+                        Console.WriteLine("[PaymentService] Invoked MapScalarApiReference(WebApplication, options) with synthetic options");
                         return;
                     }
                     catch
@@ -271,4 +274,6 @@ public static class ProgramSetup
             Console.WriteLine("[PaymentService] Error invoking MapScalarApiReference reflectively: " + ex.Message);
         }
     }
+
+    private sealed class NoOpScalarOptions { }
 }

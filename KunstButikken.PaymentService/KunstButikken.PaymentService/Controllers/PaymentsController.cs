@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using KunstButikken.PaymentService.Data;
-using KunstButikken.PaymentService.Models;
-using KunstButikken.PaymentService.Services;
+using KunstButikken.PaymentService.Application.Interfaces;
+using KunstButikken.PaymentService.Domain.Models;
+using KunstButikken.PaymentService.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
@@ -150,8 +150,7 @@ public class PaymentsController(
         try
         {
             var stripeEvent = stripeWebhookService.ConstructEvent(json,
-                (string?)Request.Headers["Stripe-Signature"] ?? string.Empty,
-                secret ?? string.Empty); // Explicitly cast to string?
+                (string?)Request.Headers["Stripe-Signature"] ?? string.Empty);
             if (stripeEvent.Type == "checkout.session.completed")
             {
                 var session = stripeEvent.Data.Object as Session;

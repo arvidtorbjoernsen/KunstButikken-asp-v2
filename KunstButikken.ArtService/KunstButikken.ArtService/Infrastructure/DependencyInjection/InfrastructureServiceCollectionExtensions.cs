@@ -3,6 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using KunstButikken.ArtService.Infrastructure.Data;
+using KunstButikken.ArtService.Domain.Interfaces;
+using KunstButikken.ArtService.Infrastructure.Repositories;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Azure;
+using KunstButikken.ArtService.Infrastructure.Storage;
 
 namespace KunstButikken.ArtService.Infrastructure.DependencyInjection;
 
@@ -28,7 +33,18 @@ public static class InfrastructureServiceCollectionExtensions
             services.AddDbContext<ArtDbContext>(options => options.UseInMemoryDatabase("art_inmemory"));
         }
 
-        services.AddScoped<KunstButikken.ArtService.Domain.Interfaces.IArtRepository, KunstButikken.ArtService.Infrastructure.Repositories.ArtRepository>();
+        services.AddScoped<IArtRepository, ArtRepository>();
+
+        var blobConnection = configuration["AzureBlob:ConnectionString"] ?? configuration.GetConnectionString("artimages");
+        if (!string.IsNullOrWhiteSpace(blobConnection))
+        {
+            services.AddSingleton(_ => new BlobServiceClient(blobConnection));
+            services.AddSingleton<IBlobStorage, BlobStorage>();
+        }
+        else
+        {
+            services.AddSingleton<IBlobStorage, NullBlobStorage>();
+        }
         return services;
     }
 }

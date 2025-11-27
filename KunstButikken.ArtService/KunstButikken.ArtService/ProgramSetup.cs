@@ -2,9 +2,11 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Aspire.Hosting.Azure;
 using KunstButikken.ArtService.Application.DependencyInjection;
 using KunstButikken.ArtService.Domain.Interfaces;
 using KunstButikken.ArtService.Infrastructure.DependencyInjection;
+using KunstButikken.ArtService.Infrastructure.Storage;
 using KunstButikken.ArtService.IntegrationEvents;
 using KunstButikken.ArtService.Services;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
@@ -91,19 +93,6 @@ public static class ProgramSetup
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddApplication();
 
-        // Azure Blob storage for images
-        var azureBlobConnString = builder.Configuration["AzureBlob:ConnectionString"];
-        if (!string.IsNullOrEmpty(azureBlobConnString))
-        {
-            builder.Services.AddAzureClients(clientBuilder => { clientBuilder.AddBlobServiceClient(azureBlobConnString); });
-            builder.Services.AddSingleton<IBlobStorage, BlobStorage>();
-        }
-        else
-        {
-            Console.WriteLine("[ArtService] AzureBlob:ConnectionString not found. Using NullBlobStorage.");
-            builder.Services.AddSingleton<IBlobStorage, NullBlobStorage>();
-        }
-
         builder.Services.AddControllers();
         builder.Services.AddSingleton<IArtSeeder, ArtSeeder>();
         builder.Services.AddHostedService<ArtSeedingHostedService>();
@@ -159,11 +148,14 @@ public static class ProgramSetup
                 {
                     try
                     {
-                        m.Invoke(null, new object[] { app, null });
-                        Console.WriteLine("[ArtService] Invoked MapScalarApiReference(WebApplication, options) with null options");
+                        m.Invoke(null, new object[] { app, new NoOpScalarOptions() });
+                        Console.WriteLine("[ArtService] Invoked MapScalarApiReference(WebApplication, options) with synthetic options");
                         return;
                     }
-                    catch { /* ignore and try next */ }
+                    catch
+                    {
+                        // ignore and try next
+                    }
                 }
             }
             Console.WriteLine("[ArtService] No matching MapScalarApiReference overload found.");
@@ -173,4 +165,6 @@ public static class ProgramSetup
             Console.WriteLine($"[ArtService] Error invoking MapScalarApiReference: {ex.Message}");
         }
     }
+
+    private sealed class NoOpScalarOptions { }
 }

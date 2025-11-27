@@ -1,5 +1,5 @@
 using KunstButikken.Common.Logging;
-using KunstButikken.PaymentService.Data;
+using KunstButikken.PaymentService.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KunstButikken.PaymentService.Controllers;

@@ -1,7 +1,7 @@
 using System.Text;
 using RabbitMQ.Client;
 
-namespace KunstButikken.PaymentService.Services;
+namespace KunstButikken.PaymentService.Application.Services;
 
 /// <summary>
 /// Simple helper to publish messages to RabbitMQ using the IConnection injected by Aspire.RabbitMQ.Client.

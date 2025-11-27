@@ -1,4 +1,4 @@
-namespace KunstButikken.PaymentService.Models;
+namespace KunstButikken.PaymentService.Domain.Models;
 
 public enum TransactionStatus
 {

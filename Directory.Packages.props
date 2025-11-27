@@ -33,7 +33,6 @@
         <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0"/>
         <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0"/>
         <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.1"/>
         <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0"/>
         <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0"/>
         <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0"/>
@@ -55,6 +54,8 @@
         <PackageVersion Include="Stripe.net" Version="50.0.0"/>
         <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.3.2"/>
         <PackageVersion Include="TUnit" Version="1.2.11"/>
+        <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.1"/>
+        <PackageVersion Include="Azure.Storage.Blobs" Version="12.22.0"/>
 
         <!-- Internal KunstButikken packages -->
         <PackageVersion Include="KunstButikken.AppHost" Version="1.0.0"/>
