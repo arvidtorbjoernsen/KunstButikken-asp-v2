@@ -3,6 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -11,5 +12,7 @@
   <ItemGroup>
     <!-- Domain contains only model classes -->
     <Compile Include="..\Models\**\*.cs" />
+    <Compile Include="Interfaces\**\*.cs" />
+    <Compile Include="Dtos\**\*.cs" />
   </ItemGroup>
 </Project>

@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Scalar.Aspire;
 using KunstButikken.UserService.Infrastructure.DependencyInjection;
 using KunstButikken.UserService.Services;
+using KunstButikken.UserService.Application.DependencyInjection;
 
 namespace KunstButikken.UserService;
 
@@ -58,37 +59,9 @@ public static class ProgramSetup
                     .AllowCredentials());
         });
 
-        // Use the Infrastructure project's registration to configure DbContext and repository registrations
-        // This keeps repository wiring centralized in the Infrastructure layer.
-        try
-        {
-            // Call the AddInfrastructure helper explicitly to avoid extension method resolution issues in some build contexts
-            KunstButikken.UserService.Infrastructure.DependencyInjection.InfrastructureServiceCollectionExtensions
-                .AddInfrastructure(builder.Services, builder.Configuration);
-        }
-        catch
-        {
-            // If the Infrastructure extension isn't available (e.g. in early migration), fall back to best-effort registration
-            var cs = builder.Configuration.GetConnectionString("Default")
-                     ?? builder.Configuration.GetConnectionString("usersdb")
-                     ?? builder.Configuration["ConnectionStrings:Default"]
-                     ?? builder.Configuration["ConnectionStrings:usersdb"];
+        builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddApplication();
 
-            if (!string.IsNullOrWhiteSpace(cs) && !cs.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
-            {
-                builder.Services.AddDbContext<UserDbContext>(options =>
-                    options.UseNpgsql(cs, npgsql => npgsql.EnableRetryOnFailure()
-                        .MigrationsAssembly(typeof(UserDbContext).Assembly.FullName)));
-            }
-            else
-            {
-                builder.Services.AddDbContext<UserDbContext>(options => options.UseInMemoryDatabase("user_inmemory_db"));
-            }
-
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-        }
-
-        // Add services to the container.
         builder.Services.AddControllers()
             .AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase; });
 
@@ -129,20 +102,11 @@ public static class ProgramSetup
 
         builder.Services.AddHttpClient();
 
-        // Register Keycloak seeder and hosted service so seeding runs on startup (development flows)
-        // IKeycloakSeeder implementation (KeycloakSeeder) and its hosted service will attempt to seed Keycloak
-        // when configuration allows it. This mirrors previous wiring that executed seeding at startup.
         builder.Services.AddSingleton<IKeycloakSeeder, KeycloakSeeder>();
         builder.Services.AddHostedService<KeycloakSeedingHostedService>();
 
-        // Register helper types for manual dev-controller-triggered seeding
-        // KeycloakUserProcessor: lightweight processor used by seeder
         builder.Services.AddSingleton<KeycloakUserProcessor>();
-
-        // KeycloakSeederService: use typed HttpClient so HttpClient is injected and lifetime is managed
         builder.Services.AddHttpClient<KeycloakSeederService>();
-
-        // DevSeedService: resolves KeycloakSeederService and is used by the DevController; register as scoped
         builder.Services.AddScoped<DevSeedService>();
     }
 
@@ -250,4 +214,3 @@ public static class ProgramSetup
         }
     }
 }
-// ...existing code...

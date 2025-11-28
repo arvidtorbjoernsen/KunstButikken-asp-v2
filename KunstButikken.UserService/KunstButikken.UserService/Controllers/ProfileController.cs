@@ -3,61 +3,29 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using KunstButikken.ServiceDefaults;
-using KunstButikken.UserService.Data;
+using KunstButikken.UserService.Application.Interfaces;
+using KunstButikken.UserService.Domain.Dtos;
 using KunstButikken.UserService.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KunstButikken.UserService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class ProfileController(IUserRepository repo, IDateTimeProvider clock) : ControllerBase
+public class ProfileController(IUserProfileService profiles) : ControllerBase
 {
-    private readonly IDateTimeProvider _clock = clock;
-
     [HttpGet("me")]
-    public Task<ActionResult<UserProfile>> GetMe() => GetMeImpl();
-
-    private async Task<ActionResult<UserProfile>> GetMeImpl()
+    public async Task<ActionResult<UserProfile>> GetMe()
     {
         if (!TryGetUserId(out var uid))
         {
             return Unauthorized();
         }
 
-        LogRolesForDebug(uid);
-
-        var (profile, created) = await GetOrCreateProfileAsync(uid).ConfigureAwait(false);
-        if (created)
-            // Already logged inside helper when created; return created profile
-        {
-            return Ok(profile);
-        }
-
-        await SyncRolesFromClaimsAsync(profile).ConfigureAwait(false);
-        Console.WriteLine(
-            $"[ProfileController] Returning profile with IsSeller: {profile.IsSeller}, IsAdmin: {profile.IsAdmin}");
+        var profile = await profiles.GetOrCreateProfileAsync(uid, User).ConfigureAwait(false);
         return Ok(profile);
-    }
-
-    // Extracted helper: get existing profile or create from claims and persist
-    private async Task<(UserProfile profile, bool created)> GetOrCreateProfileAsync(Guid uid)
-    {
-        var profile = await repo.Query().FirstOrDefaultAsync(p => p.UserId == uid).ConfigureAwait(false);
-        if (profile is not null)
-        {
-            return (profile, false);
-        }
-
-        profile = CreateProfileFromClaims(uid);
-        Console.WriteLine(
-            $"[ProfileController] Created new profile for user {uid}, IsSeller: {profile.IsSeller}, IsAdmin: {profile.IsAdmin}");
-        await repo.AddAsync(profile).ConfigureAwait(false);
-        await repo.SaveChangesAsync().ConfigureAwait(false);
-        return (profile, true);
     }
 
     [HttpPut]
@@ -73,61 +41,8 @@ public class ProfileController(IUserRepository repo, IDateTimeProvider clock) : 
             return Unauthorized();
         }
 
-        var profile = await repo.Query().FirstOrDefaultAsync(p => p.UserId == uid).ConfigureAwait(false);
-        if (profile is null)
-        {
-            return NotFound();
-        }
-
-        ApplyProfileUpdates(profile, input);
-
-        await repo.SaveChangesAsync().ConfigureAwait(false);
+        await profiles.UpdateProfileAsync(uid, input).ConfigureAwait(false);
         return NoContent();
-    }
-
-    // Extracted helper: centralize updating of editable profile fields
-    private void ApplyProfileUpdates(UserProfile profile, UserProfile input)
-    {
-        // Allow updating user-editable fields, but do not allow the user to set
-        // IsSellerVerified or IsAdmin directly.
-        profile.DisplayName = input.DisplayName;
-        profile.Email = input.Email;
-        profile.FullName = input.FullName;
-
-        UpdateContactAndAddress(profile, input);
-        UpdateSellerFlags(profile, input);
-
-        profile.ProfileImageUrl = input.ProfileImageUrl;
-        profile.PreferencesJson = input.PreferencesJson;
-        profile.UpdatedAt = _clock.UtcNow;
-    }
-
-    private static void UpdateContactAndAddress(UserProfile profile, UserProfile input)
-    {
-        // Update contact information
-        profile.PhoneNumber = input.PhoneNumber;
-
-        // Update shipping address
-        profile.Address = input.Address;
-        profile.City = input.City;
-        profile.PostalCode = input.PostalCode;
-        profile.Country = input.Country;
-    }
-
-    private static void UpdateSellerFlags(UserProfile profile, UserProfile input)
-    {
-        // If user toggles seller status, reset verification flag when enabling.
-        if (input.IsSeller && !profile.IsSeller)
-        {
-            profile.IsSeller = true;
-            profile.IsSellerVerified = false;
-        }
-        else if (!input.IsSeller && profile.IsSeller)
-        {
-            // turning off seller removes verification
-            profile.IsSeller = false;
-            profile.IsSellerVerified = false;
-        }
     }
 
     [HttpPost("register")]
@@ -146,30 +61,7 @@ public class ProfileController(IUserRepository repo, IDateTimeProvider clock) : 
             return Unauthorized();
         }
 
-        var profile = await repo.Query().FirstOrDefaultAsync(p => p.UserId == uid).ConfigureAwait(false);
-        if (profile is null)
-        {
-            profile = new UserProfile { Id = Guid.NewGuid(), UserId = uid, CreatedAt = _clock.UtcNow };
-            await repo.AddAsync(profile).ConfigureAwait(false);
-        }
-
-        // Apply registration fields (guarded by validation above)
-        // Copy into locals to clarify nullability for the analyzer
-        var email = req!.Email ?? string.Empty;
-        var fullName = req.FullName ?? string.Empty;
-        var displayName = req.DisplayName ?? string.Empty;
-        var userType = req.UserType;
-
-        profile.Email = email;
-        profile.FullName = fullName;
-        profile.DisplayName = displayName;
-        profile.IsSeller = string.Equals(userType, "seller", StringComparison.OrdinalIgnoreCase);
-        if (profile.IsSeller)
-        {
-            profile.IsSellerVerified = false;
-        }
-
-        await repo.SaveChangesAsync().ConfigureAwait(false);
+        var profile = await profiles.RegisterAsync(uid, req!).ConfigureAwait(false);
         return Ok(profile);
     }
 
@@ -205,7 +97,7 @@ public class ProfileController(IUserRepository repo, IDateTimeProvider clock) : 
             IsSeller = User.IsInRole("seller"),
             IsSellerVerified = false,
             IsAdmin = User.IsInRole("admin"),
-            CreatedAt = _clock.UtcNow
+            CreatedAt = DateTime.UtcNow
         };
     }
 
@@ -260,55 +152,6 @@ public class ProfileController(IUserRepository repo, IDateTimeProvider clock) : 
         return true;
     }
 
-    private async Task SyncRolesFromClaimsAsync(UserProfile profile)
-    {
-        var changedSeller = UpdateSellerStatusFromClaims(profile);
-        var changedAdmin = UpdateAdminStatusFromClaims(profile);
-
-        // Persist only if something changed
-        if (!changedSeller && !changedAdmin)
-        {
-            return;
-        }
-
-        await repo.SaveChangesAsync().ConfigureAwait(false);
-    }
-
-    private bool UpdateSellerStatusFromClaims(UserProfile profile)
-    {
-        var hasSellerRole = User.IsInRole("seller");
-        if (hasSellerRole && !profile.IsSeller)
-        {
-            Console.WriteLine($"[ProfileController] User {profile.UserId} gained Seller role, updating profile");
-            profile.IsSeller = true;
-            profile.IsSellerVerified = false; // Needs verification when becoming seller
-            return true;
-        }
-
-        if (!hasSellerRole && profile.IsSeller)
-        {
-            Console.WriteLine($"[ProfileController] User {profile.UserId} lost Seller role, updating profile");
-            profile.IsSeller = false;
-            profile.IsSellerVerified = false; // Remove verification if no longer seller
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool UpdateAdminStatusFromClaims(UserProfile profile)
-    {
-        var hasAdminRole = User.IsInRole("admin");
-        if (profile.IsAdmin != hasAdminRole)
-        {
-            Console.WriteLine($"[ProfileController] User {profile.UserId} admin status changed to: {hasAdminRole}");
-            profile.IsAdmin = hasAdminRole;
-            return true;
-        }
-
-        return false;
-    }
-
     [HttpPost("{id:guid}/verify")]
     [Authorize(Roles = "admin")]
     public async Task<IActionResult> VerifySeller(Guid id, [FromBody] VerifyRequest? req)
@@ -318,19 +161,14 @@ public class ProfileController(IUserRepository repo, IDateTimeProvider clock) : 
             return BadRequest("Missing payload");
         }
 
-        var profile = await repo.Query().FirstOrDefaultAsync(p => p.Id == id).ConfigureAwait(false);
-        if (profile is null)
+        try
         {
-            return NotFound();
+            await profiles.VerifySellerAsync(id, req.Verified).ConfigureAwait(false);
         }
-
-        if (!profile.IsSeller)
+        catch (InvalidOperationException ex)
         {
-            return BadRequest("User is not a seller");
+            return BadRequest(ex.Message);
         }
-
-        profile.IsSellerVerified = req.Verified;
-        await repo.SaveChangesAsync().ConfigureAwait(false);
         return NoContent();
     }
 
@@ -338,16 +176,7 @@ public class ProfileController(IUserRepository repo, IDateTimeProvider clock) : 
     [Authorize(Roles = "admin")]
     public async Task<ActionResult<List<UnverifiedSellerDto>>> ListUnverifiedSellers()
     {
-        var list = await repo.Query()
-            .Where(p => p.IsSeller && !p.IsSellerVerified)
-            .Select(p => new UnverifiedSellerDto
-            {
-                Id = p.Id, UserId = p.UserId, DisplayName = p.DisplayName, Email = p.Email
-            })
-            .ToListAsync().ConfigureAwait(false);
-
+        var list = await profiles.ListUnverifiedSellersAsync().ConfigureAwait(false);
         return Ok(list);
     }
-
-    // DTOs moved to ProfileRequests.cs
 }
