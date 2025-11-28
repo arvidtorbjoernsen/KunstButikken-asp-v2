@@ -32,7 +32,10 @@ internal static partial class AppCompositionBuilder
         // Stripe configuration
         var stripeApiKey = builder.Configuration["stripe-api-key"] ?? builder.Configuration["Stripe:ApiKey"];
         var stripeWebhookSecret = builder.Configuration["stripe-webhook-secret"] ?? builder.Configuration["Stripe:WebhookSecret"];
-        var stripePublishableKey = builder.Configuration["stripe-publishable-key"] ?? builder.Configuration["Stripe:PublishableKey"];
+        var stripePublishableKey = builder.Configuration["NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"]
+            ?? builder.Configuration["stripe-publishable-key"]
+            ?? builder.Configuration["Stripe:PublishableKey"];
+        var configuredApiGateway = builder.Configuration["NEXT_PUBLIC_API_GATEWAY"];
 
         // Azurite
         var azureBlobContainer = builder.Configuration["AzureBlob:Container"] ?? "images";
@@ -314,12 +317,21 @@ internal static partial class AppCompositionBuilder
 
             var keycloakBaseUrl = builder.Configuration["KEYCLOAK_BASE"] ?? keycloakHttpEndpoint;
             var keycloakIssuer = builder.Configuration["KEYCLOAK_ISSUER"] ?? $"{keycloakHttpEndpoint}/realms/{realmName}";
+            var resolvedGatewayBase = string.IsNullOrWhiteSpace(configuredApiGateway)
+                ? authGateway.GetEndpointString("gateway")
+                : configuredApiGateway;
+            if (string.IsNullOrWhiteSpace(resolvedGatewayBase))
+            {
+                resolvedGatewayBase = "http://localhost:5100";
+            }
+            var normalizedGatewayBase = resolvedGatewayBase.TrimEnd('/');
+            var auctionHubUrl = $"{normalizedGatewayBase}/hubs/auctions";
 
             nextJsFrontend = builder.AddNpmApp("frontend", nextFrontendPath, "dev")
                 .WithHttpEndpoint(targetPort: 3000, port: 3000, name: "web", isProxied: false)
-                .WithEnvironment("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? "")
-                .WithEnvironment("NEXT_PUBLIC_API_GATEWAY", authGateway.GetEndpointString("gateway"))
-                .WithEnvironment("NEXT_PUBLIC_AUCTION_SIGNALR_URL", authGateway.GetEndpointString("gateway") + "/hubs/auctions")
+                .WithEnvironment("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? string.Empty)
+                .WithEnvironment("NEXT_PUBLIC_API_GATEWAY", normalizedGatewayBase)
+                .WithEnvironment("NEXT_PUBLIC_AUCTION_SIGNALR_URL", auctionHubUrl)
                 .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_BASE_URL", keycloakBaseUrl)
                 .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_REALM", realmName)
                 .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_ISSUER", keycloakIssuer)
@@ -330,8 +342,8 @@ internal static partial class AppCompositionBuilder
 
             angularFrontend = builder.AddNpmApp("frontend-ang", angularFrontendPath)
                 .WithHttpEndpoint(targetPort: 4200, port: 4200, name: "web", isProxied: false)
-                .WithEnvironment("NG_APP_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? "")
-                .WithEnvironment("NG_APP_API_GATEWAY", authGateway.GetEndpointString("gateway"))
+                .WithEnvironment("NG_APP_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? string.Empty)
+                .WithEnvironment("NG_APP_API_GATEWAY", normalizedGatewayBase)
                 .WithEnvironment("NG_APP_KEYCLOAK_BASE_URL", keycloakBaseUrl)
                 .WithEnvironment("NG_APP_KEYCLOAK_REALM", realmName)
                 .WithEnvironment("NG_APP_KEYCLOAK_ISSUER", keycloakIssuer)
