@@ -2,7 +2,9 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using KunstButikken.UserService.Data;
+
+using KunstButikken.UserService.Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace KunstButikken.UserService.Services;

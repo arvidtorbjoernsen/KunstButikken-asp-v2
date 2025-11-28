@@ -1,5 +1,6 @@
 using KunstButikken.Common.Logging;
-using KunstButikken.UserService.Data;
+using KunstButikken.UserService.Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 

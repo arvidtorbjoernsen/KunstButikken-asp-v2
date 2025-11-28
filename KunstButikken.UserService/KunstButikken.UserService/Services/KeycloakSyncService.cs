@@ -3,8 +3,9 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using KunstButikken.Common.Logging;
 using KunstButikken.ServiceDefaults;
-using KunstButikken.UserService.Data;
-using KunstButikken.UserService.Models;
+using KunstButikken.UserService.Domain.Entities;
+using KunstButikken.UserService.Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace KunstButikken.UserService.Services;

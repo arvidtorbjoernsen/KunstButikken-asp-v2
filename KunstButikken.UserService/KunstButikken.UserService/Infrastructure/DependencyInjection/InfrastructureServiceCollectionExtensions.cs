@@ -2,8 +2,8 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using KunstButikken.UserService.Data;
 using KunstButikken.UserService.Domain.Interfaces;
+using KunstButikken.UserService.Infrastructure.Persistence;
 using KunstButikken.UserService.Infrastructure.Repositories;
 
 namespace KunstButikken.UserService.Infrastructure.DependencyInjection;
