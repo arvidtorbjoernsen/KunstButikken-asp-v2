@@ -1,0 +1,44 @@
+name: CI - Build & Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Fail if any csproj contains inline PackageReference version
+        run: |
+          set -e
+          echo "Checking for inline PackageReference Version attributes..."
+          if grep -RIn "<PackageReference [^>]*Version=\"" --exclude-dir:.git --exclude-dir:bin --exclude-dir:obj . ; then
+            echo "ERROR: Found one or more inline PackageReference Version attributes. Use Directory.Packages.props to manage versions centrally." >&2
+            exit 1
+          else
+            echo "No inline PackageReference versions found."
+          fi
+
+      - name: Build solution
+        run: dotnet build --no-restore -v minimal
+
+      - name: Run tests
+        run: |
+          set -e
+          # run tests for all test projects in the repo
+          for proj in $(git ls-files "**/*.csproj" | grep -E "Tests?/.+\.csproj$" || true); do
+            echo "Running tests in $proj"
+            dotnet test "$proj" --no-build --verbosity minimal
+          done
+

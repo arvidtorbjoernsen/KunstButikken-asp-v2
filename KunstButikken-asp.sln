@@ -89,6 +89,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.PaymentServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.UserService.Tests", "KunstButikken.UserService\KunstButikken.UserService.Tests\KunstButikken.UserService.Tests.csproj", "{E70BC11E-62B6-4500-9B63-C426176BB45D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AppHost.Tests", "KunstButikken.AppHost\KunstButikken.AppHost.Tests\KunstButikken.AppHost.Tests.csproj", "{1183CDA5-6FC0-4663-AB54-3E67C11464C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -495,6 +497,18 @@ Global
 		{E70BC11E-62B6-4500-9B63-C426176BB45D}.Release|x64.Build.0 = Release|Any CPU
 		{E70BC11E-62B6-4500-9B63-C426176BB45D}.Release|x86.ActiveCfg = Release|Any CPU
 		{E70BC11E-62B6-4500-9B63-C426176BB45D}.Release|x86.Build.0 = Release|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Debug|x64.Build.0 = Debug|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Debug|x86.Build.0 = Debug|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Release|x64.ActiveCfg = Release|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Release|x64.Build.0 = Release|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Release|x86.ActiveCfg = Release|Any CPU
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -533,5 +547,6 @@ Global
 		{81D364E3-D4CD-45EE-96A3-2745FBDA29EE} = {2347E559-AE55-1F7F-008D-61F17BE36D69}
 		{B1907FD9-6762-481C-99B4-C877129DBBA1} = {6754B3BF-C746-1C8E-0D7F-DD0001758D23}
 		{E70BC11E-62B6-4500-9B63-C426176BB45D} = {C014DFE6-E8F6-9788-B79D-D665D494CEFA}
+		{1183CDA5-6FC0-4663-AB54-3E67C11464C6} = {ABB53AA5-F7C2-A729-C752-6DE9C4130322}
 	EndGlobalSection
 EndGlobal
