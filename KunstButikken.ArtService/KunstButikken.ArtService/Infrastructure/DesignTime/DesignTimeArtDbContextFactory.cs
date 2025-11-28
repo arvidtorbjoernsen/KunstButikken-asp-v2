@@ -1,25 +1,29 @@
 using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using KunstButikken.AuctionService.Infrastructure.Persistence;
-using Microsoft.Extensions.Configuration;
 using System.IO;
 
-namespace KunstButikken.AuctionService.Infrastructure.DesignTime;
+using KunstButikken.ArtService.Infrastructure.Data;
 
-public class DesignTimeAuctionDbContextFactory : IDesignTimeDbContextFactory<AuctionDbContext>
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+
+
+namespace KunstButikken.ArtService.Infrastructure.DesignTime;
+
+public class DesignTimeArtDbContextFactory : IDesignTimeDbContextFactory<ArtDbContext>
 {
-    public AuctionDbContext CreateDbContext(string[] args)
+    public ArtDbContext CreateDbContext(string[] args)
     {
         var cs = Environment.GetEnvironmentVariable("CONNECTIONSTRING")
-                 ?? Environment.GetEnvironmentVariable("AUCTIONS_DB__CONNECTIONSTRING")
+                 ?? Environment.GetEnvironmentVariable("ART_DB__CONNECTIONSTRING")
                  ?? BuildConnectionStringFromConfig()
-                 ?? "Host=localhost;Database=auctionsdb;Username=postgres;Password=postgres";
+                 ?? "Host=localhost;Database=artdb;Username=postgres;Password=postgres";
 
-        var optionsBuilder = new DbContextOptionsBuilder<AuctionDbContext>();
-        optionsBuilder.UseNpgsql(cs, b => b.MigrationsAssembly(typeof(AuctionDbContext).Assembly.FullName));
+        var optionsBuilder = new DbContextOptionsBuilder<ArtDbContext>();
+        optionsBuilder.UseNpgsql(cs, b => b.MigrationsAssembly(typeof(ArtDbContext).Assembly.FullName));
 
-        return new AuctionDbContext(optionsBuilder.Options);
+        return new ArtDbContext(optionsBuilder.Options);
     }
 
     private static string? BuildConnectionStringFromConfig()
@@ -32,7 +36,8 @@ public class DesignTimeAuctionDbContextFactory : IDesignTimeDbContextFactory<Auc
                 .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false);
 
             var config = builder.Build();
-            return config.GetConnectionString("Default");
+            return config.GetConnectionString("Default")
+                   ?? config.GetConnectionString("artdb");
         }
         catch
         {

@@ -18,7 +18,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory"/>
-
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design"/>
         <PackageReference Include="Aspire.Keycloak.Authentication"/>
         <PackageReference Include="RabbitMQ.Client"/>
         <PackageReference Include="Aspire.RabbitMQ.Client"/>
@@ -27,7 +27,6 @@
         <ProjectReference Include="Domain/KunstButikken.ArtService.Domain.csproj"/>
         <ProjectReference Include="Application/KunstButikken.ArtService.Application.csproj"/>
         <ProjectReference Include="Infrastructure/KunstButikken.ArtService.Infrastructure.csproj"/>
-        <ProjectReference Include="KunstButikken.ArtService.Tests/KunstButikken.ArtService.Tests.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>

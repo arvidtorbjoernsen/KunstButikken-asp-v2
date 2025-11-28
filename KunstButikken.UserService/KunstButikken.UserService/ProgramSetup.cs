@@ -53,6 +53,8 @@ public static class ProgramSetup
 
         var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
 
+        var keycloakIssuer = builder.Configuration["KEYCLOAK_ISSUER"] ?? builder.Configuration["NEXT_PUBLIC_KEYCLOAK_ISSUER"] ?? string.Empty;
+
         if (!string.IsNullOrWhiteSpace(authority) || !string.IsNullOrWhiteSpace(realm))
         {
             builder.Services

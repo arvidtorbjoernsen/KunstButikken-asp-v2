@@ -18,14 +18,17 @@ internal static partial class AppCompositionBuilder
         var keycloakBuilder = (IResourceBuilder<KeycloakResource>?)keycloak ?? throw new InvalidOperationException("keycloak builder is null or incompatible");
         var eventBusBuilder = (IResourceBuilder<RabbitMQServerResource>?)eventBus ?? throw new InvalidOperationException("eventBus builder is null or incompatible");
 
+        var keycloakIssuer = builder.Configuration["KEYCLOAK_ISSUER"] ?? $"{keycloakHttpEndpoint}/realms/{realmName}";
+        var keycloakBase = builder.Configuration["KEYCLOAK_BASE"] ?? keycloakHttpEndpoint;
+
         var us = builder.AddProject("user-service", "../../KunstButikken.UserService/KunstButikken.UserService/KunstButikken.UserService.csproj")
             .WithReference(usersDb)
             .WithReference(keycloakBuilder)
             .WithReference(eventBusBuilder)
             .WithEnvironment("ConnectionStrings__Default", usersDb)
-            .WithEnvironment("KEYCLOAK_ISSUER", keycloakHttpEndpoint + "/realms/" + realmName)
+            .WithEnvironment("KEYCLOAK_ISSUER", keycloakIssuer)
             .WithEnvironment("KEYCLOAK_REALM", realmName)
-            .WithEnvironment("KEYCLOAK_BASE", keycloakHttpEndpoint)
+            .WithEnvironment("KEYCLOAK_BASE", keycloakBase)
             .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", keycloakAdminUser)
             .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", keycloakAdminPassword)
             .WithHttpEndpoint(57500, name: "api")

@@ -177,7 +177,7 @@ internal static partial class AppCompositionBuilder
         );
 
         void SetupUserService() =>
-            (userService, userServiceLocalBuilder) = SetupUserServiceHelper(builder, usersDb, keycloak, eventBus, keycloakHttpEndpoint, realmName, keycloakAdminUser, keycloakAdminPassword);
+            (userService, userServiceLocalBuilder) = SetupUserServiceHelper(builder, usersDb, keycloak ?? throw new InvalidOperationException("keycloak is null"), eventBus ?? throw new InvalidOperationException("eventBus is null"), keycloakHttpEndpoint, realmName, keycloakAdminUser, keycloakAdminPassword);
 
         void SetupArtService()
         {
@@ -279,12 +279,16 @@ internal static partial class AppCompositionBuilder
 
         void SetupAuthGateway()
         {
+            if (userServiceLocalBuilder == null || artServiceLocalBuilder == null || auctionServiceLocalBuilder == null || paymentServiceLocalBuilder == null || adminServiceLocalBuilder == null)
+            {
+                throw new InvalidOperationException("One or more service builders are null");
+            }
             var ag = builder.AddProject("auth-gateway", "../../KunstButikken.AuthGateway/KunstButikken.AuthGateway/KunstButikken.AuthGateway.csproj")
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>?)userServiceLocalBuilder ?? throw new InvalidOperationException("user service builder is null"))
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>?)artServiceLocalBuilder ?? throw new InvalidOperationException("art service builder is null"))
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>?)auctionServiceLocalBuilder ?? throw new InvalidOperationException("auction service builder is null"))
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>?)paymentServiceLocalBuilder ?? throw new InvalidOperationException("payment service builder is null"))
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>?)adminServiceLocalBuilder ?? throw new InvalidOperationException("admin service builder is null"))
+                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)userServiceLocalBuilder)
+                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)artServiceLocalBuilder)
+                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)auctionServiceLocalBuilder)
+                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)paymentServiceLocalBuilder)
+                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)adminServiceLocalBuilder)
                 .WithReference(keycloak)
                 .WithHttpEndpoint(5100, name: "gateway")
                 .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
@@ -308,14 +312,17 @@ internal static partial class AppCompositionBuilder
             var nextFrontendPath = Path.Combine(repoRoot, "KunstButikken.Frontend");
             var angularFrontendPath = Path.Combine(repoRoot, "KunstButikken.Frontend-Ang");
 
+            var keycloakBaseUrl = builder.Configuration["KEYCLOAK_BASE"] ?? keycloakHttpEndpoint;
+            var keycloakIssuer = builder.Configuration["KEYCLOAK_ISSUER"] ?? $"{keycloakHttpEndpoint}/realms/{realmName}";
+
             nextJsFrontend = builder.AddNpmApp("frontend", nextFrontendPath, "dev")
                 .WithHttpEndpoint(targetPort: 3000, port: 3000, name: "web", isProxied: false)
                 .WithEnvironment("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? "")
                 .WithEnvironment("NEXT_PUBLIC_API_GATEWAY", authGateway.GetEndpointString("gateway"))
                 .WithEnvironment("NEXT_PUBLIC_AUCTION_SIGNALR_URL", authGateway.GetEndpointString("gateway") + "/hubs/auctions")
-                .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_BASE_URL", keycloakHttpEndpoint)
+                .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_BASE_URL", keycloakBaseUrl)
                 .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_REALM", realmName)
-                .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_ISSUER", keycloakHttpEndpoint + "/realms/" + realmName)
+                .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_ISSUER", keycloakIssuer)
                 .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_CLIENT_ID", keycloakClientId)
                 .WaitFor(keycloak ?? throw new InvalidOperationException("keycloak is null"))
                 .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
@@ -325,9 +332,9 @@ internal static partial class AppCompositionBuilder
                 .WithHttpEndpoint(targetPort: 4200, port: 4200, name: "web", isProxied: false)
                 .WithEnvironment("NG_APP_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? "")
                 .WithEnvironment("NG_APP_API_GATEWAY", authGateway.GetEndpointString("gateway"))
-                .WithEnvironment("NG_APP_KEYCLOAK_BASE_URL", keycloakHttpEndpoint)
+                .WithEnvironment("NG_APP_KEYCLOAK_BASE_URL", keycloakBaseUrl)
                 .WithEnvironment("NG_APP_KEYCLOAK_REALM", realmName)
-                .WithEnvironment("NG_APP_KEYCLOAK_ISSUER", keycloakHttpEndpoint + "/realms/" + realmName)
+                .WithEnvironment("NG_APP_KEYCLOAK_ISSUER", keycloakIssuer)
                 .WithEnvironment("NG_APP_KEYCLOAK_CLIENT_ID", keycloakAngularClientId)
                 .WaitFor(keycloak ?? throw new InvalidOperationException("keycloak is null"))
                 .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))

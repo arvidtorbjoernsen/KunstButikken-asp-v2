@@ -44,7 +44,10 @@ public static class ProgramSetup
         var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
         var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
 
-        var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
+        var authority = builder.Configuration["KEYCLOAK_AUTHORITY"]
+                        ?? builder.Configuration["Authentication:Authority"]
+                        ?? builder.Configuration["KEYCLOAK_BASE"]
+                        ?? string.Empty;
 
         // If Keycloak is configured (authority or realm present) use Aspire's Keycloak helper
         if (!string.IsNullOrWhiteSpace(authority) || !string.IsNullOrWhiteSpace(realm))
@@ -176,30 +179,22 @@ public static class ProgramSetup
                     return;
                 }
 
-                if (ps.Length == 2 && ps[0].ParameterType.IsAssignableFrom(appType))
+                if (ps.Length == 2 && ps[0].ParameterType.IsAssignableFrom(appType) && ps[1].ParameterType.IsGenericType && ps[1].ParameterType.GetGenericTypeDefinition() == typeof(Action<>))
                 {
-                    // method signature: MapScalarApiReference(WebApplication, Action<Options>)
-                    // Build a compatible delegate dynamically
-                    var optionsType = ps[1].ParameterType.GetGenericArguments().FirstOrDefault() ?? ps[1].ParameterType;
-                    // Fallback: if we cannot construct a matching delegate, try invoking with null
-                    try
-                    {
-                        m.Invoke(null, new object[] { app, null });
-                        Console.WriteLine("[ProgramSetup] Invoked MapScalarApiReference(WebApplication, options) with null options");
-                        return;
-                    }
-                    catch
-                    {
-                        // ignore and try next
-                    }
+                    // method signature: MapScalarApiReference(WebApplication, Action<...>)
+                    var configDelegateType = ps[1].ParameterType;
+                    var configDelegate = Activator.CreateInstance(configDelegateType);
+                    m.Invoke(null, new object[] { app, configDelegate });
+                    Console.WriteLine("[ProgramSetup] Invoked MapScalarApiReference(WebApplication, Action<...>)");
+                    return;
                 }
             }
 
-            Console.WriteLine("[ProgramSetup] No matching MapScalarApiReference overload found; skipping.");
+            Console.WriteLine("[ProgramSetup] No suitable MapScalarApiReference overload found for the current application type.");
         }
         catch (Exception ex)
         {
-            Console.WriteLine("[ProgramSetup] Error invoking MapScalarApiReference reflectively: " + ex.Message);
+            Console.WriteLine($"[ProgramSetup] Error invoking MapScalarApiReference: {ex}");
         }
     }
 }

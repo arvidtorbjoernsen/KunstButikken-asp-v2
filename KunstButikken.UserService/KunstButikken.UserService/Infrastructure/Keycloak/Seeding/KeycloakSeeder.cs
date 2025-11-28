@@ -14,17 +14,26 @@ public class KeycloakSeeder(
     IHttpClientFactory httpFactory,
     IConfiguration config,
     IServiceProvider services,
-    IDbMigrationRunner migrationRunner,
-    IDevKeycloakSeeder devSeeder)
+    IDbMigrationRunner migrationRunner)
     : IKeycloakSeeder
 {
+    private readonly ILogger<KeycloakSeeder> _logger = logger;
+    private readonly IHttpClientFactory _httpFactory = httpFactory;
+    private readonly IConfiguration _config = config;
+    private readonly IServiceProvider _services = services;
+    private readonly IDbMigrationRunner _migrationRunner = migrationRunner;
+
     public Task ApplyMigrationsAsync(CancellationToken cancellationToken = default) =>
-        migrationRunner.RunMigrationsAsync(cancellationToken);
+        _migrationRunner.RunMigrationsAsync(cancellationToken);
 
-    public Task SeedKeycloakUsersAsync(CancellationToken cancellationToken = default) =>
-        devSeeder.SeedAsync(new SeedUsersRequest { Force = true }, cancellationToken);
+    public Task SeedKeycloakUsersAsync(CancellationToken cancellationToken = default)
+    {
+        using var scope = _services.CreateScope();
+        var devSeeder = scope.ServiceProvider.GetRequiredService<IDevKeycloakSeeder>();
+        return devSeeder.SeedAsync(new SeedUsersRequest { Force = true }, cancellationToken);
+    }
 
-    private static Uri BuildRealmRoleUri(string adminApiBase, string realm) => new(Uri.EscapeUriString($"{adminApiBase}/roles/{realm}"));
+    private static Uri BuildRealmRoleUri(string adminApiBase, string realm) => new(Uri.EscapeDataString($"{adminApiBase}/roles/{realm}"));
 
     // ...existing code...
 }

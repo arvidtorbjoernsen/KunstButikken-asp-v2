@@ -87,13 +87,6 @@ public static class ProgramSetup
             TryMapScalarApiReference(app);
         }
 
-        using (var scope = app.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<AuctionDbContext>();
-            try { await db.Database.MigrateAsync().ConfigureAwait(false); }
-            catch { /* ignore migrations failure */ }
-        }
-
         app.UseCors("frontend");
         app.UseAuthentication();
         app.UseAuthorization();
