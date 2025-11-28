@@ -5,7 +5,7 @@ using System.Text;
 using KunstButikken.ServiceDefaults;
 using KunstButikken.UserService.Application.Interfaces;
 using KunstButikken.UserService.Domain.Dtos;
-using KunstButikken.UserService.Models;
+using KunstButikken.UserService.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

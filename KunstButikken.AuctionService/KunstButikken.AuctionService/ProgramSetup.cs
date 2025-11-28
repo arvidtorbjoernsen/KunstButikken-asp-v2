@@ -8,7 +8,6 @@ using KunstButikken.AuctionService.Infrastructure.DependencyInjection;
 using KunstButikken.AuctionService.Infrastructure.Persistence;
 using KunstButikken.AuctionService.IntegrationEvents;
 using KunstButikken.AuctionService.IntegrationEvents.Handlers;
-using KunstButikken.AuctionService.Services;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.IntegrationEvents.Contracts.Events;
 using KunstButikken.ServiceDefaults;
@@ -76,7 +75,6 @@ public static class ProgramSetup
         builder.Services.AddControllers();
         builder.Services.AddHttpClient();
         builder.Services.AddSignalR(options => { options.EnableDetailedErrors = true; });
-        builder.Services.AddHostedService<AuctionSeedingHostedService>();
     }
 
     public static async Task ConfigureApp(WebApplication app)

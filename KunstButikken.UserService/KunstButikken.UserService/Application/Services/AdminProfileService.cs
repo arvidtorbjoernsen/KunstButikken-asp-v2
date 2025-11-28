@@ -1,11 +1,11 @@
 namespace KunstButikken.UserService.Application.Services;
 
 using KunstButikken.UserService.Application.Interfaces;
+using KunstButikken.UserService.Domain.Entities;
 using KunstButikken.UserService.Domain.Interfaces;
-using KunstButikken.UserService.Models;
 using Microsoft.EntityFrameworkCore;
 
-public sealed class AdminProfileService(IUserRepository repo) : IAdminProfileService
+public sealed class AdminProfileService : IAdminProfileService
 {
     public async Task<IReadOnlyList<UserProfile>> GetPendingSellersAsync(CancellationToken ct = default)
     {
@@ -63,4 +63,3 @@ public sealed class AdminProfileService(IUserRepository repo) : IAdminProfileSer
         await repo.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 }
-

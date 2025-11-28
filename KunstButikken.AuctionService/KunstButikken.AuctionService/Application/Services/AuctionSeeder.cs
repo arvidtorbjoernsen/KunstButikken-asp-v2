@@ -2,14 +2,18 @@ using System;
 using System.Security.Cryptography;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
 
+using KunstButikken.AuctionService.Domain.Interfaces;
 using KunstButikken.AuctionService.Domain.Models;
 using KunstButikken.Common.Logging;
 using KunstButikken.ServiceDefaults;
 using KunstButikken.AuctionService.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
-namespace KunstButikken.AuctionService.Services;
+namespace KunstButikken.AuctionService.Application.Services;
 
 public class AuctionSeeder(
     ILogger<AuctionSeeder> logger,

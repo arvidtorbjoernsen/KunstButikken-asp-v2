@@ -1,5 +1,3 @@
-using KunstButikken.PaymentService.Application.DependencyInjection;
-using KunstButikken.PaymentService.Application.Interfaces;
 using KunstButikken.PaymentService.Domain.Repositories;
 using KunstButikken.PaymentService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +27,6 @@ public static class InfrastructureServiceCollectionExtensions
         }
 
         services.AddScoped<IPaymentRepository, PaymentRepository>();
-        services.AddApplication();
         return services;
     }
 }

@@ -5,7 +5,7 @@ using KunstButikken.ServiceDefaults;
 using KunstButikken.UserService.Application.Interfaces;
 using KunstButikken.UserService.Domain.Dtos;
 using KunstButikken.UserService.Domain.Interfaces;
-using KunstButikken.UserService.Models;
+using KunstButikken.UserService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 public sealed class UserProfileService : IUserProfileService

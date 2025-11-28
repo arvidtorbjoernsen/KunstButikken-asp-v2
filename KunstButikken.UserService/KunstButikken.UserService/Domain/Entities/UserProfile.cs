@@ -1,4 +1,4 @@
-namespace KunstButikken.UserService.Models;
+namespace KunstButikken.UserService.Domain.Entities;
 
 public class UserProfile
 {

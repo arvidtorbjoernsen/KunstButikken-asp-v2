@@ -1,6 +1,9 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{187B7E00-6A74-4F5D-9C37-5F3F1CF46F77}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.PaymentService", "KunstButikken.PaymentService\\KunstButikken.PaymentService.csproj", "{B1B1B1B1-B1B1-B1B1-B1B1-B1B1B1B1B1B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.PaymentService.Tests", "KunstButikken.PaymentService.Tests\KunstButikken.PaymentService.Tests.csproj", "{9F4A19A4-5116-4ECA-8732-06D6F4BBCDCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,6 +15,10 @@ Global
 		{B1B1B1B1-B1B1-B1B1-B1B1-B1B1B1B1B1B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1B1B1B1-B1B1-B1B1-B1B1-B1B1B1B1B1B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1B1B1B1-B1B1-B1B1-B1B1-B1B1B1B1B1B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F4A19A4-5116-4ECA-8732-06D6F4BBCDCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F4A19A4-5116-4ECA-8732-06D6F4BBCDCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F4A19A4-5116-4ECA-8732-06D6F4BBCDCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F4A19A4-5116-4ECA-8732-06D6F4BBCDCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

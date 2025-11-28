@@ -1,5 +1,5 @@
+using KunstButikken.AuctionService.Domain.Interfaces;
 using KunstButikken.AuctionService.Domain.Models;
-using KunstButikken.AuctionService.Interfaces;
 using KunstButikken.Common.Logging;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.IntegrationEvents.Contracts.Events;

@@ -1,10 +1,7 @@
+namespace KunstButikken.AuthGateway.Services;
+
 using Yarp.ReverseProxy.Forwarder;
 
-namespace KunstButikken.AuthGateway;
-
-/// <summary>
-///     Custom forwarder HTTP client factory that integrates with Aspire service discovery
-/// </summary>
 public class ServiceDiscoveryForwarderHttpClientFactory(IHttpMessageHandlerFactory handlerFactory)
     : IForwarderHttpClientFactory
 {

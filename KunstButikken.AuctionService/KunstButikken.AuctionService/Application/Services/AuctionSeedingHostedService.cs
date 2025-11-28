@@ -1,6 +1,9 @@
+using KunstButikken.AuctionService.Domain.Interfaces;
 using KunstButikken.Common.Logging;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace KunstButikken.AuctionService.Services;
+namespace KunstButikken.AuctionService.Application.Services;
 
 public class AuctionSeedingHostedService(ILogger<AuctionSeedingHostedService> logger, IAuctionSeeder seeder)
     : IHostedService

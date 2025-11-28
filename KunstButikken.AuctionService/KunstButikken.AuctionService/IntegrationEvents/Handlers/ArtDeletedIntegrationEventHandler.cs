@@ -1,4 +1,4 @@
-using KunstButikken.AuctionService.Interfaces;
+using KunstButikken.AuctionService.Domain.Interfaces;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.IntegrationEvents.Contracts.Events;
 

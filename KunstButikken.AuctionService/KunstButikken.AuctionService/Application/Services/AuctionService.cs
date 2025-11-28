@@ -1,6 +1,6 @@
 using KunstButikken.AuctionService.Application.Interfaces;
+using KunstButikken.AuctionService.Domain.Interfaces;
 using KunstButikken.AuctionService.Domain.Models;
-using KunstButikken.AuctionService.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using KunstButikken.ServiceDefaults;
 

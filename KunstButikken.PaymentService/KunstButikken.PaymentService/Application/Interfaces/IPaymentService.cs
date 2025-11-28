@@ -1,7 +1,8 @@
+using KunstButikken.PaymentService.Application.Models;
+
 namespace KunstButikken.PaymentService.Application.Interfaces;
 
 public interface IPaymentService
 {
-    Task ProcessCheckoutAsync(object request, CancellationToken cancellationToken = default);
+    Task<SessionResponse> ProcessCheckoutAsync(CheckoutRequest request, CancellationToken cancellationToken = default);
 }
-

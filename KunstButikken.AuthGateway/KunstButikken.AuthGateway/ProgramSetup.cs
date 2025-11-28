@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Text.Json;
+using KunstButikken.AuthGateway.DependencyInjection;
 using KunstButikken.ServiceDefaults;
-using Microsoft.Extensions.ServiceDiscovery;
-using Yarp.ReverseProxy.Forwarder;
 using Scalar.Aspire;
 
 namespace KunstButikken.AuthGateway;
@@ -16,16 +13,10 @@ public static class ProgramSetup
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        // Add common Aspire defaults (health checks, service discovery, OpenTelemetry)
         builder.AddServiceDefaults();
-
-        // Register injectable .env loader for tests/DI
         builder.Services.AddEnvLoader();
+        builder.Services.AddApplication(builder.Configuration, builder.Environment);
 
-        // Configure service discovery to allow both HTTP and HTTPS
-        builder.Services.Configure<ServiceDiscoveryOptions>(options => { options.AllowedSchemes = new[] { "http", "https" }; });
-
-        // CORS for frontend origin(s)
         var frontendOriginsRaw = builder.Configuration["FRONTEND_ORIGINS"] ?? builder.Configuration["FRONTEND_ORIGIN"] ?? "http://localhost:3000";
         var frontendOrigins = frontendOriginsRaw
             .Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -44,56 +35,46 @@ public static class ProgramSetup
             options.AddPolicy("frontend", p => p.WithOrigins(frontendOrigins.ToArray()).AllowAnyHeader().AllowAnyMethod().AllowCredentials());
         });
 
-        // Add YARP reverse proxy with service discovery support
-        builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
-
-        // Register custom forwarder HTTP client factory that uses service discovery
-        builder.Services.AddSingleton<IForwarderHttpClientFactory, ServiceDiscoveryForwarderHttpClientFactory>();
-
-        // Pre-configure named HTTP clients for each YARP cluster with service discovery
-        var clusterIds = new[]
-        {
-            "admin-service-cluster", "art-service-cluster", "auction-service-cluster", "payment-service-cluster",
-            "user-service-cluster"
-        };
-
-        foreach (var clusterId in clusterIds)
-        {
-            builder.Services.AddHttpClient($"Yarp.Forwarder.{clusterId}")
-                .AddServiceDiscovery()
-                .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
-                {
-                    AllowAutoRedirect = false,
-                    AutomaticDecompression = DecompressionMethods.None,
-                    ActivityHeadersPropagator = null,
-                    ConnectTimeout = TimeSpan.FromSeconds(15)
-                });
-        }
-
-        // Controllers
-        builder.Services.AddControllers().AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; });
-
-        // Authentication (Keycloak via Aspire helper)
         var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
         var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
-
         var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
 
-        // If Keycloak is configured (authority or realm present) use Aspire's Keycloak helper
         if (!string.IsNullOrWhiteSpace(authority) || !string.IsNullOrWhiteSpace(realm))
         {
-            // Register JwtBearer using the Keycloak helper which configures authority/audience/validation
             builder.Services
                 .AddAuthentication()
                 .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
                 {
                     options.Audience = audience;
-                    // propagate same dev-time logging hooks as before
                     options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
                     {
-                        OnAuthenticationFailed = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
-                        OnTokenValidated = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; },
-                        OnChallenge = context => { if (builder.Environment.IsDevelopment()) Console.WriteLine($"[AuthGateway] Authentication challenge: {context.Error}, {context.ErrorDescription}"); return Task.CompletedTask; }
+                        OnAuthenticationFailed = context =>
+                        {
+                            if (builder.Environment.IsDevelopment())
+                            {
+                                Console.WriteLine($"[AuthGateway] Authentication failed: {context.Exception.Message}");
+                            }
+
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            if (builder.Environment.IsDevelopment())
+                            {
+                                Console.WriteLine($"[AuthGateway] Token validated successfully for user: {context.Principal?.Identity?.Name}");
+                            }
+
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = context =>
+                        {
+                            if (builder.Environment.IsDevelopment())
+                            {
+                                Console.WriteLine($"[AuthGateway] Authentication challenge: {context.Error}, {context.ErrorDescription}");
+                            }
+
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
@@ -101,33 +82,22 @@ public static class ProgramSetup
         }
         else
         {
-            // Fallback: register authentication system without specific scheme — keep authorization enabled
             builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();
         }
-
     }
 
     public static async Task ConfigureApp(WebApplication app)
     {
         ArgumentNullException.ThrowIfNull(app);
 
-        // Development OpenAPI UI
-        if (app.Environment.IsDevelopment())
-        {
-            // app.MapOpenApi(); // Removed
-        }
-
-        // Disable HTTPS redirection in Development (supports Aspire and localhost), enable otherwise
         if (!app.Environment.IsDevelopment())
         {
             app.UseHttpsRedirection();
         }
 
-        // Add routing middleware before CORS for proper CORS evaluation
         app.UseRouting();
 
-        // Add logging for Origin header
         app.Use(async (context, next) =>
         {
             var origin = context.Request.Headers["Origin"].ToString();
@@ -136,11 +106,8 @@ public static class ProgramSetup
         });
 
         app.UseCors("frontend");
-
-        // Enable WebSockets for SignalR hub forwarding via YARP
         app.UseWebSockets();
 
-        // Add logging middleware to debug authorization header forwarding (dev only)
         if (app.Environment.IsDevelopment())
         {
             app.Use(async (context, next) =>
@@ -159,10 +126,7 @@ public static class ProgramSetup
 
                 await next().ConfigureAwait(false);
             });
-        }
 
-        if (app.Environment.IsDevelopment())
-        {
             app.Use(async (context, next) =>
             {
                 if (context.Request.Path.StartsWithSegments("/hubs/auctions", StringComparison.Ordinal))
@@ -178,13 +142,8 @@ public static class ProgramSetup
 
         app.UseAuthentication();
         app.UseAuthorization();
-
         app.MapControllers();
-
-        // Map YARP reverse proxy endpoints
         app.MapReverseProxy();
-
-        // Map default health endpoints, etc.
         app.MapDefaultEndpoints();
 
         await Task.CompletedTask;

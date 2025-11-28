@@ -1,14 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using KunstButikken.ServiceDefaults;
 using KunstButikken.UserService.Application.Interfaces;
 using KunstButikken.UserService.Application.Services;
+using KunstButikken.ServiceDefaults;
+using Microsoft.Extensions.Configuration;
 
 namespace KunstButikken.UserService.Application.DependencyInjection;
 
 public static class ApplicationServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddScoped<IUserProfileService, UserProfileService>();

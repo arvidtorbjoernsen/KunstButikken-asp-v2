@@ -1,6 +1,9 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4F18F9FA-4A86-48E5-8E56-7E9C8500A73F}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService", "KunstButikken.AuctionService\\KunstButikken.AuctionService.csproj", "{C9A51B1D-909A-4C3A-A9A3-4242B3977E3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KunstButikken.AuctionService.Tests", "KunstButikken.AuctionService.Tests\KunstButikken.AuctionService.Tests.csproj", "{A7AB6165-2CF4-4C0A-AB15-ADA37991B28E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,6 +15,10 @@ Global
 		{C9A51B1D-909A-4C3A-A9A3-4242B3977E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9A51B1D-909A-4C3A-A9A3-4242B3977E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9A51B1D-909A-4C3A-A9A3-4242B3977E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7AB6165-2CF4-4C0A-AB15-ADA37991B28E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7AB6165-2CF4-4C0A-AB15-ADA37991B28E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7AB6165-2CF4-4C0A-AB15-ADA37991B28E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7AB6165-2CF4-4C0A-AB15-ADA37991B28E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

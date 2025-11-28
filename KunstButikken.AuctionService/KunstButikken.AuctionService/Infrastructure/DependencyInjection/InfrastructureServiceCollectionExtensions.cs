@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using KunstButikken.AuctionService.Infrastructure.Persistence;
 using KunstButikken.AuctionService.Domain.Interfaces;
 using KunstButikken.AuctionService.Infrastructure.Repositories;
-using KunstButikken.AuctionService.Interfaces;
 
 namespace KunstButikken.AuctionService.Infrastructure.DependencyInjection;
 

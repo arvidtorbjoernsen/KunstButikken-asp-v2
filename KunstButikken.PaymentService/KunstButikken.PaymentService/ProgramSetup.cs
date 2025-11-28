@@ -5,6 +5,7 @@ using System.Reflection;
 using KunstButikken.Common.Logging;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.IntegrationEvents.Contracts.Events;
+using KunstButikken.PaymentService.Application.DependencyInjection;
 using KunstButikken.PaymentService.IntegrationEvents;
 using KunstButikken.PaymentService.IntegrationEvents.Handlers;
 using KunstButikken.ServiceDefaults;
@@ -40,26 +41,8 @@ public static class ProgramSetup
 
         // Add common Aspire defaults (health checks, service discovery, OpenTelemetry)
         builder.AddServiceDefaults();
-
-        // Register injectable .env loader for tests/DI
         builder.Services.AddEnvLoader();
-
-        // Add RabbitMQ client
-        builder.AddRabbitMQClient("rabbitmq");
-        builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
-        builder.Services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
-        builder.Services.AddSingleton<IEventBus, RabbitMqEventBus>();
-        builder.Services.AddScoped<AuctionEndedIntegrationEventHandler>();
-
-        // Register example RabbitMQ publisher helper that uses IConnection injected by Aspire.RabbitMQ.Client
-        builder.Services.AddSingleton<RabbitMqPublisher>();
-
-        // Register system date/time provider
-        builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
-
-        // Register Stripe services
-        builder.Services.AddSingleton<IStripeWebhookService, StripeWebhookService>();
-        builder.Services.AddSingleton<IStripeSessionService, StripeSessionService>();
+        builder.Services.AddApplication(builder.Configuration);
 
         // Authentication (Keycloak via Aspire helper)
         var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
@@ -115,35 +98,6 @@ public static class ProgramSetup
                     .AllowCredentials());
         });
 
-        // Replace manual DbContext + repo registration with centralized AddInfrastructure call
-        // Add EF Core DbContext
-        try
-        {
-            builder.Services.AddInfrastructure(builder.Configuration);
-        }
-        catch
-        {
-            // Fallback: if AddInfrastructure is unavailable, keep current manual registration for robustness
-            var cs = builder.Configuration.GetConnectionString("Default")
-                     ?? builder.Configuration.GetConnectionString("paymentsdb")
-                     ?? builder.Configuration["ConnectionStrings:Default"]
-                     ?? builder.Configuration["ConnectionStrings:paymentsdb"];
-
-            if (!string.IsNullOrWhiteSpace(cs) && !cs.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
-            {
-                builder.Services.AddDbContext<PaymentDbContext>(options =>
-                    options.UseNpgsql(cs, npgsql => npgsql.EnableRetryOnFailure()
-                        .MigrationsAssembly(typeof(PaymentDbContext).Assembly.FullName)));
-            }
-            else
-            {
-                builder.Services.AddDbContext<PaymentDbContext>(options => options.UseInMemoryDatabase("payment_inmemory_db"));
-            }
-
-            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
-        }
-
-        // Add services to the container.
         builder.Services.AddControllers();
     }
 

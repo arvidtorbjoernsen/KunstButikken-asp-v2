@@ -1,6 +1,6 @@
 namespace KunstButikken.UserService.Application.Interfaces;
 
-using KunstButikken.UserService.Models;
+using KunstButikken.UserService.Domain.Entities;
 
 public interface IAdminProfileService
 {
@@ -10,4 +10,3 @@ public interface IAdminProfileService
     Task<UserProfile> MakeAdminByEmailAsync(string email, CancellationToken ct = default);
     Task ToggleSellerVerificationAsync(Guid userId, bool verify, CancellationToken ct = default);
 }
-
