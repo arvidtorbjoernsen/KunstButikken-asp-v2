@@ -1,7 +1,7 @@
 using System.Text.Json;
 using KunstButikken.Common.Logging;
 
-namespace KunstButikken.UserService.Services;
+namespace KunstButikken.UserService.Infrastructure.Keycloak.Sync;
 
 public record AdminTokenResult(
     string? Token,
@@ -15,6 +15,9 @@ public record AdminTokenResult(
 // Replaced KeycloakAdminConfig record with interface-based design
 // Internal implementation of IKeycloakAdminConfig to avoid exposing the concrete type
 internal sealed class KeycloakAdminConfigImpl(
+    string issuer,
+    string realm,
+    string adminBase,
     string tokenEndpoint,
     string tokenRealm,
     string adminClientId,
@@ -23,6 +26,9 @@ internal sealed class KeycloakAdminConfigImpl(
     string? adminPassword)
     : IKeycloakAdminConfig
 {
+    public string Issuer { get; } = issuer;
+    public string Realm { get; } = realm;
+    public string AdminBase { get; } = adminBase;
     public string TokenEndpoint { get; } = tokenEndpoint;
     public string TokenRealm { get; } = tokenRealm;
     public string AdminClientId { get; } = adminClientId;
@@ -69,32 +75,29 @@ public class KeycloakAdminClient(IConfiguration config, ILogger<KeycloakAdminCli
         Log.Define(LogLevel.Warning, new EventId(2006, "RequestTokenFailed"),
             "KeycloakAdminClient: RequestTokenAsync failed");
 
-    public async Task<AdminTokenResult> TryGetAdminTokenAsync(HttpClient http, string issuer, CancellationToken ct)
+    public async Task<(string? Token, string? TokenEndpoint, string? TokenRealm, string? ClientId, string? GrantTried, string? HttpError)> TryGetAdminTokenAsync(HttpClient http, string issuer, CancellationToken ct)
     {
         var cfg = ResolveAdminTokenConfig(issuer);
         if (cfg == null)
         {
             _failedResolveConfig(logger, issuer, null);
-            return new AdminTokenResult(null, null, null, null, null, "Failed to resolve config");
+            return (null, null, null, null, null, "Failed to resolve config");
         }
 
         // Try client_credentials first, then password grant using small helpers to reduce nesting
         var clientToken = await TryClientCredentialsAsync(cfg, http, ct).ConfigureAwait(false);
         if (!string.IsNullOrWhiteSpace(clientToken))
         {
-            return new AdminTokenResult(clientToken, cfg.TokenEndpoint, cfg.TokenRealm, cfg.AdminClientId,
-                "client_credentials", null);
+            return (clientToken, cfg.TokenEndpoint, cfg.TokenRealm, cfg.AdminClientId, "client_credentials", null);
         }
 
         var pwdToken = await TryPasswordGrantAsync(cfg, http, ct).ConfigureAwait(false);
         if (!string.IsNullOrWhiteSpace(pwdToken))
         {
-            return new AdminTokenResult(pwdToken, cfg.TokenEndpoint, cfg.TokenRealm, cfg.AdminClientId, "password",
-                null);
+            return (pwdToken, cfg.TokenEndpoint, cfg.TokenRealm, cfg.AdminClientId, "password", null);
         }
 
-        return new AdminTokenResult(null, cfg.TokenEndpoint, cfg.TokenRealm, cfg.AdminClientId, null,
-            "Failed to obtain token");
+        return (null, cfg.TokenEndpoint, cfg.TokenRealm, cfg.AdminClientId, null, "Failed to obtain token");
     }
 
     // Generic retry helper used by token acquisition to reduce duplicated retry logic
@@ -229,7 +232,7 @@ public class KeycloakAdminClient(IConfiguration config, ILogger<KeycloakAdminCli
             adminClientId = "admin-cli";
         }
 
-        return new KeycloakAdminConfigImpl(tokenEndpoint, tokenRealm, adminClientId, adminClientSecret, adminUsername,
+        return new KeycloakAdminConfigImpl(issuer, targetRealm, adminBase, tokenEndpoint, tokenRealm, adminClientId, adminClientSecret, adminUsername,
             adminPassword);
     }
 

@@ -1,12 +1,14 @@
-using KunstButikken.UserService.Controllers;
+using KunstButikken.UserService.Application.Interfaces;
+using Microsoft.Extensions.Http;
+using KunstButikken.UserService.Shared.Dev;
 
-namespace KunstButikken.UserService.Services;
+namespace KunstButikken.UserService.Infrastructure.Keycloak.Seeding;
 
 /// <summary>
 ///     Extracted Keycloak seeding logic from <see cref="DevSeedService" /> to reduce size and
 ///     make ownership of disposable objects explicit.
 /// </summary>
-public sealed class KeycloakSeederService
+public sealed class KeycloakSeederService : IDevKeycloakSeeder
 {
     private readonly IConfiguration _cfg;
     private readonly IWebHostEnvironment _env;
@@ -38,7 +40,7 @@ public sealed class KeycloakSeederService
     public bool IsAllowed() => _env.IsDevelopment() ||
                                string.Equals(_cfg["ALLOW_DEV_SEED"], "true", StringComparison.OrdinalIgnoreCase);
 
-    public async Task<SeedUsersResult> SeedKeycloakUsersAsync(SeedUsersRequest? req, CancellationToken ct = default)
+    public async Task<SeedUsersResult> SeedAsync(SeedUsersRequest? req, CancellationToken ct = default)
     {
         var result = new SeedUsersResult { Allowed = IsAllowed() };
         if (!result.Allowed)
@@ -65,7 +67,7 @@ public sealed class KeycloakSeederService
 
         var desired = req?.Users is { Count: > 0 }
             ? req!.Users!.Select(u => new { Username = u, Roles = DevControllerHelpers.InferRoles(u) }).ToList()
-            : DevControllerHelpers.DefaultDesiredUsers.Select(u => new { u.Username, u.Roles }).ToList();
+            : DevSeedDefaults.DefaultDesiredUsers.Select(u => new { u.Username, u.Roles }).ToList();
 
         var adminApiBaseUri =
             new Uri(DevControllerHelpers.Combine(adminConfig.AdminBase, $"/admin/realms/{adminConfig.Realm}"));

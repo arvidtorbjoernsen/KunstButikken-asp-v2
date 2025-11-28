@@ -1,10 +1,11 @@
 using KunstButikken.Common.Logging;
+using KunstButikken.UserService.Application.Interfaces;
 using KunstButikken.UserService.Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
-namespace KunstButikken.UserService.Services;
+namespace KunstButikken.UserService.Infrastructure.Persistence;
 
 public class DbMigrationRunner(IServiceProvider serviceProvider, ILogger<DbMigrationRunner> logger)
     : IDbMigrationRunner

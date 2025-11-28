@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace KunstButikken.UserService.Services;
+namespace KunstButikken.UserService.Infrastructure.Keycloak.Seeding;
 
 public sealed class KeycloakUserManager
 {

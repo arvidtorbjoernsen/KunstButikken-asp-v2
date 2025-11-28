@@ -1,6 +1,6 @@
 using FluentAssertions;
 using KunstButikken.UserService.Application.Services;
-using KunstButikken.UserService.Domain.Entities;
+using KunstButikken.UserService.Domain.Dtos;
 using KunstButikken.UserService.Domain.Interfaces;
 using Moq;
 
@@ -11,20 +11,31 @@ public sealed class SellerQueryServiceTests
     [Fact]
     public async Task GetSellersAsync_ReturnsOrderedSellers()
     {
-        var users = new List<UserProfile>
+        var sellers = new List<SellerDto>
         {
-            new() { Id = Guid.NewGuid(), UserId = Guid.NewGuid(), DisplayName = "B", Email = "b@example.com", IsSeller = true, CreatedAt = DateTimeOffset.UtcNow.AddMinutes(-10) },
-            new() { Id = Guid.NewGuid(), UserId = Guid.NewGuid(), DisplayName = "A", Email = "a@example.com", IsSeller = true, CreatedAt = DateTimeOffset.UtcNow.AddMinutes(-20) }
+            new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = Guid.NewGuid(),
+                DisplayName = "B",
+                Email = "b@example.com"
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = Guid.NewGuid(),
+                DisplayName = "A",
+                Email = "a@example.com"
+            }
         };
-        var queryable = users.AsQueryable();
         var repo = new Mock<IUserRepository>();
-        repo.Setup(r => r.Query()).Returns(queryable);
+        repo.Setup(r => r.GetSellersAsync(It.IsAny<CancellationToken>())).ReturnsAsync(sellers);
 
         var sut = new SellerQueryService(repo.Object);
 
         var result = await sut.GetSellersAsync();
 
         result.Should().HaveCount(2);
-        result.First().DisplayName.Should().Be("A");
+        result.First().DisplayName.Should().Be("B");
     }
 }

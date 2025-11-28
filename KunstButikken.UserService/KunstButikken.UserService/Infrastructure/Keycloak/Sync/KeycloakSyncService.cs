@@ -3,12 +3,12 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using KunstButikken.Common.Logging;
 using KunstButikken.ServiceDefaults;
+using KunstButikken.UserService.Application.Interfaces;
 using KunstButikken.UserService.Domain.Entities;
 using KunstButikken.UserService.Infrastructure.Persistence;
-
 using Microsoft.EntityFrameworkCore;
 
-namespace KunstButikken.UserService.Services;
+namespace KunstButikken.UserService.Infrastructure.Keycloak.Sync;
 
 public class KeycloakSyncService(
     ILogger<KeycloakSyncService> logger,

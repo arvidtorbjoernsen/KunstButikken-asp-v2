@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Text.Json;
 using KunstButikken.Common.Logging;
-using KunstButikken.UserService.Controllers;
+using KunstButikken.UserService.Shared.Dev;
 using Microsoft.EntityFrameworkCore;
 
-namespace KunstButikken.UserService.Services;
+namespace KunstButikken.UserService.Infrastructure.Keycloak.Seeding;
 
 /// <summary>
 ///     Handles per-user operations against Keycloak (find/create/set-password/map-roles).

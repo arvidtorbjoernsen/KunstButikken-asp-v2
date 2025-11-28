@@ -9,4 +9,6 @@ public interface IUserProfileService
     Task<UserProfile> GetOrCreateProfileAsync(Guid userId, ClaimsPrincipal principal, CancellationToken ct = default);
     Task<UserProfile> UpdateProfileAsync(Guid userId, UserProfile input, CancellationToken ct = default);
     Task<UserProfile> RegisterAsync(Guid userId, RegistrationRequest request, CancellationToken ct = default);
+    Task VerifySellerAsync(Guid profileId, bool verified, CancellationToken ct = default);
+    Task<IReadOnlyList<UnverifiedSellerDto>> ListUnverifiedSellersAsync(CancellationToken ct = default);
 }

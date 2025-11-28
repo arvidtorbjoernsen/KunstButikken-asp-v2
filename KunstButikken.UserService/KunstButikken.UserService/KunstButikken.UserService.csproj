@@ -24,6 +24,7 @@
         <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj"/>
         <ProjectReference Include="$(RepoRoot)KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj"/>
+        <ProjectReference Include="./DevTools/KunstButikken.UserService.Shared.Dev.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="./Domain/KunstButikken.UserService.Domain.csproj"/>
@@ -43,6 +44,7 @@
         <!-- Exclude DTOs/helpers that are owned by the Infrastructure class library -->
         <Compile Remove="Controllers\DevRequests.cs"/>
         <Compile Remove="Controllers\DevControllerHelpers.cs"/>
+        <Compile Remove="DevTools\**\*.cs"/>
     </ItemGroup>
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

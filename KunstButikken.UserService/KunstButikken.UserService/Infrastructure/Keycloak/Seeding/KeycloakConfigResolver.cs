@@ -1,6 +1,6 @@
-using KunstButikken.UserService.Controllers;
+using KunstButikken.UserService.Shared.Dev;
 
-namespace KunstButikken.UserService.Services;
+namespace KunstButikken.UserService.Infrastructure.Keycloak.Seeding;
 
 internal static class KeycloakConfigResolver
 {

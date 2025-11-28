@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Scalar.Aspire;
 using KunstButikken.UserService.Infrastructure.DependencyInjection;
 using KunstButikken.UserService.Application.DependencyInjection;
+using KunstButikken.UserService.Infrastructure.Keycloak.Seeding;
+using KunstButikken.UserService.Infrastructure.Keycloak.Sync;
 using KunstButikken.UserService.Infrastructure.Persistence;
 
 namespace KunstButikken.UserService;
@@ -75,6 +77,11 @@ public static class ProgramSetup
             builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();
         }
+
+        // Ensure ProgramSetup uses new hosted services for seeding and migration.
+        builder.Services.AddHostedService<DbMigrationHostedService>();
+        builder.Services.AddHostedService<KeycloakSeedingHostedService>();
+        builder.Services.AddHostedService<KeycloakSyncService>();
     }
 
     public static async Task ConfigureApp(WebApplication app)

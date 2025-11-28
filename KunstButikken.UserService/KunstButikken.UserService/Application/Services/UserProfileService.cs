@@ -6,22 +6,21 @@ using KunstButikken.UserService.Application.Interfaces;
 using KunstButikken.UserService.Domain.Dtos;
 using KunstButikken.UserService.Domain.Interfaces;
 using KunstButikken.UserService.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 public sealed class UserProfileService : IUserProfileService
 {
-    private readonly IUserRepository _repo;
+    private readonly IUserRepository _userRepository;
     private readonly IDateTimeProvider _clock;
 
-    public UserProfileService(IUserRepository repo, IDateTimeProvider clock)
+    public UserProfileService(IUserRepository userRepository, IDateTimeProvider clock)
     {
-        _repo = repo;
+        _userRepository = userRepository;
         _clock = clock;
     }
 
     public async Task<UserProfile> GetOrCreateProfileAsync(Guid userId, ClaimsPrincipal principal, CancellationToken ct = default)
     {
-        var profile = await _repo.Query().FirstOrDefaultAsync(p => p.UserId == userId, ct).ConfigureAwait(false);
+        var profile = await _userRepository.GetByUserIdAsync(userId, ct).ConfigureAwait(false);
         if (profile is not null)
         {
             await SyncRolesFromClaimsAsync(profile, principal, ct).ConfigureAwait(false);
@@ -29,14 +28,13 @@ public sealed class UserProfileService : IUserProfileService
         }
 
         profile = CreateProfileFromClaims(userId, principal);
-        await _repo.AddAsync(profile, ct).ConfigureAwait(false);
-        await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
+        await _userRepository.AddAsync(profile, ct).ConfigureAwait(false);
         return profile;
     }
 
     public async Task<UserProfile> UpdateProfileAsync(Guid userId, UserProfile input, CancellationToken ct = default)
     {
-        var profile = await _repo.Query().FirstOrDefaultAsync(p => p.UserId == userId, ct).ConfigureAwait(false)
+        var profile = await _userRepository.GetByUserIdAsync(userId, ct).ConfigureAwait(false)
                       ?? throw new InvalidOperationException("Profile not found");
 
         profile.DisplayName = input.DisplayName;
@@ -51,17 +49,17 @@ public sealed class UserProfileService : IUserProfileService
         profile.PreferencesJson = input.PreferencesJson;
         profile.UpdatedAt = _clock.UtcNow;
 
-        await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
+        await _userRepository.UpdateAsync(profile, ct).ConfigureAwait(false);
         return profile;
     }
 
     public async Task<UserProfile> RegisterAsync(Guid userId, RegistrationRequest request, CancellationToken ct = default)
     {
-        var profile = await _repo.Query().FirstOrDefaultAsync(p => p.UserId == userId, ct).ConfigureAwait(false);
+        var profile = await _userRepository.GetByUserIdAsync(userId, ct).ConfigureAwait(false);
         if (profile is null)
         {
             profile = new UserProfile { Id = Guid.NewGuid(), UserId = userId, CreatedAt = _clock.UtcNow };
-            await _repo.AddAsync(profile, ct).ConfigureAwait(false);
+            await _userRepository.AddAsync(profile, ct).ConfigureAwait(false);
         }
 
         profile.Email = request.Email ?? string.Empty;
@@ -73,13 +71,13 @@ public sealed class UserProfileService : IUserProfileService
             profile.IsSellerVerified = false;
         }
 
-        await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
+        await _userRepository.UpdateAsync(profile, ct).ConfigureAwait(false);
         return profile;
     }
 
     public async Task VerifySellerAsync(Guid profileId, bool verified, CancellationToken ct = default)
     {
-        var profile = await _repo.Query().FirstOrDefaultAsync(p => p.Id == profileId, ct).ConfigureAwait(false)
+        var profile = await _userRepository.FindAsync(profileId, ct).ConfigureAwait(false)
                       ?? throw new InvalidOperationException("Profile not found");
         if (!profile.IsSeller)
         {
@@ -87,22 +85,12 @@ public sealed class UserProfileService : IUserProfileService
         }
 
         profile.IsSellerVerified = verified;
-        await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
+        await _userRepository.UpdateAsync(profile, ct).ConfigureAwait(false);
     }
 
     public async Task<IReadOnlyList<UnverifiedSellerDto>> ListUnverifiedSellersAsync(CancellationToken ct = default)
     {
-        return await _repo.Query()
-            .Where(p => p.IsSeller && !p.IsSellerVerified)
-            .Select(p => new UnverifiedSellerDto
-            {
-                Id = p.Id,
-                UserId = p.UserId,
-                DisplayName = p.DisplayName,
-                Email = p.Email
-            })
-            .ToListAsync(ct)
-            .ConfigureAwait(false);
+        return await _userRepository.ListUnverifiedSellersAsync(ct).ConfigureAwait(false);
     }
 
     private static UserProfile CreateProfileFromClaims(Guid userId, ClaimsPrincipal principal)
@@ -144,7 +132,7 @@ public sealed class UserProfileService : IUserProfileService
 
         if (changed)
         {
-            await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
+            await _userRepository.UpdateAsync(profile, ct).ConfigureAwait(false);
         }
     }
 }

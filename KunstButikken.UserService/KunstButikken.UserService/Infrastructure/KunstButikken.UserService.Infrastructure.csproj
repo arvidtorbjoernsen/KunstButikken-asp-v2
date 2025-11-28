@@ -32,7 +32,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\KunstButikken.UserService.Domain.csproj" />
+    <ProjectReference Include="..\Application\KunstButikken.UserService.Application.csproj" />
     <ProjectReference Include="..\..\..\KunstButikken.IntegrationEvents.Contracts\KunstButikken.IntegrationEvents.Contracts.csproj" />
+    <ProjectReference Include="..\DevTools\KunstButikken.UserService.Shared.Dev.csproj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\KunstButikken.ServiceDefaults\KunstButikken.ServiceDefaults.csproj" />
@@ -43,14 +45,9 @@
   <ItemGroup>
     <!-- Include the UserService implementation files that live in the solution's Data/Services folders
          The Web project explicitly removes these files from its compilation so the class library
-         becomes the single owner of these implementation files. -->
-    <Compile Include="..\Data\**\*.cs" />
-    <Compile Include="..\Services\**\*.cs" />
+         becomes the single owner of these implementation files. Place shared types into the
+         Domain/Application projects or keep copies inside this Infrastructure folder. -->
     <Compile Include="..\Migrations\**\*.cs" />
     <Compile Include="..\Logging\**\*.cs" />
-    <!-- Include only the DTOs/helpers from Controllers that are used by services -->
-    <Compile Include="..\Controllers\DevRequests.cs" />
-    <Compile Include="..\Controllers\DevControllerHelpers.cs" />
-    <!-- Controllers are part of the Web project; do not include them here to avoid duplicate types -->
   </ItemGroup>
 </Project>

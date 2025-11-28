@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
-using KunstButikken.UserService.Controllers;
+using KunstButikken.UserService.Shared.Dev;
 
-namespace KunstButikken.UserService.Services;
+namespace KunstButikken.UserService.Infrastructure.Keycloak.Seeding;
 
 /// <summary>
 ///     Small wrapper to acquire admin token using an existing HttpClient. Keeps token-acquisition concerns isolated.

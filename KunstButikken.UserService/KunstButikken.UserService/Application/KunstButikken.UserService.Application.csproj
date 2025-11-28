@@ -11,5 +11,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <ProjectReference Include="..\Domain\KunstButikken.UserService.Domain.csproj" />
     <ProjectReference Include="..\..\..\KunstButikken.ServiceDefaults\KunstButikken.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\DevTools\KunstButikken.UserService.Shared.Dev.csproj" />
   </ItemGroup>
 </Project>

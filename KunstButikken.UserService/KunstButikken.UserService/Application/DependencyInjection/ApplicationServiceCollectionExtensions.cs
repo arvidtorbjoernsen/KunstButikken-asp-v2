@@ -14,6 +14,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<IUserProfileService, UserProfileService>();
         services.AddScoped<IAdminProfileService, AdminProfileService>();
         services.AddScoped<ISellerQueryService, SellerQueryService>();
+        services.AddScoped<IDevSeedService, DevSeedService>();
+        services.AddScoped<IKeycloakSyncService, KeycloakSyncApplicationService>();
         return services;
     }
 }
