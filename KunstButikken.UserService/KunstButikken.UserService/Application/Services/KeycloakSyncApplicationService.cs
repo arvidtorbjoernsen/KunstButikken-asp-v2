@@ -18,4 +18,3 @@ public sealed class KeycloakSyncApplicationService : IKeycloakSyncService
         return new SyncUsersResult { Allowed = true, Triggered = true };
     }
 }
-

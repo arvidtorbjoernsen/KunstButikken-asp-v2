@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using KunstButikken.UserService.Domain.Interfaces;
 using KunstButikken.UserService.Infrastructure.Persistence;
 using KunstButikken.UserService.Infrastructure.Repositories;
+using KunstButikken.UserService.Application.Interfaces;
+using KunstButikken.UserService.Infrastructure.Keycloak.Seeding;
+using KunstButikken.UserService.Infrastructure.Keycloak.Sync;
 
 namespace KunstButikken.UserService.Infrastructure.DependencyInjection;
 
@@ -26,6 +29,18 @@ public static class InfrastructureServiceCollectionExtensions
         {
             services.AddDbContext<UserDbContext>(options => options.UseInMemoryDatabase("users_inmemory"));
         }
+
+        services.AddHttpClient();
+        services.AddSingleton<KeycloakUserProcessor>();
+        services.AddSingleton<IKeycloakAdminClient, KeycloakAdminClient>();
+        services.AddSingleton<KeycloakSyncService>();
+        services.AddSingleton<IKeycloakSyncRunner>(sp => sp.GetRequiredService<KeycloakSyncService>());
+        services.AddSingleton<IHostedService>(sp => sp.GetRequiredService<KeycloakSyncService>());
+        services.AddScoped<IDevKeycloakSeeder, KeycloakSeederService>();
+        services.AddScoped<IDbMigrationRunner, DbMigrationRunner>();
+        services.AddScoped<IKeycloakSeeder, KeycloakSeeder>();
+        services.AddHostedService<DbMigrationHostedService>();
+        services.AddHostedService<KeycloakSeedingHostedService>();
 
         services.AddScoped<IUserRepository, UserRepository>();
         return services;

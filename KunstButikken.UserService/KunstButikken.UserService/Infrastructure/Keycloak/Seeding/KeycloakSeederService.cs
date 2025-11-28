@@ -12,30 +12,21 @@ public sealed class KeycloakSeederService : IDevKeycloakSeeder
 {
     private readonly IConfiguration _cfg;
     private readonly IWebHostEnvironment _env;
-    private readonly HttpClient _httpClient;
     private readonly ILogger<KeycloakSeederService> _logger;
     private readonly KeycloakUserProcessor _processor;
+    private readonly IHttpClientFactory _httpFactory;
 
-    // Preferred: receive an HttpClient via DI (AddHttpClient<KeycloakSeederService>) so the client
-    // lifetime is managed by the framework and static analyzers won't flag disposal issues.
-    public KeycloakSeederService(IConfiguration cfg, HttpClient httpClient, IWebHostEnvironment env,
+    public KeycloakSeederService(IConfiguration cfg, IHttpClientFactory httpFactory, IWebHostEnvironment env,
         ILogger<KeycloakSeederService> logger, KeycloakUserProcessor processor)
     {
         _cfg = cfg ?? throw new ArgumentNullException(nameof(cfg));
-        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _env = env ?? throw new ArgumentNullException(nameof(env));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _processor = processor ?? throw new ArgumentNullException(nameof(processor));
+        _httpFactory = httpFactory ?? throw new ArgumentNullException(nameof(httpFactory));
     }
 
-    // Back-compat constructor: keep factory-based construction but prefer DI HttpClient.
-    public KeycloakSeederService(IConfiguration cfg, IHttpClientFactory httpFactory, IWebHostEnvironment env,
-        ILogger<KeycloakSeederService> logger, KeycloakUserProcessor processor)
-        : this(cfg, httpFactory?.CreateClient() ?? throw new ArgumentNullException(nameof(httpFactory)), env, logger,
-            processor)
-    {
-        // Intentionally empty - delegates to primary ctor
-    }
+    private HttpClient CreateClient() => _httpFactory.CreateClient(nameof(KeycloakSeederService));
 
     public bool IsAllowed() => _env.IsDevelopment() ||
                                string.Equals(_cfg["ALLOW_DEV_SEED"], "true", StringComparison.OrdinalIgnoreCase);
@@ -56,7 +47,7 @@ public sealed class KeycloakSeederService : IDevKeycloakSeeder
             return result;
         }
 
-        var tokenService = new KeycloakTokenService(_httpClient);
+        var tokenService = new KeycloakTokenService(CreateClient());
         var adminToken = await tokenService.AcquireTokenAsync(adminConfig).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(adminToken))
         {
@@ -71,7 +62,7 @@ public sealed class KeycloakSeederService : IDevKeycloakSeeder
 
         var adminApiBaseUri =
             new Uri(DevControllerHelpers.Combine(adminConfig.AdminBase, $"/admin/realms/{adminConfig.Realm}"));
-        var manager = new KeycloakUserManager(adminApiBaseUri, _httpClient, adminToken, _logger);
+        var manager = new KeycloakUserManager(adminApiBaseUri, CreateClient(), adminToken, _logger);
 
         // Delegate per-user processing to a small collaborator to keep this method concise/testable.
         await _processor.ProcessUsersAsync(manager, desired, result, ct).ConfigureAwait(false);

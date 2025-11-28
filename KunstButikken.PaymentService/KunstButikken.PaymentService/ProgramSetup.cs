@@ -41,8 +41,10 @@ public static class ProgramSetup
 
         // Add common Aspire defaults (health checks, service discovery, OpenTelemetry)
         builder.AddServiceDefaults();
+        builder.AddRabbitMQClient("rabbitmq");
         builder.Services.AddEnvLoader();
         builder.Services.AddApplication(builder.Configuration);
+        builder.Services.AddInfrastructure(builder.Configuration);
 
         // Authentication (Keycloak via Aspire helper)
         var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
