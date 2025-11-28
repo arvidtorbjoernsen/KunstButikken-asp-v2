@@ -22,7 +22,7 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("KunstButikken.AdminService.Models.AdminLog", b =>
+            modelBuilder.Entity("KunstButikken.AdminService.Domain.Models.AdminLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()

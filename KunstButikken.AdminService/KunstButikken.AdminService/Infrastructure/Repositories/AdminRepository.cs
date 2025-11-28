@@ -1,5 +1,5 @@
 using KunstButikken.AdminService.Domain.Interfaces;
-using KunstButikken.AdminService.Models;
+using KunstButikken.AdminService.Domain.Models;
 using KunstButikken.AdminService.Infrastructure.Data;
 
 namespace KunstButikken.AdminService.Infrastructure.Repositories;

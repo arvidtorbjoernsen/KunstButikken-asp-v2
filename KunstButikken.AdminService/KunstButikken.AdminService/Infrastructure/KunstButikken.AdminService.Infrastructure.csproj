@@ -18,5 +18,7 @@
 <!--      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />-->
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
   </ItemGroup>
-
+  <ItemGroup>
+    <InternalsVisibleTo Include="KunstButikken.AdminService" />
+  </ItemGroup>
 </Project>

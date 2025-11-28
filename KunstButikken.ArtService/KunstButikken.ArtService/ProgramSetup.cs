@@ -4,13 +4,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Aspire.Hosting.Azure;
 using KunstButikken.ArtService.Application.DependencyInjection;
-using KunstButikken.ArtService.Domain.Interfaces;
 using KunstButikken.ArtService.Infrastructure.DependencyInjection;
-using KunstButikken.ArtService.Infrastructure.Storage;
 using KunstButikken.ArtService.IntegrationEvents;
-using KunstButikken.ArtService.Services;
-using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using KunstButikken.ServiceDefaults;
+using KunstButikken.IntegrationEvents.Contracts.Abstractions;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using Scalar.Aspire;
@@ -94,8 +91,6 @@ public static class ProgramSetup
         builder.Services.AddApplication();
 
         builder.Services.AddControllers();
-        builder.Services.AddSingleton<IArtSeeder, ArtSeeder>();
-        builder.Services.AddHostedService<ArtSeedingHostedService>();
     }
 
     public static Task ConfigureApp(WebApplication app)

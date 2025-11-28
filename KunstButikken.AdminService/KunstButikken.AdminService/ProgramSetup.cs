@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using KunstButikken.AdminService.Application;
+using KunstButikken.AdminService.Infrastructure;
 using KunstButikken.AdminService.Infrastructure.Data;
 using KunstButikken.AdminService.IntegrationEvents;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
@@ -36,8 +38,6 @@ public static class ProgramSetup
 
         // Register injectable .env loader for tests/DI
         builder.Services.AddEnvLoader();
-
-        // Register system date/time provider
         builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 
         // Authentication (Keycloak via Aspire helper)
@@ -95,41 +95,9 @@ public static class ProgramSetup
                     .AllowCredentials());
         });
 
-        // EF Core Postgres for AdminDb (Infrastructure DbContext)
-        builder.Services.AddDbContext<AdminDbContext>(options =>
-        {
-            var cs = builder.Configuration.GetConnectionString("Default")
-                     ?? builder.Configuration.GetConnectionString("admindb")
-                     ?? builder.Configuration["ConnectionStrings:Default"]
-                     ?? builder.Configuration["ConnectionStrings:admindb"];
+        builder.Services.AddAdminInfrastructure(builder.Configuration, strictMigrations);
+        builder.Services.AddAdminApplication();
 
-            // In tests we may register a different provider; guard with string.IsNullOrWhiteSpace
-            if (!string.IsNullOrWhiteSpace(cs) && !cs.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
-            {
-                // Ensure migrations are stored in the Infrastructure assembly
-                options.UseNpgsql(cs, npgsql => npgsql.EnableRetryOnFailure()
-                    .MigrationsAssembly(typeof(AdminDbContext).Assembly.FullName));
-            }
-            else
-            {
-                // Fallback: InMemory for tests or missing connection string
-                options.UseInMemoryDatabase("admin_inmemory_db");
-            }
-
-            options.ConfigureWarnings(w =>
-            {
-                if (strictMigrations)
-                {
-                    w.Log(RelationalEventId.PendingModelChangesWarning);
-                }
-                else
-                {
-                    w.Ignore(RelationalEventId.PendingModelChangesWarning);
-                }
-            });
-        });
-
-        // Add services to the container.
         builder.Services.AddControllers();
     }
 

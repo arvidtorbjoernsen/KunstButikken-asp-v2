@@ -1,6 +1,5 @@
 using KunstButikken.AdminService.Application.Interfaces;
-using KunstButikken.AdminService.Models;
-
+using KunstButikken.AdminService.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

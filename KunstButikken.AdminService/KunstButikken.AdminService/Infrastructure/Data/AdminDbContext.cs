@@ -1,4 +1,4 @@
-using KunstButikken.AdminService.Models;
+using KunstButikken.AdminService.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace KunstButikken.AdminService.Infrastructure.Data;

@@ -1,6 +1,6 @@
 using KunstButikken.AdminService.Application.Interfaces;
 using KunstButikken.AdminService.Domain.Interfaces;
-using KunstButikken.AdminService.Models;
+using KunstButikken.AdminService.Domain.Models;
 using KunstButikken.ServiceDefaults;
 
 namespace KunstButikken.AdminService.Application.Services;
@@ -59,4 +59,3 @@ public class AdminService : IAdminService
         return Task.FromResult<IEnumerable<AdminLog>>(q);
     }
 }
-

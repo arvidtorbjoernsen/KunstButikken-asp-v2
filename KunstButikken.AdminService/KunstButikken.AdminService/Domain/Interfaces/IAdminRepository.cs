@@ -1,4 +1,4 @@
-using KunstButikken.AdminService.Models;
+using KunstButikken.AdminService.Domain.Models;
 
 namespace KunstButikken.AdminService.Domain.Interfaces;
 
@@ -10,4 +10,3 @@ public interface IAdminRepository
     Task RemoveAsync(AdminLog log, CancellationToken ct = default);
     Task SaveChangesAsync(CancellationToken ct = default);
 }
-

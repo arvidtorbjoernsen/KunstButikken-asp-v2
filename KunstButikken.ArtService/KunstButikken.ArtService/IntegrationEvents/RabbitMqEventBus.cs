@@ -54,12 +54,12 @@ internal sealed class RabbitMqEventBus : IEventBus, IDisposable
 
         _rabbitMqConnection = rabbitMqConnection;
         _logger = logger;
-        _settings = options.Value;
+        _settings = options.Value ?? throw new InvalidOperationException("RabbitMQ settings are required.");
         _subscriptionManager = subscriptionManager;
         _serviceProvider = serviceProvider;
 
         // Configure retry count from settings (default to 3)
-        _retryCount = Math.Max(0, _settings?.RetryCount ?? 3);
+        _retryCount = Math.Max(0, _settings.RetryCount <= 0 ? 3 : _settings.RetryCount);
     }
 
     // Implement Dispose pattern
