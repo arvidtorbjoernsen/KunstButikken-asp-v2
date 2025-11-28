@@ -1,8 +1,10 @@
+namespace KunstButikken.UserService.Infrastructure.Repositories;
+
+using KunstButikken.UserService.Domain.Interfaces;
 using KunstButikken.UserService.Models;
+using KunstButikken.UserService.Data;
 
-namespace KunstButikken.UserService.Data;
-
-public class UserRepository : IUserRepository
+public sealed class UserRepository : IUserRepository
 {
     private readonly UserDbContext _db;
 
@@ -22,3 +24,4 @@ public class UserRepository : IUserRepository
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) =>
         _db.SaveChangesAsync(cancellationToken);
 }
+

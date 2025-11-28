@@ -76,7 +76,6 @@ public static class ProgramSetup
         builder.Services.AddControllers();
         builder.Services.AddHttpClient();
         builder.Services.AddSignalR(options => { options.EnableDetailedErrors = true; });
-        builder.Services.AddSingleton<IAuctionSeeder, AuctionSeeder>();
         builder.Services.AddHostedService<AuctionSeedingHostedService>();
     }
 
@@ -141,8 +140,8 @@ public static class ProgramSetup
                 {
                     try
                     {
-                        m.Invoke(null, new object[] { app, null });
-                        Console.WriteLine("[AuctionService] Invoked MapScalarApiReference(WebApplication, options) with null options");
+                        m.Invoke(null, new object[] { app, new NoOpScalarOptions() });
+                        Console.WriteLine("[AuctionService] Invoked MapScalarApiReference(WebApplication, options) with synthetic options");
                         return;
                     }
                     catch { /* ignore */ }
@@ -155,4 +154,6 @@ public static class ProgramSetup
             Console.WriteLine($"[AuctionService] Error invoking MapScalarApiReference: {ex.Message}");
         }
     }
+
+    private sealed class NoOpScalarOptions { }
 }
