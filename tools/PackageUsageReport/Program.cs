@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.MSBuild;
 
 MSBuildLocator.RegisterDefaults();
 
-var repoRoot = args.FirstOrDefault() ?? Directory.GetCurrentDirectory();
+var repoRoot = args.FirstOrDefault(a => !a.StartsWith("--", StringComparison.OrdinalIgnoreCase)) ?? Directory.GetCurrentDirectory();
 var solutionPath = Path.Combine(repoRoot, "KunstButikken-asp.sln");
 
 if (!File.Exists(solutionPath))
@@ -16,6 +16,8 @@ if (!File.Exists(solutionPath))
     Console.Error.WriteLine($"Solution not found at {solutionPath}");
     return;
 }
+
+var applyMissingReferences = args.Any(a => string.Equals(a, "--apply-missing", StringComparison.OrdinalIgnoreCase));
 
 using var workspace = MSBuildWorkspace.Create();
 var solution = await workspace.OpenSolutionAsync(solutionPath);
@@ -104,12 +106,30 @@ await Parallel.ForEachAsync(solution.Projects, parallelOptions, async (project, 
 });
 
 var summaryPath = Path.Combine(repoRoot, "package-usage-report.md");
+var summaryJsonPath = Path.Combine(repoRoot, "package-usage-missing.json");
+
+if (applyMissingReferences)
+{
+    ApplyMissingReferences(report);
+    // Reload package map to capture newly added references for the final report
+    projectPackageMap = await LoadPackageReferencesAsync(repoRoot, centralVersions);
+}
+
+var jsonPayload = JsonSerializer.Serialize(report.Select(r => new
+{
+    r.ProjectName,
+    r.ProjectPath,
+    MissingPackages = r.MissingDirectPackages.Select(p => p.Id).ToArray()
+}), new JsonSerializerOptions { WriteIndented = true });
+await File.WriteAllTextAsync(summaryJsonPath, jsonPayload);
+
 await using (var writer = new StreamWriter(summaryPath))
 {
     foreach (var entry in report.OrderBy(r => r.ProjectName, StringComparer.OrdinalIgnoreCase))
     {
-        await writer.WriteLineAsync($"Project name: {entry.ProjectName}");
+        await writer.WriteLineAsync($"## Project name: {entry.ProjectName}");
         await writer.WriteLineAsync();
+
         await writer.WriteLineAsync("Used (direct):");
         if (entry.DirectUsedPackages.Count == 0)
         {
@@ -180,6 +200,7 @@ await using (var writer = new StreamWriter(summaryPath))
 }
 
 Console.WriteLine($"Report written to {summaryPath}");
+Console.WriteLine($"Missing summary written to {summaryJsonPath}");
 
 static PackageUsage? InferPackageUsage(string referenceDisplay)
 {
@@ -266,6 +287,52 @@ static FrameworkFilter LoadFrameworkFilter(string root)
     catch
     {
         return FrameworkFilter.Empty;
+    }
+}
+
+static void ApplyMissingReferences(IEnumerable<ProjectReport> entries)
+{
+    foreach (var entry in entries.Where(e => e.MissingDirectPackages.Count > 0))
+    {
+        AddPackagesToProject(entry.ProjectPath, entry.MissingDirectPackages);
+    }
+}
+
+static void AddPackagesToProject(string projectPath, IEnumerable<PackageInfo> packages)
+{
+    var doc = XDocument.Load(projectPath);
+    var ns = doc.Root?.Name.Namespace ?? XNamespace.None;
+    var existing = new HashSet<string>(doc.Descendants(ns + "PackageReference")
+        .Select(pr => pr.Attribute("Include")?.Value)
+        .Where(id => !string.IsNullOrWhiteSpace(id))
+        .Cast<string>(), StringComparer.OrdinalIgnoreCase);
+
+    var targetGroup = doc.Descendants(ns + "ItemGroup")
+        .FirstOrDefault(g => g.Elements(ns + "PackageReference").Any());
+
+    if (targetGroup is null)
+    {
+        targetGroup = new XElement(ns + "ItemGroup");
+        doc.Root?.Add(targetGroup);
+    }
+
+    var addedAny = false;
+    foreach (var pkg in packages)
+    {
+        if (existing.Contains(pkg.Id))
+        {
+            continue;
+        }
+
+        targetGroup.Add(new XElement(ns + "PackageReference", new XAttribute("Include", pkg.Id)));
+        existing.Add(pkg.Id);
+        addedAny = true;
+        Console.WriteLine($"Added {pkg.Id} to {projectPath}");
+    }
+
+    if (addedAny)
+    {
+        doc.Save(projectPath);
     }
 }
 

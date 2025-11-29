@@ -1,11 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Domain\KunstButikken.AdminService.Domain.csproj" />
     <ProjectReference Include="..\..\..\KunstButikken.IntegrationEvents.Contracts\KunstButikken.IntegrationEvents.Contracts.csproj" />
@@ -14,9 +13,21 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
-      <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
-<!--      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />-->
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <!--      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />-->
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="aspire.keycloak.authentication" />
+    <PackageReference Include="aspire.rabbitmq.client" />
+    <PackageReference Include="dotnetenv" />
+    <PackageReference Include="microsoft.entityframeworkcore.relational" />
+    <PackageReference Include="microsoft.extensions.http.resilience" />
+    <PackageReference Include="microsoft.extensions.servicediscovery" />
+    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
+    <PackageReference Include="opentelemetry.extensions.hosting" />
+    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
+    <PackageReference Include="opentelemetry.instrumentation.http" />
+    <PackageReference Include="opentelemetry.instrumentation.runtime" />
+    <PackageReference Include="rabbitmq.client" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="KunstButikken.AdminService" />

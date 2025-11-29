@@ -1,27 +1,44 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="aspire.hosting" />
+    <PackageReference Include="aspire.hosting.azure" />
+    <PackageReference Include="aspire.hosting.azure.storage" />
+    <PackageReference Include="aspire.hosting.keycloak" />
+    <PackageReference Include="aspire.hosting.nodejs" />
+    <PackageReference Include="aspire.hosting.postgresql" />
+    <PackageReference Include="aspire.hosting.rabbitmq" />
+    <PackageReference Include="aspire.keycloak.authentication" />
+    <PackageReference Include="azure.storage.blobs" />
+    <PackageReference Include="dotnetenv" />
+    <PackageReference Include="microsoft.extensions.http.resilience" />
+    <PackageReference Include="microsoft.extensions.servicediscovery" />
+    <PackageReference Include="modelcontextprotocol.aspnetcore" />
+    <PackageReference Include="modelcontextprotocol.core" />
+    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
+    <PackageReference Include="opentelemetry.extensions.hosting" />
+    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
+    <PackageReference Include="opentelemetry.instrumentation.http" />
+    <PackageReference Include="opentelemetry.instrumentation.runtime" />
+    <PackageReference Include="rabbitmq.client" />
+    <PackageReference Include="scalar.aspire" />
   </ItemGroup>
-
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\KunstButikken.AppHost\KunstButikken.AppHost.csproj" />
     <ProjectReference Include="..\..\KunstButikken.ServiceDefaults\KunstButikken.ServiceDefaults.csproj" />
   </ItemGroup>
-
 </Project>

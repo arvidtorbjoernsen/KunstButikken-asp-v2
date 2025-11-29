@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -14,5 +15,20 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="aspire.keycloak.authentication" />
+    <PackageReference Include="aspire.npgsql.entityframeworkcore.postgresql" />
+    <PackageReference Include="aspire.rabbitmq.client" />
+    <PackageReference Include="azure.storage.blobs" />
+    <PackageReference Include="dotnetenv" />
+    <PackageReference Include="microsoft.entityframeworkcore" />
+    <PackageReference Include="microsoft.entityframeworkcore.inmemory" />
+    <PackageReference Include="microsoft.entityframeworkcore.relational" />
+    <PackageReference Include="microsoft.extensions.servicediscovery" />
+    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
+    <PackageReference Include="opentelemetry.extensions.hosting" />
+    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
+    <PackageReference Include="opentelemetry.instrumentation.http" />
+    <PackageReference Include="opentelemetry.instrumentation.runtime" />
+    <PackageReference Include="rabbitmq.client" />
   </ItemGroup>
 </Project>

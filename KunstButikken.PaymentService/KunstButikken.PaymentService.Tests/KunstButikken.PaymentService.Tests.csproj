@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -10,6 +11,25 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="aspire.hosting" />
+    <PackageReference Include="aspire.keycloak.authentication" />
+    <PackageReference Include="aspire.npgsql.entityframeworkcore.postgresql" />
+    <PackageReference Include="aspire.rabbitmq.client" />
+    <PackageReference Include="dotnetenv" />
+    <PackageReference Include="microsoft.entityframeworkcore" />
+    <PackageReference Include="microsoft.entityframeworkcore.inmemory" />
+    <PackageReference Include="microsoft.entityframeworkcore.relational" />
+    <PackageReference Include="microsoft.extensions.http.resilience" />
+    <PackageReference Include="microsoft.extensions.servicediscovery" />
+    <PackageReference Include="microsoft.openapi" />
+    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
+    <PackageReference Include="opentelemetry.extensions.hosting" />
+    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
+    <PackageReference Include="opentelemetry.instrumentation.http" />
+    <PackageReference Include="opentelemetry.instrumentation.runtime" />
+    <PackageReference Include="rabbitmq.client" />
+    <PackageReference Include="scalar.aspire" />
+    <PackageReference Include="stripe.net" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KunstButikken.PaymentService\KunstButikken.PaymentService.csproj" />

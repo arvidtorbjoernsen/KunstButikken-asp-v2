@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -10,6 +11,21 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="aspire.hosting" />
+    <PackageReference Include="aspire.hosting.yarp" />
+    <PackageReference Include="aspire.keycloak.authentication" />
+    <PackageReference Include="aspire.rabbitmq.client" />
+    <PackageReference Include="dotnetenv" />
+    <PackageReference Include="microsoft.extensions.http.resilience" />
+    <PackageReference Include="microsoft.extensions.servicediscovery" />
+    <PackageReference Include="microsoft.openapi" />
+    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
+    <PackageReference Include="opentelemetry.extensions.hosting" />
+    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
+    <PackageReference Include="opentelemetry.instrumentation.http" />
+    <PackageReference Include="opentelemetry.instrumentation.runtime" />
+    <PackageReference Include="rabbitmq.client" />
+    <PackageReference Include="scalar.aspire" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KunstButikken.AuthGateway\KunstButikken.AuthGateway.csproj" />

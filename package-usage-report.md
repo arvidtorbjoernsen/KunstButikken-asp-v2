@@ -1,22 +1,29 @@
-Project name: KunstButikken.AdminService
+## Project name: KunstButikken.AdminService
 
 Used (direct):
+- aspire.hosting (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Used (transitive):
-- aspire.hosting (13.0.0)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - aspnetcore.healthchecks.uris (9.0.0)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -40,7 +47,6 @@ Used (transitive):
 - microsoft.codeanalysis.workspaces.common (4.14.0)
 - microsoft.codeanalysis.workspaces.msbuild (4.14.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
@@ -49,7 +55,6 @@ Used (transitive):
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -71,11 +76,6 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
@@ -85,39 +85,47 @@ Used (transitive):
 - yamldotnet (16.3.0)
 
 In csproj:
+- aspire.hosting (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Should add to csproj:
-- aspire.hosting (13.0.0)
+- None
+
+
+## Project name: KunstButikken.AdminService.Application
+
+Used (direct):
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
+- aspire.rabbitmq.client (13.0.1)
 - dotnetenv (3.1.1)
-- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
-
-
-Project name: KunstButikken.AdminService.Application
-
-Used (direct):
-- None
+- rabbitmq.client (7.2.0)
 
 Used (transitive):
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
@@ -125,9 +133,7 @@ Used (transitive):
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -140,21 +146,12 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
 
 In csproj:
-- None
-
-Should add to csproj:
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.rabbitmq.client (13.0.1)
 - dotnetenv (3.1.1)
@@ -167,8 +164,11 @@ Should add to csproj:
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
 
+Should add to csproj:
+- None
 
-Project name: KunstButikken.AdminService.Domain
+
+## Project name: KunstButikken.AdminService.Domain
 
 Used (direct):
 - None
@@ -183,19 +183,28 @@ Should add to csproj:
 - None
 
 
-Project name: KunstButikken.AdminService.Infrastructure
+## Project name: KunstButikken.AdminService.Infrastructure
 
 Used (direct):
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
+- rabbitmq.client (7.2.0)
 
 Used (transitive):
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
-- dotnetenv (3.1.1)
 - humanizer.core (2.14.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
@@ -205,7 +214,6 @@ Used (transitive):
 - microsoft.codeanalysis.workspaces.common (4.14.0)
 - microsoft.codeanalysis.workspaces.msbuild (4.14.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
@@ -213,9 +221,7 @@ Used (transitive):
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -234,27 +240,19 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
 
 In csproj:
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
-
-Should add to csproj:
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- aspire.rabbitmq.client (13.0.1)
-- dotnetenv (3.1.1)
 - microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
@@ -265,35 +263,44 @@ Should add to csproj:
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
 
+Should add to csproj:
+- None
 
-Project name: KunstButikken.AdminService.Tests
+
+## Project name: KunstButikken.AdminService.Tests
 
 Used (direct):
-- Moq (4.20.72)
-
-Used (transitive):
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
+- microsoft.entityframeworkcore (10.0.0)
+- microsoft.entityframeworkcore.inmemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
+- Moq (4.20.72)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
+- rabbitmq.client (7.2.0)
+
+Used (transitive):
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - castle.core (5.1.1)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.codecoverage (18.0.1)
-- microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.inmemory (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -312,15 +319,9 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
 - xunit.abstractions (2.0.3)
 - xunit.assert (2.9.3)
@@ -328,48 +329,58 @@ Used (transitive):
 - xunit.extensibility.execution (2.9.3)
 
 In csproj:
-- coverlet.collector (6.0.4)
-- Microsoft.NET.Test.Sdk (18.0.1)
-- Moq (4.20.72)
-- xunit (2.9.3)
-- xunit.runner.visualstudio (3.1.5)
-
-Should add to csproj:
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
+- coverlet.collector (6.0.4)
 - dotnetenv (3.1.1)
 - microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.inmemory (10.0.0)
 - microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
+- Microsoft.NET.Test.Sdk (18.0.1)
+- Moq (4.20.72)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
+- xunit (2.9.3)
+- xunit.runner.visualstudio (3.1.5)
+
+Should add to csproj:
+- None
 
 
-Project name: KunstButikken.AppHost
+## Project name: KunstButikken.AppHost
 
 Used (direct):
+- Aspire.Hosting (13.0.1)
 - Aspire.Hosting.Azure (13.0.1)
 - Aspire.Hosting.Azure.Storage (13.0.1)
 - Aspire.Hosting.Keycloak (13.0.1-preview.1.25575.3)
 - Aspire.Hosting.NodeJS (9.5.2)
 - Aspire.Hosting.PostgreSQL (13.0.1)
 - Aspire.Hosting.RabbitMQ (13.0.1)
-- Aspire.Hosting.Yarp (13.0.1)
+- Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
+- Azure.Storage.Blobs (12.26.0)
+- DotNetEnv (3.1.1)
+- Microsoft.Extensions.Http.Resilience (10.0.0)
+- Microsoft.Extensions.ServiceDiscovery (10.0.0)
 - ModelContextProtocol.AspNetCore (0.4.1-preview.1)
 - ModelContextProtocol.Core (0.4.1-preview.1)
+- OpenTelemetry.Exporter.OpenTelemetryProtocol (1.14.0)
+- OpenTelemetry.Extensions.Hosting (1.14.0)
+- OpenTelemetry.Instrumentation.AspNetCore (1.14.0)
+- OpenTelemetry.Instrumentation.Http (1.14.0)
+- OpenTelemetry.Instrumentation.Runtime (1.14.0)
+- RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Used (transitive):
-- aspire.hosting (13.0.1)
 - aspire.hosting.apphost (13.0.1)
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspnetcore.healthchecks.azure.storage.blobs (9.0.0)
 - aspnetcore.healthchecks.azure.storage.queues (9.0.0)
 - aspnetcore.healthchecks.npgsql (9.0.0)
@@ -385,10 +396,8 @@ Used (transitive):
 - azure.resourcemanager.keyvault (1.3.3)
 - azure.resourcemanager.resources (1.11.1)
 - azure.security.keyvault.secrets (4.8.0)
-- azure.storage.blobs (12.26.0)
 - azure.storage.common (12.25.0)
 - azure.storage.queues (12.24.0)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -413,9 +422,7 @@ Used (transitive):
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -436,64 +443,68 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.1.2)
 - semver (3.0.0)
 - sprache (2.3.1)
 - streamjsonrpc (2.22.23)
 - yamldotnet (16.3.0)
-- yarp.reverseproxy (2.3.0)
 
 In csproj:
+- Aspire.Hosting (13.0.1)
 - Aspire.Hosting.Azure (13.0.1)
 - Aspire.Hosting.Azure.Storage (13.0.1)
 - Aspire.Hosting.Keycloak (13.0.1-preview.1.25575.3)
 - Aspire.Hosting.NodeJS (9.5.2)
 - Aspire.Hosting.PostgreSQL (13.0.1)
 - Aspire.Hosting.RabbitMQ (13.0.1)
-- Aspire.Hosting.Yarp (13.0.1)
+- Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
+- Azure.Storage.Blobs (12.26.0)
+- DotNetEnv (3.1.1)
+- Microsoft.Extensions.Http.Resilience (10.0.0)
+- Microsoft.Extensions.ServiceDiscovery (10.0.0)
 - ModelContextProtocol.AspNetCore (0.4.1-preview.1)
 - ModelContextProtocol.Core (0.4.1-preview.1)
+- OpenTelemetry.Exporter.OpenTelemetryProtocol (1.14.0)
+- OpenTelemetry.Extensions.Hosting (1.14.0)
+- OpenTelemetry.Instrumentation.AspNetCore (1.14.0)
+- OpenTelemetry.Instrumentation.Http (1.14.0)
+- OpenTelemetry.Instrumentation.Runtime (1.14.0)
+- RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Should add to csproj:
-- aspire.hosting (13.0.1)
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- azure.storage.blobs (12.26.0)
-- dotnetenv (3.1.1)
-- microsoft.extensions.http.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
-- rabbitmq.client (7.1.2)
-
-
-Project name: KunstButikken.AppHost.Tests
-
-Used (direct):
 - None
 
-Used (transitive):
+
+## Project name: KunstButikken.AppHost.Tests
+
+Used (direct):
 - aspire.hosting (13.0.1)
-- aspire.hosting.apphost (13.0.1)
 - aspire.hosting.azure (13.0.1)
 - aspire.hosting.azure.storage (13.0.1)
 - aspire.hosting.keycloak (13.0.1-preview.1.25575.3)
 - aspire.hosting.nodejs (9.5.2)
 - aspire.hosting.postgresql (13.0.1)
 - aspire.hosting.rabbitmq (13.0.1)
-- aspire.hosting.yarp (13.0.1)
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
+- azure.storage.blobs (12.26.0)
+- dotnetenv (3.1.1)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
+- modelcontextprotocol.aspnetcore (0.4.1-preview.1)
+- modelcontextprotocol.core (0.4.1-preview.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
+- rabbitmq.client (7.2.0)
+- scalar.aspire (0.7.4)
+
+Used (transitive):
+- aspire.hosting.apphost (13.0.1)
 - aspnetcore.healthchecks.azure.storage.blobs (9.0.0)
 - aspnetcore.healthchecks.azure.storage.queues (9.0.0)
 - aspnetcore.healthchecks.npgsql (9.0.0)
@@ -509,10 +520,8 @@ Used (transitive):
 - azure.resourcemanager.keyvault (1.3.3)
 - azure.resourcemanager.resources (1.11.1)
 - azure.security.keyvault.secrets (4.8.0)
-- azure.storage.blobs (12.26.0)
 - azure.storage.common (12.25.0)
 - azure.storage.queues (12.24.0)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -538,9 +547,7 @@ Used (transitive):
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -556,24 +563,15 @@ Used (transitive):
 - microsoft.visualstudio.threading.only (17.13.61)
 - microsoft.visualstudio.validation (17.8.8)
 - modelcontextprotocol (0.4.1-preview.1)
-- modelcontextprotocol.aspnetcore (0.4.1-preview.1)
-- modelcontextprotocol.core (0.4.1-preview.1)
 - nerdbank.streams (2.12.87)
 - newtonsoft.json (13.0.4)
 - npgsql (8.0.3)
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.1.2)
-- scalar.aspire (0.7.4)
 - semver (3.0.0)
 - sprache (2.3.1)
 - streamjsonrpc (2.22.23)
@@ -582,16 +580,8 @@ Used (transitive):
 - xunit.extensibility.core (2.9.3)
 - xunit.extensibility.execution (2.9.3)
 - yamldotnet (16.3.0)
-- yarp.reverseproxy (2.3.0)
 
 In csproj:
-- coverlet.collector (6.0.4)
-- Microsoft.Extensions.DependencyInjection (10.0.0)
-- Microsoft.NET.Test.Sdk (18.0.1)
-- xunit (2.9.3)
-- xunit.runner.visualstudio (3.1.5)
-
-Should add to csproj:
 - aspire.hosting (13.0.1)
 - aspire.hosting.azure (13.0.1)
 - aspire.hosting.azure.storage (13.0.1)
@@ -599,12 +589,14 @@ Should add to csproj:
 - aspire.hosting.nodejs (9.5.2)
 - aspire.hosting.postgresql (13.0.1)
 - aspire.hosting.rabbitmq (13.0.1)
-- aspire.hosting.yarp (13.0.1)
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - azure.storage.blobs (12.26.0)
+- coverlet.collector (6.0.4)
 - dotnetenv (3.1.1)
+- Microsoft.Extensions.DependencyInjection (10.0.0)
 - microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
+- Microsoft.NET.Test.Sdk (18.0.1)
 - modelcontextprotocol.aspnetcore (0.4.1-preview.1)
 - modelcontextprotocol.core (0.4.1-preview.1)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
@@ -612,33 +604,48 @@ Should add to csproj:
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
-- rabbitmq.client (7.1.2)
+- rabbitmq.client (7.2.0)
 - scalar.aspire (0.7.4)
+- xunit (2.9.3)
+- xunit.runner.visualstudio (3.1.5)
+
+Should add to csproj:
+- None
 
 
-Project name: KunstButikken.ArtService
+## Project name: KunstButikken.ArtService
 
 Used (direct):
 - Aspire.Azure.Storage.Blobs (13.0.1)
+- aspire.hosting (13.0.1)
 - Aspire.Hosting.Azure (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
+- aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- azure.storage.blobs (12.26.0)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.azure (1.13.1)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Used (transitive):
-- aspire.hosting (13.0.1)
-- aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspnetcore.healthchecks.azure.storage.blobs (9.0.0)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - aspnetcore.healthchecks.uris (9.0.0)
-- azure.core (1.49.0)
-- azure.identity (1.17.0)
+- azure.core (1.50.0)
+- azure.identity (1.17.1)
 - azure.provisioning (1.3.0)
 - azure.provisioning.keyvault (1.1.0)
 - azure.resourcemanager (1.13.2)
@@ -646,9 +653,7 @@ Used (transitive):
 - azure.resourcemanager.keyvault (1.3.3)
 - azure.resourcemanager.resources (1.11.1)
 - azure.security.keyvault.secrets (4.8.0)
-- azure.storage.blobs (12.26.0)
 - azure.storage.common (12.25.0)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -673,9 +678,7 @@ Used (transitive):
 - microsoft.codeanalysis.workspaces.common (4.14.0)
 - microsoft.codeanalysis.workspaces.msbuild (4.14.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
-- microsoft.extensions.azure (1.13.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.dependencymodel (10.0.0)
@@ -683,13 +686,12 @@ Used (transitive):
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
-- microsoft.identity.client (4.76.0)
-- microsoft.identity.client.extensions.msal (4.76.0)
-- microsoft.identitymodel.abstractions (8.0.1)
+- microsoft.identity.client (4.78.0)
+- microsoft.identity.client.extensions.msal (4.78.0)
+- microsoft.identitymodel.abstractions (8.14.0)
 - microsoft.identitymodel.jsonwebtokens (8.0.1)
 - microsoft.identitymodel.logging (8.0.1)
 - microsoft.identitymodel.protocols (8.0.1)
@@ -707,11 +709,6 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
@@ -722,53 +719,61 @@ Used (transitive):
 
 In csproj:
 - Aspire.Azure.Storage.Blobs (13.0.1)
+- aspire.hosting (13.0.1)
 - Aspire.Hosting.Azure (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
+- aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- azure.storage.blobs (12.26.0)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.azure (1.13.1)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Should add to csproj:
-- aspire.hosting (13.0.1)
+- None
+
+
+## Project name: KunstButikken.ArtService.Application
+
+Used (direct):
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
 - azure.storage.blobs (12.26.0)
 - dotnetenv (3.1.1)
+- microsoft.entityframeworkcore (10.0.0)
+- microsoft.entityframeworkcore.inmemory (10.0.0)
 - microsoft.entityframeworkcore.relational (10.0.0)
-- microsoft.extensions.azure (1.13.0)
+- Microsoft.Extensions.Http.Resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
-
-
-Project name: KunstButikken.ArtService.Application
-
-Used (direct):
-- Microsoft.Extensions.Http.Resilience (10.0.0)
+- rabbitmq.client (7.2.0)
 
 Used (transitive):
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - azure.core (1.47.3)
-- azure.storage.blobs (12.26.0)
 - azure.storage.common (12.25.0)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.bcl.asyncinterfaces (8.0.0)
-- microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.inmemory (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
@@ -776,7 +781,6 @@ Used (transitive):
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -793,22 +797,12 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
 
 In csproj:
-- Microsoft.Extensions.Http (10.0.0)
-- Microsoft.Extensions.Http.Resilience (10.0.0)
-
-Should add to csproj:
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
@@ -817,6 +811,8 @@ Should add to csproj:
 - microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.inmemory (10.0.0)
 - microsoft.entityframeworkcore.relational (10.0.0)
+- Microsoft.Extensions.Http (10.0.0)
+- Microsoft.Extensions.Http.Resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
@@ -825,8 +821,11 @@ Should add to csproj:
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
 
+Should add to csproj:
+- None
 
-Project name: KunstButikken.ArtService.Domain
+
+## Project name: KunstButikken.ArtService.Domain
 
 Used (direct):
 - None
@@ -841,19 +840,27 @@ Should add to csproj:
 - None
 
 
-Project name: KunstButikken.ArtService.Infrastructure
+## Project name: KunstButikken.ArtService.Infrastructure
 
 Used (direct):
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
 - Azure.Storage.Blobs (12.26.0)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.configuration.abstractions (10.0.0)
 - Microsoft.Extensions.Configuration.FileExtensions (10.0.0)
 - Microsoft.Extensions.Configuration.Json (10.0.0)
+- microsoft.extensions.dependencyinjection (10.0.0)
+- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
+- microsoft.extensions.hosting.abstractions (10.0.0)
+- microsoft.extensions.logging.abstractions (10.0.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- rabbitmq.client (7.2.0)
 
 Used (transitive):
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - azure.core (1.47.3)
 - azure.storage.common (12.25.0)
@@ -865,14 +872,10 @@ Used (transitive):
 - microsoft.codeanalysis.workspaces.common (4.14.0)
 - microsoft.codeanalysis.workspaces.msbuild (4.14.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.caching.abstractions (10.0.0)
 - microsoft.extensions.caching.memory (10.0.0)
 - microsoft.extensions.configuration (10.0.0)
-- microsoft.extensions.configuration.abstractions (10.0.0)
 - microsoft.extensions.configuration.binder (10.0.0)
-- microsoft.extensions.dependencyinjection (10.0.0)
-- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.dependencymodel (10.0.0)
 - microsoft.extensions.diagnostics.abstractions (10.0.0)
@@ -882,12 +885,10 @@ Used (transitive):
 - microsoft.extensions.fileproviders.abstractions (10.0.0)
 - microsoft.extensions.fileproviders.physical (10.0.0)
 - microsoft.extensions.filesystemglobbing (10.0.0)
-- microsoft.extensions.hosting.abstractions (10.0.0)
 - microsoft.extensions.logging (10.0.0)
-- microsoft.extensions.logging.abstractions (10.0.0)
-- microsoft.extensions.logging.configuration (8.0.0)
+- microsoft.extensions.logging.configuration (10.0.0)
 - microsoft.extensions.options (10.0.0)
-- microsoft.extensions.options.configurationextensions (8.0.0)
+- microsoft.extensions.options.configurationextensions (10.0.0)
 - microsoft.extensions.primitives (10.0.0)
 - mono.texttemplating (3.0.0)
 - newtonsoft.json (13.0.3)
@@ -895,66 +896,71 @@ Used (transitive):
 - npgsql.dependencyinjection (10.0.0)
 - npgsql.entityframeworkcore.postgresql (10.0.0)
 - npgsql.opentelemetry (10.0.0)
-- opentelemetry (1.9.0)
+- opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
-- opentelemetry.api.providerbuilderextensions (1.9.0)
-- opentelemetry.extensions.hosting (1.9.0)
+- opentelemetry.api.providerbuilderextensions (1.14.0)
 - polly.core (8.6.4)
-- rabbitmq.client (7.2.0)
 
 In csproj:
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
 - Azure.Storage.Blobs (12.26.0)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
-- Microsoft.Extensions.Configuration.FileExtensions (10.0.0)
-- Microsoft.Extensions.Configuration.Json (10.0.0)
-
-Should add to csproj:
-- aspire.rabbitmq.client (13.0.1)
 - microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.configuration.abstractions (10.0.0)
+- Microsoft.Extensions.Configuration.FileExtensions (10.0.0)
+- Microsoft.Extensions.Configuration.Json (10.0.0)
 - microsoft.extensions.dependencyinjection (10.0.0)
 - microsoft.extensions.dependencyinjection.abstractions (10.0.0)
 - microsoft.extensions.hosting.abstractions (10.0.0)
 - microsoft.extensions.logging.abstractions (10.0.0)
-- opentelemetry.extensions.hosting (1.9.0)
+- opentelemetry.extensions.hosting (1.14.0)
 - rabbitmq.client (7.2.0)
 
+Should add to csproj:
+- None
 
-Project name: KunstButikken.ArtService.Tests
+
+## Project name: KunstButikken.ArtService.Tests
 
 Used (direct):
-- Moq (4.20.72)
-
-Used (transitive):
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
+- azure.storage.blobs (12.26.0)
+- dotnetenv (3.1.1)
+- microsoft.entityframeworkcore (10.0.0)
+- microsoft.entityframeworkcore.inmemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
+- Moq (4.20.72)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
+- rabbitmq.client (7.2.0)
+
+Used (transitive):
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - azure.core (1.47.3)
-- azure.storage.blobs (12.26.0)
 - azure.storage.common (12.25.0)
 - castle.core (5.1.1)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.bcl.asyncinterfaces (8.0.0)
 - microsoft.codecoverage (18.0.1)
-- microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.inmemory (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -973,15 +979,9 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
 - xunit.abstractions (2.0.3)
 - xunit.assert (2.9.3)
@@ -989,32 +989,33 @@ Used (transitive):
 - xunit.extensibility.execution (2.9.3)
 
 In csproj:
-- coverlet.collector (6.0.4)
-- Microsoft.NET.Test.Sdk (18.0.1)
-- Moq (4.20.72)
-- xunit (2.9.3)
-- xunit.runner.visualstudio (3.1.5)
-
-Should add to csproj:
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
 - azure.storage.blobs (12.26.0)
+- coverlet.collector (6.0.4)
 - dotnetenv (3.1.1)
 - microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.inmemory (10.0.0)
 - microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
+- Microsoft.NET.Test.Sdk (18.0.1)
+- Moq (4.20.72)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
+- xunit (2.9.3)
+- xunit.runner.visualstudio (3.1.5)
+
+Should add to csproj:
+- None
 
 
-Project name: KunstButikken.AuctionService
+## Project name: KunstButikken.AuctionService
 
 Used (direct):
 - Aspire.Hosting (13.0.1)
@@ -1023,11 +1024,19 @@ Used (direct):
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
@@ -1035,7 +1044,6 @@ Used (transitive):
 - aspnetcore.healthchecks.npgsql (9.0.0)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - aspnetcore.healthchecks.uris (9.0.0)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -1059,7 +1067,6 @@ Used (transitive):
 - microsoft.codeanalysis.workspaces.common (4.14.0)
 - microsoft.codeanalysis.workspaces.msbuild (4.14.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
@@ -1068,7 +1075,6 @@ Used (transitive):
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -1090,11 +1096,6 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
@@ -1110,50 +1111,57 @@ In csproj:
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Should add to csproj:
+- None
+
+
+## Project name: KunstButikken.AuctionService.Application
+
+Used (direct):
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
+- aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
 - dotnetenv (3.1.1)
+- Microsoft.EntityFrameworkCore (10.0.0)
+- microsoft.entityframeworkcore.inmemory (10.0.0)
 - microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
-
-
-Project name: KunstButikken.AuctionService.Application
-
-Used (direct):
-- Microsoft.EntityFrameworkCore (10.0.0)
+- rabbitmq.client (7.2.0)
 
 Used (transitive):
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.inmemory (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -1170,32 +1178,24 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
 
 In csproj:
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
+- aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
+- microsoft.entityframeworkcore.inmemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Configuration.Abstractions (10.0.0)
 - Microsoft.Extensions.DependencyInjection (10.0.0)
 - Microsoft.Extensions.DependencyInjection.Abstractions (10.0.0)
-- Microsoft.Extensions.Logging.Abstractions (10.0.0)
-
-Should add to csproj:
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
-- aspire.rabbitmq.client (13.0.1)
-- dotnetenv (3.1.1)
-- microsoft.entityframeworkcore.inmemory (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.http.resilience (10.0.0)
+- Microsoft.Extensions.Logging.Abstractions (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
@@ -1204,8 +1204,11 @@ Should add to csproj:
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
 
+Should add to csproj:
+- None
 
-Project name: KunstButikken.AuctionService.Domain
+
+## Project name: KunstButikken.AuctionService.Domain
 
 Used (direct):
 - None
@@ -1220,18 +1223,26 @@ Should add to csproj:
 - None
 
 
-Project name: KunstButikken.AuctionService.Infrastructure
+## Project name: KunstButikken.AuctionService.Infrastructure
 
 Used (direct):
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.configuration.abstractions (10.0.0)
 - Microsoft.Extensions.Configuration.FileExtensions (10.0.0)
 - Microsoft.Extensions.Configuration.Json (10.0.0)
+- microsoft.extensions.dependencyinjection (10.0.0)
+- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
+- microsoft.extensions.hosting.abstractions (10.0.0)
+- microsoft.extensions.logging.abstractions (10.0.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- rabbitmq.client (7.2.0)
 
 Used (transitive):
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - humanizer.core (2.14.1)
 - microsoft.codeanalysis.common (4.14.0)
@@ -1240,14 +1251,10 @@ Used (transitive):
 - microsoft.codeanalysis.workspaces.common (4.14.0)
 - microsoft.codeanalysis.workspaces.msbuild (4.14.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.caching.abstractions (10.0.0)
 - microsoft.extensions.caching.memory (10.0.0)
 - microsoft.extensions.configuration (10.0.0)
-- microsoft.extensions.configuration.abstractions (10.0.0)
 - microsoft.extensions.configuration.binder (10.0.0)
-- microsoft.extensions.dependencyinjection (10.0.0)
-- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.dependencymodel (10.0.0)
 - microsoft.extensions.diagnostics.abstractions (10.0.0)
@@ -1257,12 +1264,10 @@ Used (transitive):
 - microsoft.extensions.fileproviders.abstractions (10.0.0)
 - microsoft.extensions.fileproviders.physical (10.0.0)
 - microsoft.extensions.filesystemglobbing (10.0.0)
-- microsoft.extensions.hosting.abstractions (10.0.0)
 - microsoft.extensions.logging (10.0.0)
-- microsoft.extensions.logging.abstractions (10.0.0)
-- microsoft.extensions.logging.configuration (8.0.0)
+- microsoft.extensions.logging.configuration (10.0.0)
 - microsoft.extensions.options (10.0.0)
-- microsoft.extensions.options.configurationextensions (8.0.0)
+- microsoft.extensions.options.configurationextensions (10.0.0)
 - microsoft.extensions.primitives (10.0.0)
 - mono.texttemplating (3.0.0)
 - newtonsoft.json (13.0.3)
@@ -1270,62 +1275,67 @@ Used (transitive):
 - npgsql.dependencyinjection (10.0.0)
 - npgsql.entityframeworkcore.postgresql (10.0.0)
 - npgsql.opentelemetry (10.0.0)
-- opentelemetry (1.9.0)
+- opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
-- opentelemetry.api.providerbuilderextensions (1.9.0)
-- opentelemetry.extensions.hosting (1.9.0)
+- opentelemetry.api.providerbuilderextensions (1.14.0)
 - polly.core (8.6.4)
-- rabbitmq.client (7.2.0)
 
 In csproj:
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
-- Microsoft.Extensions.Configuration.FileExtensions (10.0.0)
-- Microsoft.Extensions.Configuration.Json (10.0.0)
-
-Should add to csproj:
-- aspire.rabbitmq.client (13.0.1)
 - microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.configuration.abstractions (10.0.0)
+- Microsoft.Extensions.Configuration.FileExtensions (10.0.0)
+- Microsoft.Extensions.Configuration.Json (10.0.0)
 - microsoft.extensions.dependencyinjection (10.0.0)
 - microsoft.extensions.dependencyinjection.abstractions (10.0.0)
 - microsoft.extensions.hosting.abstractions (10.0.0)
 - microsoft.extensions.logging.abstractions (10.0.0)
-- opentelemetry.extensions.hosting (1.9.0)
+- opentelemetry.extensions.hosting (1.14.0)
 - rabbitmq.client (7.2.0)
 
+Should add to csproj:
+- None
 
-Project name: KunstButikken.AuctionService.Tests
+
+## Project name: KunstButikken.AuctionService.Tests
 
 Used (direct):
-- FluentAssertions (8.8.0)
-- Moq (4.20.72)
-
-Used (transitive):
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
+- FluentAssertions (8.8.0)
+- microsoft.entityframeworkcore (10.0.0)
+- microsoft.entityframeworkcore.inmemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
+- Moq (4.20.72)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
+- rabbitmq.client (7.2.0)
+
+Used (transitive):
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - castle.core (5.1.1)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.codecoverage (18.0.1)
-- microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.inmemory (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -1344,15 +1354,9 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
 - xunit.abstractions (2.0.3)
 - xunit.assert (2.9.3)
@@ -1360,45 +1364,53 @@ Used (transitive):
 - xunit.extensibility.execution (2.9.3)
 
 In csproj:
-- FluentAssertions (8.8.0)
-- Microsoft.NET.Test.Sdk (18.0.1)
-- Moq (4.20.72)
-- xunit (2.9.3)
-- xunit.runner.visualstudio (3.1.5)
-
-Should add to csproj:
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
 - dotnetenv (3.1.1)
+- FluentAssertions (8.8.0)
 - microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.inmemory (10.0.0)
 - microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
+- Microsoft.NET.Test.Sdk (18.0.1)
+- Moq (4.20.72)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
+- xunit (2.9.3)
+- xunit.runner.visualstudio (3.1.5)
+
+Should add to csproj:
+- None
 
 
-Project name: KunstButikken.AuthGateway
+## Project name: KunstButikken.AuthGateway
 
 Used (direct):
+- Aspire.Hosting (13.0.1)
 - Aspire.Hosting.Yarp (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
+- Aspire.RabbitMQ.Client (13.0.1)
+- DotNetEnv (3.1.1)
+- Microsoft.Extensions.Http.Resilience (10.0.0)
+- Microsoft.Extensions.ServiceDiscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- OpenTelemetry.Exporter.OpenTelemetryProtocol (1.14.0)
 - OpenTelemetry.Extensions.Hosting (1.14.0)
+- OpenTelemetry.Instrumentation.AspNetCore (1.14.0)
+- OpenTelemetry.Instrumentation.Http (1.14.0)
+- OpenTelemetry.Instrumentation.Runtime (1.14.0)
+- RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Used (transitive):
-- aspire.hosting (13.0.1)
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - aspnetcore.healthchecks.uris (9.0.0)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -1421,9 +1433,7 @@ Used (transitive):
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -1440,14 +1450,9 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - semver (3.0.0)
 - sprache (2.3.1)
 - streamjsonrpc (2.22.23)
@@ -1455,26 +1460,27 @@ Used (transitive):
 - yarp.reverseproxy (2.3.0)
 
 In csproj:
+- Aspire.Hosting (13.0.1)
 - Aspire.Hosting.Yarp (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
+- Aspire.RabbitMQ.Client (13.0.1)
+- DotNetEnv (3.1.1)
+- Microsoft.Extensions.Http.Resilience (10.0.0)
+- Microsoft.Extensions.ServiceDiscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- OpenTelemetry.Exporter.OpenTelemetryProtocol (1.14.0)
 - OpenTelemetry.Extensions.Hosting (1.14.0)
+- OpenTelemetry.Instrumentation.AspNetCore (1.14.0)
+- OpenTelemetry.Instrumentation.Http (1.14.0)
+- OpenTelemetry.Instrumentation.Runtime (1.14.0)
+- RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Should add to csproj:
-- aspire.hosting (13.0.1)
-- aspire.rabbitmq.client (13.0.1)
-- dotnetenv (3.1.1)
-- microsoft.extensions.http.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
-- rabbitmq.client (7.2.0)
+- None
 
 
-Project name: KunstButikken.AuthGateway.Application
+## Project name: KunstButikken.AuthGateway.Application
 
 Used (direct):
 - None
@@ -1489,7 +1495,7 @@ Should add to csproj:
 - None
 
 
-Project name: KunstButikken.AuthGateway.Domain
+## Project name: KunstButikken.AuthGateway.Domain
 
 Used (direct):
 - None
@@ -1504,21 +1510,31 @@ Should add to csproj:
 - None
 
 
-Project name: KunstButikken.AuthGateway.Tests
+## Project name: KunstButikken.AuthGateway.Tests
 
 Used (direct):
-- FluentAssertions (8.8.0)
-- Moq (4.20.72)
-
-Used (transitive):
 - aspire.hosting (13.0.1)
 - aspire.hosting.yarp (13.0.1)
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
+- FluentAssertions (8.8.0)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
+- microsoft.openapi (3.0.1)
+- Moq (4.20.72)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
+- rabbitmq.client (7.2.0)
+- scalar.aspire (0.7.4)
+
+Used (transitive):
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - aspnetcore.healthchecks.uris (9.0.0)
 - castle.core (5.1.1)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -1542,9 +1558,7 @@ Used (transitive):
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -1554,7 +1568,6 @@ Used (transitive):
 - microsoft.identitymodel.protocols (8.0.1)
 - microsoft.identitymodel.protocols.openidconnect (8.0.1)
 - microsoft.identitymodel.tokens (8.0.1)
-- microsoft.openapi (3.0.1)
 - microsoft.testplatform.testhost (18.0.1)
 - microsoft.visualstudio.threading.only (17.13.61)
 - microsoft.visualstudio.validation (17.8.8)
@@ -1563,16 +1576,9 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
-- scalar.aspire (0.7.4)
 - semver (3.0.0)
 - sprache (2.3.1)
 - streamjsonrpc (2.22.23)
@@ -1584,21 +1590,17 @@ Used (transitive):
 - yarp.reverseproxy (2.3.0)
 
 In csproj:
-- FluentAssertions (8.8.0)
-- Microsoft.NET.Test.Sdk (18.0.1)
-- Moq (4.20.72)
-- xunit (2.9.3)
-- xunit.runner.visualstudio (3.1.5)
-
-Should add to csproj:
 - aspire.hosting (13.0.1)
 - aspire.hosting.yarp (13.0.1)
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.rabbitmq.client (13.0.1)
 - dotnetenv (3.1.1)
+- FluentAssertions (8.8.0)
 - microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
+- Microsoft.NET.Test.Sdk (18.0.1)
 - microsoft.openapi (3.0.1)
+- Moq (4.20.72)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
@@ -1606,87 +1608,102 @@ Should add to csproj:
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
 - scalar.aspire (0.7.4)
+- xunit (2.9.3)
+- xunit.runner.visualstudio (3.1.5)
+
+Should add to csproj:
+- None
 
 
-Project name: KunstButikken.Common.Logging
+## Project name: KunstButikken.Common.Logging
 
 Used (direct):
+- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
 - Microsoft.Extensions.Logging.Abstractions (10.0.0)
 
 Used (transitive):
-- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
+- None
 
 In csproj:
+- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
 - Microsoft.Extensions.Logging.Abstractions (10.0.0)
 
 Should add to csproj:
-- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
+- None
 
 
-Project name: KunstButikken.IntegrationEvents.Contracts
+## Project name: KunstButikken.IntegrationEvents.Contracts
 
 Used (direct):
 - Aspire.RabbitMQ.Client (13.0.1)
+- microsoft.extensions.configuration.abstractions (10.0.0)
+- microsoft.extensions.dependencyinjection (10.0.0)
+- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
+- microsoft.extensions.hosting.abstractions (10.0.0)
+- microsoft.extensions.logging.abstractions (10.0.0)
+- opentelemetry.extensions.hosting (1.14.0)
 - RabbitMQ.Client (7.2.0)
 
 Used (transitive):
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - microsoft.extensions.configuration (10.0.0)
-- microsoft.extensions.configuration.abstractions (10.0.0)
 - microsoft.extensions.configuration.binder (10.0.0)
-- microsoft.extensions.dependencyinjection (8.0.0)
-- microsoft.extensions.dependencyinjection.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.abstractions (10.0.0)
 - microsoft.extensions.diagnostics.healthchecks (10.0.0)
 - microsoft.extensions.diagnostics.healthchecks.abstractions (10.0.0)
 - microsoft.extensions.fileproviders.abstractions (10.0.0)
-- microsoft.extensions.hosting.abstractions (10.0.0)
-- microsoft.extensions.logging (8.0.0)
-- microsoft.extensions.logging.abstractions (10.0.0)
-- microsoft.extensions.logging.configuration (8.0.0)
+- microsoft.extensions.logging (10.0.0)
+- microsoft.extensions.logging.configuration (10.0.0)
 - microsoft.extensions.options (10.0.0)
-- microsoft.extensions.options.configurationextensions (8.0.0)
+- microsoft.extensions.options.configurationextensions (10.0.0)
 - microsoft.extensions.primitives (10.0.0)
-- opentelemetry (1.9.0)
-- opentelemetry.api (1.9.0)
-- opentelemetry.api.providerbuilderextensions (1.9.0)
-- opentelemetry.extensions.hosting (1.9.0)
+- opentelemetry (1.14.0)
+- opentelemetry.api (1.14.0)
+- opentelemetry.api.providerbuilderextensions (1.14.0)
 - polly.core (8.6.4)
 
 In csproj:
 - Aspire.RabbitMQ.Client (13.0.1)
-- RabbitMQ.Client (7.2.0)
-
-Should add to csproj:
 - microsoft.extensions.configuration.abstractions (10.0.0)
-- microsoft.extensions.dependencyinjection (8.0.0)
+- microsoft.extensions.dependencyinjection (10.0.0)
 - microsoft.extensions.dependencyinjection.abstractions (10.0.0)
 - microsoft.extensions.hosting.abstractions (10.0.0)
 - microsoft.extensions.logging.abstractions (10.0.0)
-- opentelemetry.extensions.hosting (1.9.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- RabbitMQ.Client (7.2.0)
+
+Should add to csproj:
+- None
 
 
-Project name: KunstButikken.PaymentService
+## Project name: KunstButikken.PaymentService
 
 Used (direct):
+- aspire.hosting (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 - Stripe.net (50.0.0)
 
 Used (transitive):
-- aspire.hosting (13.0.0)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - aspnetcore.healthchecks.uris (9.0.0)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -1710,7 +1727,6 @@ Used (transitive):
 - microsoft.codeanalysis.workspaces.common (4.14.0)
 - microsoft.codeanalysis.workspaces.msbuild (4.14.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
@@ -1719,7 +1735,6 @@ Used (transitive):
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -1741,11 +1756,6 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
@@ -1755,40 +1765,49 @@ Used (transitive):
 - yamldotnet (16.3.0)
 
 In csproj:
+- aspire.hosting (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 - Stripe.net (50.0.0)
 
 Should add to csproj:
-- aspire.hosting (13.0.0)
+- None
+
+
+## Project name: KunstButikken.PaymentService.Application
+
+Used (direct):
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
+- aspire.rabbitmq.client (13.0.1)
 - dotnetenv (3.1.1)
-- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
-
-
-Project name: KunstButikken.PaymentService.Application
-
-Used (direct):
+- rabbitmq.client (7.2.0)
 - Stripe.net (50.0.0)
 
 Used (transitive):
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
@@ -1796,9 +1815,7 @@ Used (transitive):
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -1812,21 +1829,12 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
 
 In csproj:
-- Stripe.net (50.0.0)
-
-Should add to csproj:
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.rabbitmq.client (13.0.1)
 - dotnetenv (3.1.1)
@@ -1838,9 +1846,13 @@ Should add to csproj:
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
+- Stripe.net (50.0.0)
+
+Should add to csproj:
+- None
 
 
-Project name: KunstButikken.PaymentService.Domain
+## Project name: KunstButikken.PaymentService.Domain
 
 Used (direct):
 - None
@@ -1855,23 +1867,31 @@ Should add to csproj:
 - None
 
 
-Project name: KunstButikken.PaymentService.Infrastructure
+## Project name: KunstButikken.PaymentService.Infrastructure
 
 Used (direct):
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
+- rabbitmq.client (7.2.0)
+- stripe.net (50.0.0)
 
 Used (transitive):
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
@@ -1879,7 +1899,6 @@ Used (transitive):
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -1897,29 +1916,20 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
-- stripe.net (50.0.0)
 
 In csproj:
-- Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
-- Microsoft.EntityFrameworkCore (10.0.0)
-- Microsoft.EntityFrameworkCore.InMemory (10.0.0)
-- Microsoft.Extensions.Http.Resilience (10.0.0)
-
-Should add to csproj:
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
+- Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
 - dotnetenv (3.1.1)
+- Microsoft.EntityFrameworkCore (10.0.0)
+- Microsoft.EntityFrameworkCore.InMemory (10.0.0)
 - microsoft.entityframeworkcore.relational (10.0.0)
+- Microsoft.Extensions.Http.Resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
@@ -1929,22 +1939,39 @@ Should add to csproj:
 - rabbitmq.client (7.2.0)
 - stripe.net (50.0.0)
 
+Should add to csproj:
+- None
 
-Project name: KunstButikken.PaymentService.Tests
+
+## Project name: KunstButikken.PaymentService.Tests
 
 Used (direct):
-- FluentAssertions (8.8.0)
-- Moq (4.20.72)
-
-Used (transitive):
-- aspire.hosting (13.0.0)
+- aspire.hosting (13.0.1)
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
+- FluentAssertions (8.8.0)
+- microsoft.entityframeworkcore (10.0.0)
+- microsoft.entityframeworkcore.inmemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
+- microsoft.openapi (3.0.1)
+- Moq (4.20.72)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
+- rabbitmq.client (7.2.0)
+- scalar.aspire (0.7.4)
+- stripe.net (50.0.0)
+
+Used (transitive):
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - aspnetcore.healthchecks.uris (9.0.0)
 - castle.core (5.1.1)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -1963,19 +1990,14 @@ Used (transitive):
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.codecoverage (18.0.1)
-- microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.inmemory (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -1985,7 +2007,6 @@ Used (transitive):
 - microsoft.identitymodel.protocols (8.0.1)
 - microsoft.identitymodel.protocols.openidconnect (8.0.1)
 - microsoft.identitymodel.tokens (8.0.1)
-- microsoft.openapi (3.0.1)
 - microsoft.testplatform.testhost (18.0.1)
 - microsoft.visualstudio.threading.only (17.13.61)
 - microsoft.visualstudio.validation (17.8.8)
@@ -1998,20 +2019,12 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
-- scalar.aspire (0.7.4)
 - semver (3.0.0)
 - sprache (2.3.1)
 - streamjsonrpc (2.22.23)
-- stripe.net (50.0.0)
 - xunit.abstractions (2.0.3)
 - xunit.assert (2.9.3)
 - xunit.extensibility.core (2.9.3)
@@ -2019,24 +2032,20 @@ Used (transitive):
 - yamldotnet (16.3.0)
 
 In csproj:
-- FluentAssertions (8.8.0)
-- Microsoft.NET.Test.Sdk (18.0.1)
-- Moq (4.20.72)
-- xunit (2.9.3)
-- xunit.runner.visualstudio (3.1.5)
-
-Should add to csproj:
-- aspire.hosting (13.0.0)
+- aspire.hosting (13.0.1)
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - aspire.npgsql.entityframeworkcore.postgresql (13.0.1)
 - aspire.rabbitmq.client (13.0.1)
 - dotnetenv (3.1.1)
+- FluentAssertions (8.8.0)
 - microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.inmemory (10.0.0)
 - microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
+- Microsoft.NET.Test.Sdk (18.0.1)
 - microsoft.openapi (3.0.1)
+- Moq (4.20.72)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
@@ -2045,9 +2054,14 @@ Should add to csproj:
 - rabbitmq.client (7.2.0)
 - scalar.aspire (0.7.4)
 - stripe.net (50.0.0)
+- xunit (2.9.3)
+- xunit.runner.visualstudio (3.1.5)
+
+Should add to csproj:
+- None
 
 
-Project name: KunstButikken.ServiceDefaults
+## Project name: KunstButikken.ServiceDefaults
 
 Used (direct):
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
@@ -2101,27 +2115,37 @@ Should add to csproj:
 - None
 
 
-Project name: KunstButikken.UserService
+## Project name: KunstButikken.UserService
 
 Used (direct):
+- aspire.hosting (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Microsoft.Data.SqlClient (13.0.1)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- dotnetenv (3.1.1)
+- microsoft.aspnetcore.mvc.testing (10.0.0)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
+- microsoft.entityframeworkcore.inmemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Used (transitive):
-- aspire.hosting (13.0.0)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
 - aspnetcore.healthchecks.sqlserver (9.0.0)
 - aspnetcore.healthchecks.uris (9.0.0)
 - azure.core (1.49.0)
 - azure.identity (1.17.0)
-- dotnetenv (3.1.1)
 - fractions (7.3.0)
 - google.protobuf (3.33.0)
 - grpc.aspnetcore.server (2.71.0)
@@ -2139,7 +2163,6 @@ Used (transitive):
 - messagepack.annotations (2.5.192)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
-- microsoft.aspnetcore.mvc.testing (10.0.0)
 - microsoft.aspnetcore.testhost (10.0.0)
 - microsoft.bcl.asyncinterfaces (8.0.0)
 - microsoft.bcl.cryptography (9.0.4)
@@ -2149,8 +2172,6 @@ Used (transitive):
 - microsoft.codeanalysis.workspaces.common (4.14.0)
 - microsoft.codeanalysis.workspaces.msbuild (4.14.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.inmemory (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
@@ -2158,9 +2179,7 @@ Used (transitive):
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -2185,11 +2204,6 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
@@ -2199,22 +2213,38 @@ Used (transitive):
 - yamldotnet (16.3.0)
 
 In csproj:
+- aspire.hosting (13.0.1)
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Microsoft.Data.SqlClient (13.0.1)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
 - Aspire.RabbitMQ.Client (13.0.1)
+- dotnetenv (3.1.1)
+- microsoft.aspnetcore.mvc.testing (10.0.0)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.Design (10.0.0)
+- microsoft.entityframeworkcore.inmemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Microsoft.OpenApi (3.0.1)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 - RabbitMQ.Client (7.2.0)
 - Scalar.Aspire (0.7.4)
 
 Should add to csproj:
-- aspire.hosting (13.0.0)
+- None
+
+
+## Project name: KunstButikken.UserService.Application
+
+Used (direct):
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - dotnetenv (3.1.1)
-- microsoft.aspnetcore.mvc.testing (10.0.0)
-- microsoft.entityframeworkcore.inmemory (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
+- Microsoft.EntityFrameworkCore (10.0.0)
 - microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
@@ -2223,15 +2253,7 @@ Should add to csproj:
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
 
-
-Project name: KunstButikken.UserService.Application
-
-Used (direct):
-- Microsoft.EntityFrameworkCore (10.0.0)
-
 Used (transitive):
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
@@ -2240,9 +2262,7 @@ Used (transitive):
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -2255,26 +2275,19 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.4.2)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
 - sprache (2.3.1)
 
 In csproj:
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
+- dotnetenv (3.1.1)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.Extensions.Configuration.Abstractions (10.0.0)
 - Microsoft.Extensions.DependencyInjection.Abstractions (10.0.0)
-- Microsoft.Extensions.Logging.Abstractions (10.0.0)
-
-Should add to csproj:
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
-- dotnetenv (3.1.1)
 - microsoft.extensions.http.resilience (10.0.0)
+- Microsoft.Extensions.Logging.Abstractions (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
@@ -2282,8 +2295,11 @@ Should add to csproj:
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
 
+Should add to csproj:
+- None
 
-Project name: KunstButikken.UserService.Domain
+
+## Project name: KunstButikken.UserService.Domain
 
 Used (direct):
 - None
@@ -2298,25 +2314,32 @@ Should add to csproj:
 - None
 
 
-Project name: KunstButikken.UserService.Infrastructure
+## Project name: KunstButikken.UserService.Infrastructure
 
 Used (direct):
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.AspNetCore.Mvc.Testing (10.0.0)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
+- rabbitmq.client (7.2.0)
 
 Used (transitive):
-- aspire.rabbitmq.client (13.0.1)
 - aspnetcore.healthchecks.rabbitmq (9.0.0)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.aspnetcore.testhost (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
@@ -2325,7 +2348,6 @@ Used (transitive):
 - microsoft.extensions.diagnostics.healthchecks.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -2342,34 +2364,26 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.6.4)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
-- rabbitmq.client (7.2.0)
 - sprache (2.3.1)
 
 In csproj:
 - Aspire.Keycloak.Authentication (13.0.1-preview.1.25575.3)
 - Aspire.Npgsql.EntityFrameworkCore.PostgreSQL (13.0.1)
+- aspire.rabbitmq.client (13.0.1)
+- dotnetenv (3.1.1)
 - Microsoft.AspNetCore.Mvc.Testing (10.0.0)
 - Microsoft.EntityFrameworkCore (10.0.0)
 - Microsoft.EntityFrameworkCore.InMemory (10.0.0)
+- microsoft.entityframeworkcore.relational (10.0.0)
 - Microsoft.Extensions.Configuration.Abstractions (10.0.0)
 - Microsoft.Extensions.DependencyInjection.Abstractions (10.0.0)
 - Microsoft.Extensions.Hosting.Abstractions (10.0.0)
 - Microsoft.Extensions.Http (10.0.0)
 - Microsoft.Extensions.Http.Resilience (10.0.0)
 - Microsoft.Extensions.Logging.Abstractions (10.0.0)
-
-Should add to csproj:
-- aspire.rabbitmq.client (13.0.1)
-- dotnetenv (3.1.1)
-- microsoft.entityframeworkcore.relational (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
@@ -2378,8 +2392,11 @@ Should add to csproj:
 - opentelemetry.instrumentation.runtime (1.14.0)
 - rabbitmq.client (7.2.0)
 
+Should add to csproj:
+- None
 
-Project name: KunstButikken.UserService.Shared.Dev
+
+## Project name: KunstButikken.UserService.Shared.Dev
 
 Used (direct):
 - None
@@ -2394,29 +2411,34 @@ Should add to csproj:
 - None
 
 
-Project name: KunstButikken.UserService.Tests
+## Project name: KunstButikken.UserService.Tests
 
 Used (direct):
+- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
+- dotnetenv (3.1.1)
 - FluentAssertions (8.8.0)
+- microsoft.entityframeworkcore (10.0.0)
+- microsoft.extensions.http.resilience (10.0.0)
+- microsoft.extensions.servicediscovery (10.0.0)
 - Moq (4.20.72)
+- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
+- opentelemetry.extensions.hosting (1.14.0)
+- opentelemetry.instrumentation.aspnetcore (1.14.0)
+- opentelemetry.instrumentation.http (1.14.0)
+- opentelemetry.instrumentation.runtime (1.14.0)
 
 Used (transitive):
-- aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - castle.core (5.1.1)
-- dotnetenv (3.1.1)
 - microsoft.aspnetcore.authentication.jwtbearer (10.0.0)
 - microsoft.aspnetcore.authentication.openidconnect (10.0.0)
 - microsoft.codecoverage (18.0.1)
-- microsoft.entityframeworkcore (10.0.0)
 - microsoft.entityframeworkcore.abstractions (10.0.0)
 - microsoft.extensions.ambientmetadata.application (10.0.0)
 - microsoft.extensions.compliance.abstractions (10.0.0)
 - microsoft.extensions.dependencyinjection.autoactivation (10.0.0)
 - microsoft.extensions.diagnostics.exceptionsummarization (10.0.0)
 - microsoft.extensions.http.diagnostics (10.0.0)
-- microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.resilience (10.0.0)
-- microsoft.extensions.servicediscovery (10.0.0)
 - microsoft.extensions.servicediscovery.abstractions (10.0.0)
 - microsoft.extensions.telemetry (10.0.0)
 - microsoft.extensions.telemetry.abstractions (10.0.0)
@@ -2431,11 +2453,6 @@ Used (transitive):
 - opentelemetry (1.14.0)
 - opentelemetry.api (1.14.0)
 - opentelemetry.api.providerbuilderextensions (1.14.0)
-- opentelemetry.exporter.opentelemetryprotocol (1.14.0)
-- opentelemetry.extensions.hosting (1.14.0)
-- opentelemetry.instrumentation.aspnetcore (1.14.0)
-- opentelemetry.instrumentation.http (1.14.0)
-- opentelemetry.instrumentation.runtime (1.14.0)
 - polly.core (8.4.2)
 - polly.extensions (8.4.2)
 - polly.ratelimiting (8.4.2)
@@ -2446,22 +2463,23 @@ Used (transitive):
 - xunit.extensibility.execution (2.9.3)
 
 In csproj:
-- FluentAssertions (8.8.0)
-- Microsoft.NET.Test.Sdk (18.0.1)
-- Moq (4.20.72)
-- xunit (2.9.3)
-- xunit.runner.visualstudio (3.1.5)
-
-Should add to csproj:
 - aspire.keycloak.authentication (13.0.1-preview.1.25575.3)
 - dotnetenv (3.1.1)
+- FluentAssertions (8.8.0)
 - microsoft.entityframeworkcore (10.0.0)
 - microsoft.extensions.http.resilience (10.0.0)
 - microsoft.extensions.servicediscovery (10.0.0)
+- Microsoft.NET.Test.Sdk (18.0.1)
+- Moq (4.20.72)
 - opentelemetry.exporter.opentelemetryprotocol (1.14.0)
 - opentelemetry.extensions.hosting (1.14.0)
 - opentelemetry.instrumentation.aspnetcore (1.14.0)
 - opentelemetry.instrumentation.http (1.14.0)
 - opentelemetry.instrumentation.runtime (1.14.0)
+- xunit (2.9.3)
+- xunit.runner.visualstudio (3.1.5)
+
+Should add to csproj:
+- None
 
 
