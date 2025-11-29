@@ -66,6 +66,17 @@ internal static partial class AppCompositionBuilder
             .WaitForHttp($"/realms/{realmName}/.well-known/openid-configuration", "http");
 
         var keycloakHttpEndpoint = keycloak.GetEndpointString("http");
+        var sharedKeycloakIssuer = builder.Configuration["KEYCLOAK_ISSUER"] ?? $"{keycloakHttpEndpoint}/realms/{realmName}";
+        var sharedKeycloakBase = builder.Configuration["KEYCLOAK_BASE"] ?? keycloakHttpEndpoint;
+        var sharedKeycloakAudience = builder.Configuration["KEYCLOAK_AUDIENCE"];
+        var sharedKeycloakAudiences = builder.Configuration["KEYCLOAK_AUDIENCES"];
+        var sharedKeycloakAuthority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? sharedKeycloakIssuer;
+        var keycloakSettings = new KeycloakSettings(
+            sharedKeycloakIssuer,
+            sharedKeycloakBase,
+            sharedKeycloakAudience,
+            sharedKeycloakAudiences,
+            sharedKeycloakAuthority);
 
         // RabbitMQ
         var eventBus = builder.AddRabbitMQ("rabbitmq");
@@ -88,7 +99,104 @@ internal static partial class AppCompositionBuilder
         IResourceBuilder<ProjectResource>? paymentServiceLocalBuilder;
         IResourceBuilder<ProjectResource>? adminServiceLocalBuilder;
 
-        // Run the smaller setup steps using local functions so overload resolution keeps working
+        // Run the smaller setup steps using dedicated helper methods
+        void SetupUserService()
+        {
+            (userService, userServiceLocalBuilder) = SetupUserServiceHelper(
+                builder,
+                usersDb,
+                keycloak ?? throw new InvalidOperationException("keycloak is null"),
+                eventBus ?? throw new InvalidOperationException("eventBus is null"),
+                keycloakHttpEndpoint,
+                realmName,
+                keycloakAdminUser,
+                keycloakAdminPassword,
+                keycloakSettings);
+        }
+
+        void SetupArtService()
+        {
+            (artService, artServiceLocalBuilder) = BuildArtService(
+                builder,
+                artDb,
+                userService ?? throw new InvalidOperationException("userService is null"),
+                azurite ?? throw new InvalidOperationException("azurite is null"),
+                eventBus ?? throw new InvalidOperationException("eventBus is null"),
+                postgres ?? throw new InvalidOperationException("postgres is null"),
+                azureBlobContainer,
+                keycloakSettings);
+        }
+
+        void SetupAuctionService()
+        {
+            (auctionService, auctionServiceLocalBuilder) = BuildAuctionService(
+                builder,
+                auctionsDb,
+                artService ?? throw new InvalidOperationException("artService is null"),
+                userService ?? throw new InvalidOperationException("userService is null"),
+                eventBus ?? throw new InvalidOperationException("eventBus is null"),
+                postgres ?? throw new InvalidOperationException("postgres is null"),
+                keycloakSettings);
+        }
+
+        void SetupPaymentService()
+        {
+            (paymentService, paymentServiceLocalBuilder) = BuildPaymentService(
+                builder,
+                paymentsDb,
+                eventBus ?? throw new InvalidOperationException("eventBus is null"),
+                postgres ?? throw new InvalidOperationException("postgres is null"),
+                stripeApiKey,
+                stripeWebhookSecret,
+                keycloakSettings);
+        }
+
+        void SetupAdminService()
+        {
+            (adminService, adminServiceLocalBuilder) = BuildAdminService(
+                builder,
+                adminDb,
+                userService ?? throw new InvalidOperationException("userService is null"),
+                eventBus ?? throw new InvalidOperationException("eventBus is null"),
+                postgres ?? throw new InvalidOperationException("postgres is null"),
+                keycloakSettings);
+        }
+
+        void SetupAuthGateway()
+        {
+            authGateway = BuildAuthGateway(
+                builder,
+                keycloak ?? throw new InvalidOperationException("keycloak is null"),
+                userServiceLocalBuilder ?? throw new InvalidOperationException("userService builder is null"),
+                artServiceLocalBuilder ?? throw new InvalidOperationException("artService builder is null"),
+                auctionServiceLocalBuilder ?? throw new InvalidOperationException("auctionService builder is null"),
+                paymentServiceLocalBuilder ?? throw new InvalidOperationException("paymentService builder is null"),
+                adminServiceLocalBuilder ?? throw new InvalidOperationException("adminService builder is null"),
+                userService ?? throw new InvalidOperationException("userService is null"),
+                artService ?? throw new InvalidOperationException("artService is null"),
+                auctionService ?? throw new InvalidOperationException("auctionService is null"),
+                paymentService ?? throw new InvalidOperationException("paymentService is null"),
+                adminService ?? throw new InvalidOperationException("adminService is null"),
+                postgres ?? throw new InvalidOperationException("postgres is null"),
+                keycloakSettings);
+        }
+
+        void SetupFrontends()
+        {
+            (nextJsFrontend, angularFrontend) = BuildFrontends(
+                builder,
+                repoRoot,
+                keycloakSettings,
+                realmName,
+                keycloakClientId,
+                keycloakAngularClientId,
+                configuredApiGateway,
+                stripePublishableKey,
+                authGateway ?? throw new InvalidOperationException("authGateway is null"),
+                keycloak ?? throw new InvalidOperationException("keycloak is null"),
+                postgres ?? throw new InvalidOperationException("postgres is null"));
+        }
+
         SetupUserService();
         SetupArtService();
         SetupAuctionService();
@@ -178,179 +286,43 @@ internal static partial class AppCompositionBuilder
             nextJsFrontend,
             angularFrontend
         );
-
-        void SetupUserService() =>
-            (userService, userServiceLocalBuilder) = SetupUserServiceHelper(builder, usersDb, keycloak ?? throw new InvalidOperationException("keycloak is null"), eventBus ?? throw new InvalidOperationException("eventBus is null"), keycloakHttpEndpoint, realmName, keycloakAdminUser, keycloakAdminPassword);
-
-        void SetupArtService()
-        {
-            var azRef = azurite.GetEndpoint("blob") ?? throw new InvalidOperationException("Azurite blob endpoint not available");
-            var art = builder.AddProject("art-service", "../../KunstButikken.ArtService/KunstButikken.ArtService/KunstButikken.ArtService.csproj")
-                .WithReference(artDb)
-                .WithReference(eventBus)
-                .WithReference(azRef)
-                .WithReference(postgres)
-                .WithEnvironment("ConnectionStrings__Default", artDb)
-                .WithEnvironment("AzureBlob__Container", azureBlobContainer)
-                .WithEnvironment("AzureBlob__PublicUrl", azurite.GetEndpointString("blob"))
-                .WithEnvironment("AzureBlob__ConnectionString", "UseDevelopmentStorage=true")
-                .WithEnvironment("USER_SERVICE_URL", userService.GetEndpointString("api"))
-                .WithHttpEndpoint(name: "api")
-                .WithExternalHttpEndpoints()
-                .WaitFor(userService ?? throw new InvalidOperationException("userService is null"))
-                .WaitFor(azurite ?? throw new InvalidOperationException("azurite is null"))
-                .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
-                .WaitFor(eventBus ?? throw new InvalidOperationException("eventBus is null"))
-                .WaitForHttp("/api/health");
-
-            if (art is null)
-            {
-                throw new InvalidOperationException("art service builder creation failed");
-            }
-            artServiceLocalBuilder = art;
-            artService = art;
-        }
-
-        void SetupAuctionService()
-        {
-            var auc = builder
-                .AddProject("auction-service", "../../KunstButikken.AuctionService/KunstButikken.AuctionService/KunstButikken.AuctionService.csproj")
-                .WithReference(auctionsDb)
-                .WithReference(eventBus)
-                .WithReference(postgres)
-                .WithEnvironment("ConnectionStrings__Default", auctionsDb)
-                .WithHttpEndpoint(name: "api")
-                .WithExternalHttpEndpoints()
-                .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
-                .WaitFor(artService ?? throw new InvalidOperationException("artService is null"))
-                .WaitFor(userService ?? throw new InvalidOperationException("userService is null"))
-                .WaitFor(eventBus ?? throw new InvalidOperationException("eventBus is null"))
-                .WaitForHttp("/api/health");
-
-            if (auc is null)
-            {
-                throw new InvalidOperationException("auction service builder creation failed");
-            }
-            auctionServiceLocalBuilder = auc;
-            auctionService = auc;
-        }
-
-        void SetupPaymentService()
-        {
-            var pay = builder
-                .AddProject("payment-service", "../../KunstButikken.PaymentService/KunstButikken.PaymentService/KunstButikken.PaymentService.csproj")
-                .WithReference(paymentsDb)
-                .WithReference(eventBus)
-                .WithEnvironment("ConnectionStrings__Default", paymentsDb)
-                .WithEnvironment("Stripe__ApiKey", stripeApiKey)
-                .WithEnvironment("Stripe__WebhookSecret", stripeWebhookSecret)
-                .WithHttpEndpoint(name: "api")
-                .WithHttpEndpoint(name: "webhook")
-                .WithExternalHttpEndpoints()
-                .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
-                .WaitFor(eventBus ?? throw new InvalidOperationException("eventBus is null"));
-
-            if (pay is null)
-            {
-                throw new InvalidOperationException("payment service builder creation failed");
-            }
-            paymentServiceLocalBuilder = pay;
-            paymentService = pay;
-            paymentService.WaitForHttp("/api/health");
-        }
-
-        void SetupAdminService()
-        {
-            var adm = builder
-                .AddProject("admin-service", "../../KunstButikken.AdminService/KunstButikken.AdminService/KunstButikken.AdminService.csproj")
-                .WithReference(adminDb)
-                .WithEnvironment("ConnectionStrings__Default", adminDb)
-                .WithHttpEndpoint(name: "api")
-                .WithExternalHttpEndpoints()
-                .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
-                .WaitFor(userService ?? throw new InvalidOperationException("userService is null"))
-                .WaitFor(eventBus ?? throw new InvalidOperationException("eventBus is null"))
-                .WaitForHttp("/api/health");
-
-            if (adm is null)
-            {
-                throw new InvalidOperationException("admin service builder creation failed");
-            }
-            adminServiceLocalBuilder = adm;
-            adminService = adm;
-        }
-
-        void SetupAuthGateway()
-        {
-            if (userServiceLocalBuilder == null || artServiceLocalBuilder == null || auctionServiceLocalBuilder == null || paymentServiceLocalBuilder == null || adminServiceLocalBuilder == null)
-            {
-                throw new InvalidOperationException("One or more service builders are null");
-            }
-            var ag = builder.AddProject("auth-gateway", "../../KunstButikken.AuthGateway/KunstButikken.AuthGateway/KunstButikken.AuthGateway.csproj")
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)userServiceLocalBuilder)
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)artServiceLocalBuilder)
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)auctionServiceLocalBuilder)
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)paymentServiceLocalBuilder)
-                .WithReference((IResourceBuilder<IResourceWithServiceDiscovery>)adminServiceLocalBuilder)
-                .WithReference(keycloak)
-                .WithHttpEndpoint(5100, name: "gateway")
-                .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
-                .WaitFor(userService ?? throw new InvalidOperationException("userService is null"))
-                .WaitFor(artService ?? throw new InvalidOperationException("artService is null"))
-                .WaitFor(auctionService ?? throw new InvalidOperationException("auctionService is null"))
-                .WaitFor(paymentService ?? throw new InvalidOperationException("paymentService is null"))
-                .WaitFor(adminService ?? throw new InvalidOperationException("adminService is null"))
-                .WaitForHttp("/health", "gateway");
-
-            if (ag is null)
-            {
-                throw new InvalidOperationException("auth gateway builder creation failed");
-            }
-            authGateway = ag;
-        }
-
-        void SetupFrontends()
-        {
-            // var repoRoot = AppHostHelpers.FindRepoRoot();
-            var nextFrontendPath = Path.Combine(repoRoot, "KunstButikken.Frontend");
-            var angularFrontendPath = Path.Combine(repoRoot, "KunstButikken.Frontend-Ang");
-
-            var keycloakBaseUrl = builder.Configuration["KEYCLOAK_BASE"] ?? keycloakHttpEndpoint;
-            var keycloakIssuer = builder.Configuration["KEYCLOAK_ISSUER"] ?? $"{keycloakHttpEndpoint}/realms/{realmName}";
-            var resolvedGatewayBase = string.IsNullOrWhiteSpace(configuredApiGateway)
-                ? authGateway.GetEndpointString("gateway")
-                : configuredApiGateway;
-            if (string.IsNullOrWhiteSpace(resolvedGatewayBase))
-            {
-                resolvedGatewayBase = "http://localhost:5100";
-            }
-            var normalizedGatewayBase = resolvedGatewayBase.TrimEnd('/');
-            var auctionHubUrl = $"{normalizedGatewayBase}/hubs/auctions";
-
-            nextJsFrontend = builder.AddNpmApp("frontend", nextFrontendPath, "dev")
-                .WithHttpEndpoint(targetPort: 3000, port: 3000, name: "web", isProxied: false)
-                .WithEnvironment("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? string.Empty)
-                .WithEnvironment("NEXT_PUBLIC_API_GATEWAY", normalizedGatewayBase)
-                .WithEnvironment("NEXT_PUBLIC_AUCTION_SIGNALR_URL", auctionHubUrl)
-                .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_BASE_URL", keycloakBaseUrl)
-                .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_REALM", realmName)
-                .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_ISSUER", keycloakIssuer)
-                .WithEnvironment("NEXT_PUBLIC_KEYCLOAK_CLIENT_ID", keycloakClientId)
-                .WaitFor(keycloak ?? throw new InvalidOperationException("keycloak is null"))
-                .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
-                .WaitFor(authGateway ?? throw new InvalidOperationException("authGateway is null"));
-
-            angularFrontend = builder.AddNpmApp("frontend-ang", angularFrontendPath)
-                .WithHttpEndpoint(targetPort: 4200, port: 4200, name: "web", isProxied: false)
-                .WithEnvironment("NG_APP_STRIPE_PUBLISHABLE_KEY", stripePublishableKey ?? string.Empty)
-                .WithEnvironment("NG_APP_API_GATEWAY", normalizedGatewayBase)
-                .WithEnvironment("NG_APP_KEYCLOAK_BASE_URL", keycloakBaseUrl)
-                .WithEnvironment("NG_APP_KEYCLOAK_REALM", realmName)
-                .WithEnvironment("NG_APP_KEYCLOAK_ISSUER", keycloakIssuer)
-                .WithEnvironment("NG_APP_KEYCLOAK_CLIENT_ID", keycloakAngularClientId)
-                .WaitFor(keycloak ?? throw new InvalidOperationException("keycloak is null"))
-                .WaitFor(postgres ?? throw new InvalidOperationException("postgres is null"))
-                .WaitFor(authGateway ?? throw new InvalidOperationException("authGateway is null"));
-        }
     }
+
+    private static IResourceBuilder<T> ApplyKeycloakEnvironment<T>(IResourceBuilder<T> resource, KeycloakSettings settings)
+        where T : IResourceWithEnvironment
+    {
+        if (!string.IsNullOrWhiteSpace(settings.Audience))
+        {
+            resource = resource.WithEnvironment("KEYCLOAK_AUDIENCE", settings.Audience);
+        }
+
+        if (!string.IsNullOrWhiteSpace(settings.Audiences))
+        {
+            resource = resource.WithEnvironment("KEYCLOAK_AUDIENCES", settings.Audiences);
+        }
+
+        if (!string.IsNullOrWhiteSpace(settings.Authority))
+        {
+            resource = resource.WithEnvironment("KEYCLOAK_AUTHORITY", settings.Authority);
+        }
+
+        if (!string.IsNullOrWhiteSpace(settings.BaseUrl))
+        {
+            resource = resource.WithEnvironment("KEYCLOAK_BASE", settings.BaseUrl);
+        }
+
+        if (!string.IsNullOrWhiteSpace(settings.Issuer))
+        {
+            resource = resource.WithEnvironment("KEYCLOAK_ISSUER", settings.Issuer);
+        }
+
+        return resource;
+    }
+
+    internal record KeycloakSettings(
+        string Issuer,
+        string BaseUrl,
+        string? Audience,
+        string? Audiences,
+        string? Authority);
 }
