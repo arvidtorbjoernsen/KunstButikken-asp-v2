@@ -15,17 +15,17 @@ export default function ArtForSaleClient({ mine, others, isSeller, isBuyer }: { 
     <Container maxWidth="xl" sx={{ py: 8 }}>
       <Box mb={6}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Art for Sale
+          {t('artPage.title')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {isSeller ? 'Manage your art and browse verified artworks from other sellers' : isBuyer ? 'Verified artworks available for purchase' : 'Browse verified artworks'}
+          {isSeller ? t('artPage.sellerDescription') : isBuyer ? t('artPage.buyerDescription') : t('artPage.defaultDescription')}
         </Typography>
       </Box>
 
       {isSeller && mine.length > 0 && (
         <Box mb={6}>
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-            Your Art
+            {t('artPage.yourArt')}
           </Typography>
           <Grid container spacing={3}>
             {mine.map(a => (
@@ -41,7 +41,7 @@ export default function ArtForSaleClient({ mine, others, isSeller, isBuyer }: { 
       <Box>
         {isSeller && mine.length > 0 && (
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-            Other Available Art
+            {t('artPage.otherArt')}
           </Typography>
         )}
         {others.length === 0 ? (
@@ -59,4 +59,3 @@ export default function ArtForSaleClient({ mine, others, isSeller, isBuyer }: { 
     </Container>
   );
 }
-

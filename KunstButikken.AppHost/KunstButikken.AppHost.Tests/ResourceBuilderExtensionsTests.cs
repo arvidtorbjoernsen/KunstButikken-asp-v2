@@ -1,43 +1,41 @@
-// ...existing code...
-
-using System;
 using Xunit;
 using KunstButikken.ServiceDefaults;
 
-namespace KunstButikken.AppHost.Tests;
-
-public class ResourceBuilderExtensionsTests
-    public void GetEndpointString_UsesGetEndpointMethod_WhenAvailable()
+namespace KunstButikken.AppHost.Tests
+{
+    public class ResourceBuilderExtensionsTests
     {
-        var d = new DummyWithGetEndpoint();
-        var s = KunstButikken.ServiceDefaults.ResourceBuilderExtensions.GetEndpointString(d, "web");
-        Assert.Equal<string?>("https://example.com/web", s);
-    }
+        [Fact]
+        public void GetEndpointString_UsesGetEndpointMethod_WhenAvailable()
+        {
+            var d = new DummyWithGetEndpoint();
+            var s = ResourceBuilderExtensions.GetEndpointString(d, "web");
+            Assert.Equal("https://example.com/web", s);
+        }
 
-    [Fact]
-    public void GetEndpointString_UsesProvider_WhenAvailable()
-    private class DummyWithGetEndpoint
-    {
-        public string GetEndpoint(string name) => $"https://example.com/{name}";
-    }
+        [Fact]
+        public void GetEndpointString_UsesProvider_WhenAvailable()
+        {
+            var p = new DummyProvider();
+            var s = ResourceBuilderExtensions.GetEndpointString(p, "api");
+            Assert.Equal("provider://api", s);
+        }
 
-    private class DummyProvider : KunstButikken.ServiceDefaults.IResourceEndpointProvider
-    {
-        public object? GetEndpoint(string name) => $"provider://{name}";
-    }
+        [Fact]
+        public void GetEndpointString_ReturnsEmpty_ForNull()
+        {
+            string s = ResourceBuilderExtensions.GetEndpointString(null, "web");
+            Assert.Equal(string.Empty, s);
+        }
 
-    [Fact]
-    public void GetEndpointString_ReturnsEmpty_ForNull()
-    {
-        string s = KunstButikken.ServiceDefaults.ResourceBuilderExtensions.GetEndpointString(null, "web");
-        Assert.Equal<string?>(string.Empty, s);
-    }
+        private class DummyWithGetEndpoint
+        {
+            public string GetEndpoint(string name) => $"https://example.com/{name}";
+        }
 
-    [Fact]
-        var p = new DummyProvider();
-        var s = KunstButikken.ServiceDefaults.ResourceBuilderExtensions.GetEndpointString(p, "api");
-        Assert.Equal<string?>("provider://api", s);
-    {
-        Assert.Equal("a","a");
+        private class DummyProvider : IResourceEndpointProvider
+        {
+            public object GetEndpoint(string name) => $"provider://{name}";
+        }
     }
 }

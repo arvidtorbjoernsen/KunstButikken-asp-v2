@@ -30,13 +30,13 @@
     "noArtwork": "No artwork available at the moment."
   },
   "artPage": {
+    "title": "Art for Sale",
+    "sellerDescription": "Manage your art and browse verified artworks from other sellers",
+    "buyerDescription": "Verified artworks available for purchase",
+    "defaultDescription": "Browse verified artworks",
+    "yourArt": "Your Art",
+    "otherArt": "Other Available Art",
     "featured": "Featured",
-    "forSale": "Art for Sale",
-    "sellerSubtitle": "Manage your art and browse verified artworks from other sellers",
-    "buyerSubtitle": "Verified artworks available for purchase",
-    "guestSubtitle": "Browse verified artworks",
-    "sellerHeading": "Your Art",
-    "othersHeading": "Other Available Art",
     "noArt": "No art found."
   },
   "art": {

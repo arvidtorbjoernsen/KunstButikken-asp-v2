@@ -6,7 +6,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="Aspire.Azure.Storage.Blobs" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Hosting" Version="13.0.1-preview.1.25575.3"/>
+        <PackageVersion Include="Aspire.Hosting" Version="13.0.1"/>
         <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="13.0.1"/>
         <PackageVersion Include="Aspire.Hosting.Keycloak" Version="13.0.1-preview.1.25575.3"/>
         <PackageVersion Include="Aspire.Hosting.NodeJS" Version="9.5.2"/>
@@ -54,9 +54,9 @@
         <PackageVersion Include="RabbitMQ.Client" Version="7.2.0"/>
         <PackageVersion Include="Scalar.Aspire" Version="0.7.4"/>
         <PackageVersion Include="Stripe.net" Version="50.0.0"/>
-        <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.3.2"/>
+        <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.0.1"/>
         <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.1"/>
-        <PackageVersion Include="Azure.Storage.Blobs" Version="12.22.0"/>
+        <PackageVersion Include="Azure.Storage.Blobs" Version="12.26.0"/>
         <PackageVersion Include="xunit" Version="2.9.3"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
 

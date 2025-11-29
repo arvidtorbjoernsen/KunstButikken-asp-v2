@@ -1,67 +1,90 @@
-import 'reflect-metadata';
-import { ArtRepository } from '@/infrastructure/repositories/ArtRepository';
-import type { ApiClient } from '@/infrastructure/http/types';
+import { ArtRepository } from '../ArtRepository';
 
 describe('ArtRepository', () => {
-  const baseUrl = 'http://gateway.test';
-  let originalFetch: typeof global.fetch;
-
-  beforeAll(() => {
-    originalFetch = global.fetch;
-  });
-
+  const origFetch = global.fetch;
   beforeEach(() => {
-    process.env.NEXT_PUBLIC_API_GATEWAY = baseUrl;
+    jest.resetModules();
+    // @ts-ignore
+    global.fetch = jest.fn();
   });
-
   afterEach(() => {
-    global.fetch = originalFetch;
-    jest.resetAllMocks();
+    // @ts-ignore
+    global.fetch = origFetch;
   });
 
-  it('returns mapped featured art', async () => {
-    const apiClient = {} as ApiClient;
-    const repo = new ArtRepository(apiClient);
-    const response = new Response(
-      JSON.stringify([
-        {
-          id: '1',
-          titleNb: 'nb',
-          titleEn: 'en',
-          price: 100,
-          imageUrl: 'img.jpg',
-          artist: 'Artist',
-          status: 2,
-          isVerified: true,
-          isFeatured: true,
-        },
-      ]),
+  test('getAll returns mapped array when fetch ok', async () => {
+    const apiArts = [
       {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
+        id: 123,
+        titleNb: 'Nb',
+        titleEn: 'En',
+        descriptionNb: 'dnb',
+        descriptionEn: 'den',
+        artist: 'A',
+        sellerDisplayName: 'S',
+        sellerId: 'sid',
+        price: 200,
+        imageUrl: '/img.png',
+        status: 1,
+        isVerified: true,
+        isFeatured: false,
       },
-    );
-    global.fetch = jest.fn().mockResolvedValue(response) as typeof global.fetch;
+    ];
 
-    const result = await repo.getFeatured(1);
+    // @ts-ignore
+    global.fetch.mockResolvedValue({ ok: true, headers: new Headers({ 'Content-Type': 'application/json' }), json: async () => apiArts });
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${baseUrl}/api/art/featured?limit=1`,
-      expect.objectContaining({ next: { revalidate: 60 } }),
-    );
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({ id: '1', artist: 'Artist', isFeatured: true });
+    const repo = new ArtRepository({} as any);
+    const res = await repo.getAll();
+    expect(res).toHaveLength(1);
+    const a = res[0];
+    expect(a.id).toBe('123');
+    expect(a.titleNb).toBe('Nb');
+    expect(a.titleEn).toBe('En');
+    expect(a.artist).toBe('A');
+    expect(a.sellerDisplayName).toBe('S');
+    expect(a.price).toBe(200);
+    expect(a.image).toBe('/img.png');
+    expect(a.status).toBe(1);
+    expect(a.isVerified).toBe(true);
   });
 
-  it('returns empty array on fetch failure', async () => {
-    const apiClient = {} as ApiClient;
-    const repo = new ArtRepository(apiClient);
-    const response = new Response('nope', { status: 500 });
-    global.fetch = jest.fn().mockResolvedValue(response) as typeof global.fetch;
+  test('getAll returns empty array when fetch not ok', async () => {
+    // @ts-ignore
+    global.fetch.mockResolvedValue({ ok: false });
+    const repo = new ArtRepository({} as any);
+    const res = await repo.getAll();
+    expect(res).toEqual([]);
+  });
 
-    const result = await repo.getAll();
+  test('getById returns null when fetch not ok', async () => {
+    // @ts-ignore
+    global.fetch.mockResolvedValue({ ok: false });
+    const repo = new ArtRepository({} as any);
+    const res = await repo.getById('x');
+    expect(res).toBeNull();
+  });
 
-    expect(result).toEqual([]);
+  test('getById maps empty api object to Untitled and Unknown Artist', async () => {
+    // Return empty object (no fields)
+    // @ts-ignore
+    global.fetch.mockResolvedValue({ ok: true, headers: new Headers({ 'Content-Type': 'application/json' }), json: async () => ({}) });
+    const repo = new ArtRepository({} as any);
+    const res = await repo.getById('id');
+    expect(res).not.toBeNull();
+    expect(res?.titleNb).toBe('Untitled');
+    expect(res?.artist).toBe('Unknown Artist');
+    // id should be string (may be empty)
+    expect(typeof res?.id).toBe('string');
+  });
+
+  test('getFeatured proxies to fetchCollection with limit', async () => {
+    const apiArts = Array.from({ length: 3 }).map((_, i) => ({ id: i + 1 }));
+    // @ts-ignore
+    global.fetch.mockResolvedValue({ ok: true, headers: new Headers({ 'Content-Type': 'application/json' }), json: async () => apiArts });
+    const repo = new ArtRepository({} as any);
+    const res = await repo.getFeatured(3);
+    expect(res).toHaveLength(3);
   });
 });
 

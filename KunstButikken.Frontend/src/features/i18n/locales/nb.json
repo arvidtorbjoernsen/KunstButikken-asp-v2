@@ -30,13 +30,13 @@
     "noArtwork": "Ingen kunst tilgjengelig akkurat nå."
   },
   "artPage": {
+    "title": "Kunst til Salgs",
+    "sellerDescription": "Administrer kunsten din og bla gjennom verifiserte kunstverk fra andre selgere",
+    "buyerDescription": "Verifiserte kunstverk tilgjengelig for kjøp",
+    "defaultDescription": "Bla gjennom verifiserte kunstverk",
+    "yourArt": "Din Kunst",
+    "otherArt": "Annen Tilgjengelig Kunst",
     "featured": "Utvalgte",
-    "forSale": "Kunst til salgs",
-    "sellerSubtitle": "Administrer din kunst og se verifiserte verk fra andre selgere",
-    "buyerSubtitle": "Verifiserte kunstverk tilgjengelig for kjøp",
-    "guestSubtitle": "Bla gjennom verifiserte kunstverk",
-    "sellerHeading": "Din kunst",
-    "othersHeading": "Andre tilgjengelige kunstverk",
     "noArt": "Ingen kunst funnet."
   },
   "art": {

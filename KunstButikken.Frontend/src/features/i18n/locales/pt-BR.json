@@ -30,13 +30,14 @@
     "noArtwork": "Nenhuma obra disponível no momento."
   },
   "artPage": {
+    "title": "Arte à Venda",
+    "sellerDescription": "Gerencie sua arte e navegue pelas obras de arte verificadas de outros vendedores",
+    "buyerDescription": "Obras de arte verificadas disponíveis para compra",
+    "defaultDescription": "Navegue pelas obras de arte verificadas",
+    "yourArt": "Sua Arte",
+    "otherArt": "Outras Obras de Arte Disponíveis",
     "featured": "Em destaque",
-    "forSale": "Arte à Venda",
-    "sellerSubtitle": "Gerencie sua arte e explore obras verificadas de outros vendedores",
-    "buyerSubtitle": "Obras verificadas disponíveis para compra",
-    "guestSubtitle": "Explore obras verificadas",
-    "sellerHeading": "Sua arte",
-    "othersHeading": "Outras obras disponíveis"
+    "noArt": "Nenhuma arte encontrada."
   },
   "art": {
     "price": "Preço",
