@@ -1,6 +1,6 @@
 namespace KunstButikken.AppHost;
 
-internal static partial class AppCompositionBuilder
+public static partial class AppCompositionBuilder
 {
     private static (IResourceBuilder<IResourceWithEnvironment>, IResourceBuilder<ProjectResource>) BuildPaymentService(
         IDistributedApplicationBuilder builder,

@@ -1,6 +1,6 @@
 namespace KunstButikken.AppHost;
 
-internal static partial class AppCompositionBuilder
+public static partial class AppCompositionBuilder
 {
     private static (IResourceBuilder<IResourceWithEndpoints>, IResourceBuilder<IResourceWithEndpoints>) BuildFrontends(
         IDistributedApplicationBuilder builder,
@@ -56,4 +56,3 @@ internal static partial class AppCompositionBuilder
         return (nextJsFrontend, angularFrontend);
     }
 }
-

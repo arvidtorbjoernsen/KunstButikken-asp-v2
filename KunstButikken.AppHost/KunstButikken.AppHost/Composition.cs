@@ -4,7 +4,7 @@ using Scalar.Aspire;
 
 namespace KunstButikken.AppHost;
 
-internal record AppComposition(
+public record AppComposition(
     IResourceBuilder<IResourceWithEnvironment> AuthGateway,
     IResourceBuilder<IResourceWithEnvironment> UserService,
     IResourceBuilder<IResourceWithEnvironment> ArtService,
@@ -15,7 +15,7 @@ internal record AppComposition(
     IResourceBuilder<IResourceWithEndpoints> AngularFrontend
 );
 
-internal static partial class AppCompositionBuilder
+public static partial class AppCompositionBuilder
 {
     [SuppressMessage("SonarAnalyzer.CSharp", "S3776", Justification = "Large composition method; will be refactored into smaller parts incrementally.")]
     [SuppressMessage("SonarAnalyzer.CSharp", "S106", Justification = "Composition wiring - acceptable here.")]
@@ -319,7 +319,7 @@ internal static partial class AppCompositionBuilder
         return resource;
     }
 
-    internal record KeycloakSettings(
+    public record KeycloakSettings(
         string Issuer,
         string BaseUrl,
         string? Audience,

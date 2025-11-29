@@ -52,11 +52,8 @@ async function validateSessionForRoute(
   }
   try {
     const resp = await fetch(`${process.env.NEXT_PUBLIC_API_GATEWAY ?? ''}/auth/session/validate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-AuthGateway-Session': session,
-      },
+      method: 'GET',
+      credentials: 'include',
       cache: 'no-store',
     });
     return resp.ok;
@@ -78,18 +75,20 @@ export async function middleware(request: NextRequest) {
   const hasFallbackSession = Boolean(cookies.get('AUTHGATEWAY_REFRESH')?.value || cookies.get('KEYCLOAK_SESSION')?.value);
   const needsGateway = requiresGatewaySession(pathname);
 
+  if (needsGateway && hasGatewaySession) {
+    const valid = await validateSessionForRoute(pathname, cookies);
+    if (!valid) {
+      const forbiddenUrl = new URL('/auth/forbidden', request.url);
+      forbiddenUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(forbiddenUrl);
+    }
+  }
+
   if ((needsGateway && !hasGatewaySession) || (!needsGateway && !hasGatewaySession && !hasFallbackSession)) {
     const redirectUrl = new URL('/auth/signin', request.url);
     const safeRedirect = ensureRedirectPath(request.nextUrl.searchParams.get('redirect'), request) ?? pathname;
     redirectUrl.searchParams.set('redirect', safeRedirect);
     return NextResponse.redirect(redirectUrl);
-  }
-
-  const valid = await validateSessionForRoute(pathname, cookies);
-  if (!valid) {
-    const forbiddenUrl = new URL('/auth/forbidden', request.url);
-    forbiddenUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(forbiddenUrl);
   }
 
   return NextResponse.next();

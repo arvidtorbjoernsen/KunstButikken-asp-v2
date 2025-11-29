@@ -1,5 +1,6 @@
 using System.Net;
 using KunstButikken.AuthGateway.Services;
+using KunstButikken.AuthGateway.Application.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -47,6 +48,8 @@ public static class ApplicationServiceCollectionExtensions
         {
             options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         });
+
+        services.AddAuthSessions(configuration);
 
         return services;
     }

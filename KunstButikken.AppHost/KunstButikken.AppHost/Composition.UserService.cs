@@ -1,6 +1,6 @@
 namespace KunstButikken.AppHost;
 
-internal static partial class AppCompositionBuilder
+public static partial class AppCompositionBuilder
 {
     // Typed helper extracted from Composition.Configure to keep the Configure method smaller.
     public static (IResourceBuilder<IResourceWithEnvironment>, IResourceBuilder<ProjectResource>) SetupUserServiceHelper(
