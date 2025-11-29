@@ -9,7 +9,7 @@ jest.resetModules();
 const mockResolve = jest.fn();
 
 jest.mock('@/infrastructure/di/container', () => ({
-  getContainer: () => ({ resolve: mockResolve }),
+  createRequestScope: () => ({ resolve: mockResolve }),
 }));
 
 import { getFeaturedClient, getAllClient, getByIdClient } from '@/features/art/api/art-client';

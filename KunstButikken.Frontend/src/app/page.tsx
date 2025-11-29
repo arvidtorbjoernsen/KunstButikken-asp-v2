@@ -1,7 +1,7 @@
 import HomePageClient from './HomePageClient';
 import { GetFeaturedArt } from '@/application/useCases/GetFeaturedArt';
 import { GetAllArt } from '@/application/useCases/GetAllArt';
-import { getContainer } from '@/infrastructure/di/container';
+import { createRequestScope } from '@/infrastructure/di/container';
 import type { UiArt } from '@/features/art/types/art';
 
 /**
@@ -10,13 +10,13 @@ import type { UiArt } from '@/features/art/types/art';
  * Similar to Angular's SSR data fetching in resolvers
  */
 async function getFeaturedArt(): Promise<UiArt[]> {
-  const container = getContainer();
+  const container = createRequestScope();
   const getFeaturedArtUseCase = container.resolve(GetFeaturedArt);
   return getFeaturedArtUseCase.execute(5);
 }
 
 async function getAllArt(): Promise<UiArt[]> {
-  const container = getContainer();
+  const container = createRequestScope();
   const getAllArtUseCase = container.resolve(GetAllArt);
   return getAllArtUseCase.execute();
 }

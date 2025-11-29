@@ -1,4 +1,4 @@
-import { setKeycloakTokenGetter, apiFetch, apiClient } from '@/shared/api/api-client';
+import { setKeycloakTokenGetter, setKeycloakTokenRefresher, apiFetch, apiClient } from '@/shared/api/api-client';
 import { getGatewayBase } from '@/shared/config';
 import { parseResponse } from '@/shared/api/response';
 
@@ -8,6 +8,8 @@ describe('api-client', () => {
   const origFetch = global.fetch;
   beforeEach(() => {
     jest.resetModules();
+    setKeycloakTokenGetter(null);
+    setKeycloakTokenRefresher(null);
     // @ts-ignore
     global.fetch = jest.fn();
     (parseResponse as jest.Mock).mockImplementation(async (r: any) => {
@@ -126,5 +128,39 @@ describe('api-client', () => {
     const textRes: any = { headers: new Headers({ 'Content-Type': 'text/plain' }), json: async () => ({}) , text: async () => 'ok' };
     const t = await realParse(textRes);
     expect(t).toBe('ok');
+  });
+
+  test('apiFetch retries once after successful token refresh', async () => {
+    const gateway = getGatewayBase();
+    const url = `${gateway}/api/retry`;
+    setKeycloakTokenGetter(() => 'stale');
+    const refresher = jest.fn().mockResolvedValue(true);
+    setKeycloakTokenRefresher(refresher);
+
+    const failResponse = { ok: false, status: 401, statusText: 'Unauthorized' };
+    const successResponse = { ok: true, status: 200, json: async () => ({ ok: true }), headers: new Headers({ 'content-type': 'application/json' }) };
+    // @ts-ignore
+    global.fetch.mockResolvedValueOnce(failResponse);
+    // @ts-ignore
+    global.fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await apiClient.get(url);
+    expect(result).toEqual({ ok: true });
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+    expect(refresher).toHaveBeenCalledTimes(1);
+  });
+
+  test('apiFetch surfaces error when token refresh fails', async () => {
+    const gateway = getGatewayBase();
+    const url = `${gateway}/api/retry-fail`;
+    setKeycloakTokenGetter(() => 'stale');
+    setKeycloakTokenRefresher(() => Promise.resolve(false));
+
+    const failResponse = { ok: false, status: 403, statusText: 'Forbidden' };
+    // @ts-ignore
+    global.fetch.mockResolvedValueOnce(failResponse);
+
+    await expect(apiClient.get(url)).rejects.toThrow('HTTP 403: Forbidden');
+    expect(global.fetch).toHaveBeenCalledTimes(1);
   });
 });

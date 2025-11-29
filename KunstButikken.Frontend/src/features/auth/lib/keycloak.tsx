@@ -2,7 +2,7 @@
 
 import type Keycloak from 'keycloak-js';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { setKeycloakTokenGetter } from '@/shared/api/api-client';
+import { setKeycloakTokenGetter, setKeycloakTokenRefresher } from '@/shared/api/api-client';
 import { setKeycloakClientTokenGetter } from './keycloak-client';
 
 /**
@@ -233,7 +233,26 @@ export function KeycloakProvider({ children }: KeycloakProviderProps) {
     if (keycloak) {
       setKeycloakTokenGetter(getToken);
       setKeycloakClientTokenGetter(getToken);
+      setKeycloakTokenRefresher(async () => {
+        if (!keycloak) {
+          return false;
+        }
+        try {
+          const refreshed = await keycloak.updateToken(30);
+          if (refreshed) {
+            console.log('[KeycloakProvider] Token refreshed via api-client');
+          }
+          return true;
+        } catch (err) {
+          console.warn('[KeycloakProvider] Token refresh failed:', err);
+          setAuthenticated(false);
+          return false;
+        }
+      });
     }
+    return () => {
+      setKeycloakTokenRefresher(() => Promise.resolve(false));
+    };
   }, [keycloak]);
 
   const getUsername = (): string | undefined => {

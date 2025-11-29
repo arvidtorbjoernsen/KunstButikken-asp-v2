@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { container } from 'tsyringe';
+import { container, DependencyContainer } from 'tsyringe';
 import type { ApiClient } from '@/infrastructure/http/types';
 import { createApiClient } from '@/infrastructure/http/apiClientFactory';
 import { DI_TOKENS } from './tokens';
@@ -10,22 +10,32 @@ import type { IAuctionRepository } from '@/application/interfaces/IAuctionReposi
 import { ProfileRepository } from '@/infrastructure/repositories/ProfileRepository';
 import type { IProfileRepository } from '@/application/interfaces/IProfileRepository';
 
-export function registerInfrastructureServices() {
-  if (!container.isRegistered(DI_TOKENS.ApiClient)) {
-    container.registerInstance<ApiClient>(DI_TOKENS.ApiClient, createApiClient());
+function registerServices(target: DependencyContainer) {
+  if (!target.isRegistered(DI_TOKENS.ApiClient)) {
+    target.registerInstance<ApiClient>(DI_TOKENS.ApiClient, createApiClient());
   }
-  if (!container.isRegistered(DI_TOKENS.ArtRepository)) {
-    container.registerSingleton<IArtRepository>(DI_TOKENS.ArtRepository, ArtRepository);
+  if (!target.isRegistered(DI_TOKENS.ArtRepository)) {
+    target.registerSingleton<IArtRepository>(DI_TOKENS.ArtRepository, ArtRepository);
   }
-  if (!container.isRegistered(DI_TOKENS.AuctionRepository)) {
-    container.registerSingleton<IAuctionRepository>(DI_TOKENS.AuctionRepository, AuctionRepository);
+  if (!target.isRegistered(DI_TOKENS.AuctionRepository)) {
+    target.registerSingleton<IAuctionRepository>(DI_TOKENS.AuctionRepository, AuctionRepository);
   }
-  if (!container.isRegistered(DI_TOKENS.ProfileRepository)) {
-    container.registerSingleton<IProfileRepository>(DI_TOKENS.ProfileRepository, ProfileRepository);
+  if (!target.isRegistered(DI_TOKENS.ProfileRepository)) {
+    target.registerSingleton<IProfileRepository>(DI_TOKENS.ProfileRepository, ProfileRepository);
   }
 }
 
-export function getContainer() {
+export function registerInfrastructureServices() {
+  registerServices(container);
+}
+
+export function getContainer(): DependencyContainer {
   registerInfrastructureServices();
   return container;
+}
+
+export function createRequestScope(): DependencyContainer {
+  const scope = container.createChildContainer();
+  registerServices(scope);
+  return scope;
 }

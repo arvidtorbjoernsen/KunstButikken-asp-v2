@@ -1,12 +1,16 @@
-import { setKeycloakTokenGetter, apiFetch, apiClient } from '@/shared/api/api-client';
+import { setKeycloakTokenGetter, setKeycloakTokenRefresher, apiFetch, apiClient } from '@/shared/api/api-client';
 
 const origFetch = global.fetch;
 beforeEach(() => {
   jest.resetModules();
+  setKeycloakTokenGetter(null);
+  setKeycloakTokenRefresher(null);
   // @ts-ignore
   global.fetch = jest.fn();
 });
 afterEach(() => {
+  setKeycloakTokenGetter(null);
+  setKeycloakTokenRefresher(null);
   // @ts-ignore
   global.fetch = origFetch;
 });
@@ -38,4 +42,3 @@ describe('api-client additional', () => {
     expect(res).toBe('gone');
   });
 });
-

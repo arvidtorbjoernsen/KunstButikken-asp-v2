@@ -6,7 +6,7 @@ import type { UiAuction } from '@/features/auction/types/auction';
 import type { UiArt } from '@/features/art/types/art';
 import AuctionLiveClient from './live-client';
 import ArtDetails from './ArtDetails';
-import { getContainer } from '@/infrastructure/di/container';
+import { createRequestScope } from '@/infrastructure/di/container';
 import { GetAuctionById } from '@/application/useCases/GetAuctionById';
 import { GetArtById } from '@/application/useCases/GetArtById';
 
@@ -26,7 +26,7 @@ function enrichAuctionWithArt(auction: UiAuction, art: UiArt | null): UiAuction 
 
 export default async function AuctionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const container = getContainer();
+  const container = createRequestScope();
   const getAuctionById = container.resolve(GetAuctionById);
   const getArtById = container.resolve(GetArtById);
   const data = await getAuctionById.execute(id);

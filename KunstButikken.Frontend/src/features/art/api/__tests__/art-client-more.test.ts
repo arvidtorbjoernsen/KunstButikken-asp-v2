@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 jest.resetModules();
 const mockResolve = jest.fn();
-jest.mock('@/infrastructure/di/container', () => ({ getContainer: () => ({ resolve: mockResolve }) }));
+jest.mock('@/infrastructure/di/container', () => ({ createRequestScope: () => ({ resolve: mockResolve }) }));
 
 import { getAllClient, getFeaturedClient } from '@/features/art/api/art-client';
 
