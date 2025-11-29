@@ -6,7 +6,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 
 type InterpolationValues = Record<string, string | number | boolean | null | undefined>;
 
-type TFunc = (key: string, vars?: InterpolationValues) => string;
+export type TFunc = (key: string, vars?: InterpolationValues) => string;
 
 // Recursive resource tree: keys map to either strings or deeper trees
 type ResourceTree = { [key: string]: string | ResourceTree };

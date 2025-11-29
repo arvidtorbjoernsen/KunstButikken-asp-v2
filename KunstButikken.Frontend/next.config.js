@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * next.config.js
  * Next.js 16 configuration with SSR enabled.
@@ -36,6 +37,18 @@ const nextConfig = {
     ],
   },
 };
+
+const requiredPolyfillFiles = [
+  './src/app/layout.tsx',
+  './src/shared/providers/Providers.tsx',
+];
+const reflectImportPattern = /import\s+['"]reflect-metadata['"]/;
+for (const file of requiredPolyfillFiles) {
+  const contents = require('fs').readFileSync(require('path').resolve(__dirname, file), 'utf8');
+  if (!reflectImportPattern.test(contents)) {
+    throw new Error(`Missing "import 'reflect-metadata'" in ${file}. DI requires this polyfill.`);
+  }
+}
 
 module.exports = nextConfig;
 

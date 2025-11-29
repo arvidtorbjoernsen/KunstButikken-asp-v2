@@ -31,10 +31,13 @@ export function parseRolesFromBearer(token: string | null): string[] {
   try {
     const [, payload] = token.split('.');
     if (!payload) return [];
-    const decoded = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
-    const realmRoles: string[] = decoded?.realm_access?.roles || [];
-    const clientRoles: string[] = Object.values(decoded?.resource_access || {})
-      .flatMap((r: any) => r?.roles || []);
+    const decoded = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as {
+      realm_access?: { roles?: string[] };
+      resource_access?: Record<string, { roles?: string[] }>;
+    };
+    const realmRoles: string[] = decoded?.realm_access?.roles ?? [];
+    const clientRoles: string[] = Object.values(decoded?.resource_access ?? {})
+      .flatMap(r => r.roles ?? []);
     return [...new Set([...realmRoles, ...clientRoles])];
   } catch {
     return [];

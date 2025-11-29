@@ -46,6 +46,14 @@ public static class ProgramSetup
                 .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
                 {
                     options.Audience = audience;
+                    if (!string.IsNullOrWhiteSpace(authority))
+                    {
+                        options.Authority = authority;
+                    }
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        options.RequireHttpsMetadata = false;
+                    }
                     options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
                     {
                         OnAuthenticationFailed = context =>

@@ -1,36 +1,43 @@
 # KunstButikken Frontend
 
-Next.js-based frontend for the KunstButikken art marketplace platform.
+Next.js-based frontend for the KunstButikken platform following Clean Architecture, DI via tsyringe, and feature-driven modularity.
 
 ## Tech Stack
 
-- **Framework:** Next.js 16 with App Router
-- **UI:** Material-UI (MUI) with SSR support
-- **State:** Redux Toolkit
-- **Auth:** Keycloak (via custom integration)
-- **Payment:** Stripe
+- **Framework:** Next.js 16 (App Router)
 - **Language:** TypeScript
-- **Styling:** Tailwind CSS + Material-UI
+- **UI:** Material UI + Tailwind CSS utilities
+- **State:** Redux Toolkit
+- **DI & Patterns:** tsyringe + Clean Architecture + Repository Pattern
+- **Auth:** Keycloak
+- **Payments:** Stripe
+- **Testing:** Jest + Testing Library + Playwright
 
-## Architecture
+## Architecture & Patterns
 
-This project uses a **feature-based architecture** with domain-driven design. See [ARCHITECTURE.md](./ARCHITECTURE.md) for details.
+- Clean Architecture layers: `application/` (use cases), `infrastructure/` (repositories, HTTP), `presentation/` (providers), `features/` (UI/logic per domain).
+- tsyringe container lives in `src/infrastructure/di` and is initialised through `DiProvider` + guardrails ensuring `reflect-metadata` is loaded (`src/app/layout.tsx`, `src/shared/providers/Providers.tsx`).
+- Repositories map API DTOs to UI models and are consumed via use cases for both server and client components.
+- See `ARCHITECTURE.md` for feature layout details.
 
 ```
 src/
-├── app/                # Next.js routes
-├── features/          # Feature modules (art, auth, admin, etc.)
-├── shared/            # Cross-cutting concerns
-└── styles/            # Global styles
+├── app/                    # Next.js routes & RSCs
+├── application/            # Use cases + interfaces
+├── features/               # Domain modules (art, auction, auth, etc.)
+├── infrastructure/         # DI container, repositories, http client
+├── presentation/           # React providers (DI, Keycloak, etc.)
+├── shared/                 # Cross-cutting helpers, state
+└── styles/                 # Global styles
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- pnpm (recommended) or npm
-- Running backend services (via Aspire AppHost)
+- Node.js 20+
+- pnpm 9+
+- Backend services via Aspire AppHost (recommended) or running microservices manually
 
 ### Installation
 
@@ -41,15 +48,14 @@ pnpm install
 ### Development
 
 ```bash
-# Run via Aspire (recommended - includes all services)
+# Recommended: run through Aspire (boots all services)
 cd ..
 dotnet run --project KunstButikken.AppHost
 
-# Or run standalone (requires backend services running)
+# Frontend only (requires env + backend services running)
 pnpm dev
 ```
-
-The app will be available at `http://localhost:3000`
+App runs at `http://localhost:3000`.
 
 ### Build
 
@@ -60,65 +66,54 @@ pnpm start
 
 ## Environment Variables
 
-Environment variables are automatically injected by the Aspire AppHost. For standalone development, copy `.env.local.example` to `.env.local`.
+Managed via Aspire secrets by default. For standalone work, create `.env.local`:
 
-**Required Variables:**
-- `NEXT_PUBLIC_API_GATEWAY` - API Gateway URL
-- `NEXT_PUBLIC_KEYCLOAK_URL` - Keycloak server URL
-- `NEXT_PUBLIC_KEYCLOAK_REALM` - Keycloak realm
-- `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID` - Keycloak client ID
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
+- `NEXT_PUBLIC_API_GATEWAY`
+- `NEXT_PUBLIC_KEYCLOAK_URL`
+- `NEXT_PUBLIC_KEYCLOAK_REALM`
+- `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_API_USER`, `NEXT_PUBLIC_API_AUTH`, etc. as needed by providers
 
-See `.env.local.example` for the complete list.
+See `.env.local.example` for the full list.
 
-## Testing
+## Testing & Quality
 
 ```bash
-# Run unit tests
-pnpm test
-
-# Run E2E tests
-pnpm test:e2e
-
-# Generate coverage report
-pnpm test:coverage
+pnpm lint               # ESLint
+pnpm test               # Jest unit tests (use cases, repos, slices)
+pnpm test:coverage      # Coverage report
+pnpm test:e2e           # Playwright E2E
 ```
+- Guardrail in `next.config.js` fails builds if DI polyfill imports are removed.
+- Jest covers Clean Architecture layers (use cases/repositories) plus feature slices.
 
 ## Scripts
 
-- `pnpm dev` - Start development server
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Run ESLint
-- `pnpm test` - Run Jest tests
-- `pnpm test:e2e` - Run Playwright E2E tests
+- `pnpm dev` – start dev server
+- `pnpm build` / `pnpm start` – production build/start
+- `pnpm lint` – lint all sources
+- `pnpm test`, `pnpm test:e2e`, `pnpm test:coverage`
 
-## Features
+## Key Features
 
-- 🎨 Browse and purchase artwork
-- 🔐 Keycloak authentication
-- 🛒 Shopping cart functionality
-- 💳 Stripe payment integration
-- 🌍 Multi-language support (i18n)
-- 🎭 Auction bidding system
-- 👤 User profile management
-- 🔍 Search and filtering
-- 📱 Responsive design
-- 🌙 Dark mode support
+- 🎨 Art discovery, seller tooling, and auctions
+- 🔐 Keycloak auth (SSR + CSR)
+- 💳 Stripe checkout
+- 🌍 i18n with locale persistence
+- 🧩 DI-backed Clean Architecture for reuse/testing
+- 📱 Responsive, dark-mode ready UI
 
-## Project Structure
+## After Recent Refactors
 
-For detailed information about the project architecture and conventions, see:
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - Feature-based architecture overview
-- [docs/archive/](./docs/archive/) - Historical migration documentation
+- All data access flows through repositories + use cases with DI (tsyringe).
+- `reflect-metadata` enforced at entry points to prevent runtime DI failures.
+- Legacy docs migrated/archived; outdated `.md` files under `docs/archive` removed.
+- Expanded Jest coverage across use cases, repositories, and Redux slices.
 
 ## Contributing
 
-When adding new features:
-1. Create a new feature module in `src/features/`
-2. Follow the established feature structure (components, api, types, state)
-3. Use barrel exports (`index.ts`) for clean imports
-4. Add tests alongside your features
-5. Update this README if adding major functionality
-
-
+1. Create/extend feature folders under `src/features` and related use cases under `src/application`.
+2. Register new repositories/tokens in `src/infrastructure/di/container.ts`.
+3. Add unit tests for each new use case/repository (see `src/application/useCases/__tests__`).
+4. Keep README + docs updated after significant architectural changes.

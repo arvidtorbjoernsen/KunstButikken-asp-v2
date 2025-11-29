@@ -25,17 +25,35 @@
     "subtitle": "Utforsk utvalgte verk fra butikken vår",
     "searchPlaceholder": "Søk etter kunst, kunstnere eller selgere",
     "noResults": "Ingen treff",
-    "featured": "Utvalgte"
+    "featured": "Utvalgte",
+    "allArt": "All kunst",
+    "noArtwork": "Ingen kunst tilgjengelig akkurat nå."
   },
   "artPage": {
     "featured": "Utvalgte",
-    "forSale": "Kunst til salgs"
+    "forSale": "Kunst til salgs",
+    "sellerSubtitle": "Administrer din kunst og se verifiserte verk fra andre selgere",
+    "buyerSubtitle": "Verifiserte kunstverk tilgjengelig for kjøp",
+    "guestSubtitle": "Bla gjennom verifiserte kunstverk",
+    "sellerHeading": "Din kunst",
+    "othersHeading": "Andre tilgjengelige kunstverk",
+    "noArt": "Ingen kunst funnet."
   },
   "art": {
     "price": "Pris",
     "artist": "Kunstner",
     "seller": "Selger",
-    "unknownArtist": "Ukjent kunstner"
+    "unknownArtist": "Ukjent kunstner",
+    "status": {
+      "draft": "Utkast",
+      "published": "Publisert",
+      "sold": "Solgt",
+      "rejected": "Avvist"
+    },
+    "labels": {
+      "verified": "Verifisert",
+      "featured": "Fremhevet"
+    }
   },
   "auction": {
     "subtitle": "Alle aktive auksjoner",

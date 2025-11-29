@@ -62,14 +62,19 @@ public static class ProgramSetup
                 .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
                 {
                     options.Audience = audience;
+                    if (!string.IsNullOrWhiteSpace(authority))
+                    {
+                        options.Authority = authority;
+                    }
                     if (builder.Environment.IsDevelopment())
                     {
-                        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
-                        {
-                            OnAuthenticationFailed = context => { Console.WriteLine($"[UserService] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
-                            OnTokenValidated = context => { Console.WriteLine($"[UserService] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; }
-                        };
+                        options.RequireHttpsMetadata = false;
                     }
+                    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context => { Console.WriteLine($"[UserService] Authentication failed: {context.Exception.Message}"); return Task.CompletedTask; },
+                        OnTokenValidated = context => { Console.WriteLine($"[UserService] Token validated successfully for user: {context.Principal?.Identity?.Name}"); return Task.CompletedTask; }
+                    };
                 });
 
             builder.Services.AddAuthorization();

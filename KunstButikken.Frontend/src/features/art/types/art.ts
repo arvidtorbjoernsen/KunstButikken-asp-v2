@@ -13,6 +13,9 @@ export type ApiArt = {
   sellerId?: string;
   sellerDisplayName?: string;
   artist?: string;
+  status?: number;
+  isVerified?: boolean;
+  isFeatured?: boolean;
 };
 
 export type UiArt = {
@@ -29,6 +32,7 @@ export type UiArt = {
   status?: number;
   isVerified?: boolean;
   isFeatured?: boolean;
+  createdAt?: string;
 };
 
 export type AdminArt = UiArt & {

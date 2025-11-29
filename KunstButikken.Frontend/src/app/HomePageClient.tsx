@@ -52,7 +52,7 @@ export default function HomePageClient({ initialFeatured, initialAll }: HomePage
       {/* All Art Section (server-rendered) */}
       <Box mb={4} mt={6}>
         <Typography variant="h6" gutterBottom>
-          {t("home.allArt") ?? "All Art"}
+          {t('home.allArt')}
         </Typography>
 
         {initialAll && initialAll.length > 0 ? (
@@ -66,7 +66,7 @@ export default function HomePageClient({ initialFeatured, initialAll }: HomePage
         ) : (
           <Box sx={{ textAlign: "center", py: 4 }}>
             <Typography variant="body2" color="text.secondary">
-              {t("home.noArtwork") ?? "No artwork available at the moment."}
+              {t('home.noArtwork')}
             </Typography>
           </Box>
         )}
@@ -75,7 +75,7 @@ export default function HomePageClient({ initialFeatured, initialAll }: HomePage
       {(!initialFeatured || initialFeatured.length === 0) && (
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography variant="body2" color="text.secondary">
-            {t("home.noArtwork") ?? "No artwork available at the moment."}
+            {t('home.noArtwork')}
           </Typography>
         </Box>
       )}

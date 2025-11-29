@@ -39,8 +39,9 @@ export const fetchSearchResults = createAsyncThunk(
       });
 
       return filteredArt;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch search results');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to fetch search results';
+      return rejectWithValue(message);
     }
   },
 );
@@ -66,7 +67,7 @@ const searchResultsSlice = createSlice({
       })
       .addCase(fetchSearchResults.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = typeof action.payload === 'string' ? action.payload : 'Failed to fetch search results';
         state.results = [];
       });
   },

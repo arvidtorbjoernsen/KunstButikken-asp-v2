@@ -19,6 +19,9 @@ const statusMap: Record<number, { label: string; color: 'default' | 'success' | 
   3: { label: 'Rejected', color: 'warning' },
 };
 
+const verifiedLabel = 'Verified';
+const featuredLabel = 'Featured';
+
 export default function ArtCard({ art, showStatus = false }: { art: UiArt; showStatus?: boolean }) {
   const { t, locale } = useTranslations();
 
@@ -27,9 +30,8 @@ export default function ArtCard({ art, showStatus = false }: { art: UiArt; showS
   // Use language-specific title and description based on current locale
   const title = locale === 'nb' ? art.titleNb : art.titleEn;
   const description = locale === 'nb' ? art.descriptionNb : art.descriptionEn;
-  
-  const artWithStatus = art as any;
-  const status = artWithStatus.status != null ? statusMap[artWithStatus.status] : null;
+
+  const status = typeof art.status === 'number' ? statusMap[art.status] : null;
 
   // Helper function for currency formatting
   const formatCurrencyNOK = (n?: number) => {
@@ -66,26 +68,26 @@ export default function ArtCard({ art, showStatus = false }: { art: UiArt; showS
               {showStatus && (
                 <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', ml: 1 }}>
                   {status && (
-                    <Chip 
-                      label={status.label} 
-                      color={status.color} 
-                      size="small" 
+                    <Chip
+                      label={status.label}
+                      color={status.color}
+                      size="small"
                       sx={{ height: 20, fontSize: '0.7rem' }}
                     />
                   )}
-                  {artWithStatus.isVerified && (
-                    <Chip 
-                      label="Verified" 
-                      color="primary" 
-                      size="small" 
+                  {art.isVerified && (
+                    <Chip
+                      label={verifiedLabel}
+                      color="primary"
+                      size="small"
                       sx={{ height: 20, fontSize: '0.7rem' }}
                     />
                   )}
-                  {artWithStatus.isFeatured && (
-                    <Chip 
-                      label="Featured" 
-                      color="secondary" 
-                      size="small" 
+                  {art.isFeatured && (
+                    <Chip
+                      label={featuredLabel}
+                      color="secondary"
+                      size="small"
                       sx={{ height: 20, fontSize: '0.7rem' }}
                     />
                   )}

@@ -18,6 +18,8 @@
         <!-- ModelContextProtocol packages: core + AspNetCore integration -->
         <PackageReference Include="ModelContextProtocol.Core" />
         <PackageReference Include="ModelContextProtocol.AspNetCore" />
+        <PackageReference Include="Aspire.Hosting.Azure" />
+        <PackageReference Include="Aspire.Hosting.Yarp" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(RepoRoot)KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj">

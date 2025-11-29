@@ -1,10 +1,13 @@
 "use client";
 
+import "reflect-metadata";
+
 import { TranslationProvider } from "@/features/i18n/components";
 import { KeycloakProvider } from "@/features/auth/lib/keycloak";
 import React from "react";
 import ReduxProvider from "./ReduxProvider";
 import ThemeProvider from "./ThemeProvider";
+import DiProvider from "@/presentation/providers/DiProvider";
 
 /**
  * Main providers wrapper for the application
@@ -19,12 +22,14 @@ import ThemeProvider from "./ThemeProvider";
  */
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <KeycloakProvider>
-      <ThemeProvider>
-        <TranslationProvider>
-          <ReduxProvider>{children}</ReduxProvider>
-        </TranslationProvider>
-      </ThemeProvider>
-    </KeycloakProvider>
+    <DiProvider>
+      <KeycloakProvider>
+        <ThemeProvider>
+          <TranslationProvider>
+            <ReduxProvider>{children}</ReduxProvider>
+          </TranslationProvider>
+        </ThemeProvider>
+      </KeycloakProvider>
+    </DiProvider>
   );
 }

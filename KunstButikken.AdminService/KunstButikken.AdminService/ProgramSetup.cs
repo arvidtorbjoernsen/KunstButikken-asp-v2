@@ -58,6 +58,14 @@ public static class ProgramSetup
                 .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
                 {
                     options.Audience = audience;
+                    if (!string.IsNullOrWhiteSpace(authority))
+                    {
+                        options.Authority = authority;
+                    }
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        options.RequireHttpsMetadata = false;
+                    }
                     // Optional: Add logging for development
                     if (builder.Environment.IsDevelopment())
                     {

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import Providers from "@/shared/providers/Providers";
 import "@/styles/globals.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";

@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import type { RootState } from '@/shared/state/store';
 
 // Mock translations
 jest.mock('@/features/i18n/components/TranslationProvider', () => ({
@@ -14,15 +15,19 @@ const mockDispatch = jest.fn();
 jest.mock('react-redux', () => ({
   __esModule: true,
   useDispatch: () => mockDispatch,
-  useSelector: (selector: (state: any) => unknown) =>
-    selector({
-      search: { query: 'initial' },
-      searchResults: { results: [], loading: false, error: null },
-    }),
+  useSelector: (selector: (state: RootState) => unknown) =>
+    selector(testState),
 }));
 
 import SearchOverlay from '@/features/navigation/components/SearchOverlay';
 import { setQuery } from '@/features/search/state/searchSlice';
+
+const testState: RootState = {
+  search: { query: 'initial' },
+  searchResults: { results: [], loading: false, error: null },
+  ui: { /* minimal stub for test */ } as RootState['ui'],
+  auction: { /* stub */ } as RootState['auction'],
+};
 
 describe('NavbarSearch', () => {
   beforeEach(() => {

@@ -1,9 +1,6 @@
-'use client';
-
-import { apiFetch } from '@/shared/api/api';
 import type { ApiAuction, UiAuction } from '../types/auction';
 
-function mapApiToUi(a: ApiAuction): UiAuction {
+export function mapApiToUi(a: ApiAuction): UiAuction {
   const startsAt = new Date(a.startsAt);
   const endsAt = new Date(a.endsAt);
   const bids = Array.isArray(a.bids) ? a.bids : [];
@@ -15,7 +12,7 @@ function mapApiToUi(a: ApiAuction): UiAuction {
 
   // Normalize status: backend may send numeric enum (0/1/2)
   const statusNorm = ((): 'Draft' | 'Open' | 'Closed' => {
-    const s: any = (a as any).status;
+    const s = a.status;
     if (typeof s === 'number') return s === 1 ? 'Open' : s === 2 ? 'Closed' : 'Draft';
     if (s === 'Open' || s === 'Closed' || s === 'Draft') return s;
     // Fallback: infer from time
@@ -43,14 +40,6 @@ function mapApiToUi(a: ApiAuction): UiAuction {
     isClosed,
     reserveMet,
     timeLeftMs,
-    sellerDisplayName: (a as any).sellerDisplayName,
+    sellerDisplayName: a.sellerDisplayName,
   };
-}
-
-export async function getAuctionsClient(
-  status?: 'Open' | 'Closed' | 'Draft',
-): Promise<UiAuction[]> {
-  const qs = status ? `?status=${encodeURIComponent(status)}` : '';
-  const data = await apiFetch<ApiAuction[]>('AUCTION', `/${qs}`, {}, false);
-  return (Array.isArray(data) ? data : []).map(mapApiToUi);
 }

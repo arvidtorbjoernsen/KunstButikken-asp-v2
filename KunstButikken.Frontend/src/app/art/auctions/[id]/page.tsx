@@ -2,54 +2,34 @@
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { getAuctionByIdServer } from '@/features/auction/api/auction-server';
-import type { ApiAuction, UiAuction } from '@/features/auction/types/auction';
+import type { UiAuction } from '@/features/auction/types/auction';
+import type { UiArt } from '@/features/art/types/art';
 import AuctionLiveClient from './live-client';
 import ArtDetails from './ArtDetails';
-import { getByIdServer as getArtByIdServer } from '@/features/art/api/art';
+import { getContainer } from '@/infrastructure/di/container';
+import { GetAuctionById } from '@/application/useCases/GetAuctionById';
+import { GetArtById } from '@/application/useCases/GetArtById';
 
-function mapApiToUi(a: ApiAuction, art: any): UiAuction {
-  const startsAt = new Date(a.startsAt);
-  const endsAt = new Date(a.endsAt);
-  const bids = Array.isArray(a.bids) ? a.bids : [];
-  const highestBid = bids.length ? Math.max(...bids.map(b => b.amount)) : undefined;
-  const now = Date.now();
-  const timeLeftMs = endsAt.getTime() - now;
-  const hasStarted = startsAt.getTime() <= now;
-  const hasEnded = timeLeftMs <= 0;
-  const isOpen = a.status === 'Open' && hasStarted && !hasEnded;
-  const isClosed = a.status === 'Closed' || hasEnded || !hasStarted;
-  const reservePrice = a.reservePrice ?? undefined;
-  const reserveMet = reservePrice == null || (highestBid != null && highestBid >= reservePrice);
-
+function enrichAuctionWithArt(auction: UiAuction, art: UiArt | null): UiAuction {
+  if (!art) return auction;
   return {
-    id: String(a.id),
-    artId: String(a.artId),
-    sellerId: String(a.sellerId),
-    startsAt,
-    endsAt,
-    startingPrice: a.startingPrice ?? 0,
-    reservePrice,
-    status: a.status,
-    bidsCount: bids.length,
-    highestBid,
-    isOpen,
-    isClosed,
-    reserveMet,
-    timeLeftMs,
-    artImage: art?.image,
-    artTitleEn: art?.titleEn,
-    artTitleNb: art?.titleNb,
-    artist: art?.artist,
-    sellerDisplayName: art?.sellerDisplayName,
-    descriptionNb: art?.descriptionNb, // Added descriptionNb
-    descriptionEn: art?.descriptionEn, // Added descriptionEn
+    ...auction,
+    artImage: art.image ?? auction.artImage,
+    artTitleEn: art.titleEn ?? auction.artTitleEn,
+    artTitleNb: art.titleNb ?? auction.artTitleNb,
+    artist: art.artist ?? auction.artist,
+    sellerDisplayName: art.sellerDisplayName ?? auction.sellerDisplayName,
+    descriptionNb: art.descriptionNb ?? auction.descriptionNb,
+    descriptionEn: art.descriptionEn ?? auction.descriptionEn,
   };
 }
 
 export default async function AuctionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const data = await getAuctionByIdServer(id);
+  const container = getContainer();
+  const getAuctionById = container.resolve(GetAuctionById);
+  const getArtById = container.resolve(GetArtById);
+  const data = await getAuctionById.execute(id);
   if (!data) {
     return (
       <Container maxWidth='md' sx={{ py: 8 }}>
@@ -57,8 +37,8 @@ export default async function AuctionDetailPage({ params }: { params: Promise<{ 
       </Container>
     );
   }
-  const art = await getArtByIdServer(data.artId);
-  const auction = mapApiToUi(data, art);
+  const art = await getArtById.execute(data.artId);
+  const auction = enrichAuctionWithArt(data, art);
 
   return (
     <Container maxWidth='xl' sx={{ py: 4 }}>

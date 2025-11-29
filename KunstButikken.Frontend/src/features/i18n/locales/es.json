@@ -25,17 +25,35 @@
     "subtitle": "Explora obras seleccionadas de nuestra tienda",
     "searchPlaceholder": "Buscar arte, artistas o vendedores",
     "noResults": "No hay resultados",
-    "featured": "Destacado"
+    "featured": "Destacado",
+    "allArt": "Todo el arte",
+    "noArtwork": "No hay obras disponibles en este momento."
   },
   "artPage": {
     "featured": "Destacado",
-    "forSale": "Arte en Venta"
+    "forSale": "Arte en Venta",
+    "sellerSubtitle": "Administra tu arte y explora obras verificadas de otros vendedores",
+    "buyerSubtitle": "Obras verificadas disponibles para comprar",
+    "guestSubtitle": "Explora obras verificadas",
+    "sellerHeading": "Tu arte",
+    "othersHeading": "Otras obras disponibles",
+    "noArt": "No se encontró arte."
   },
   "art": {
     "price": "Precio",
     "artist": "Artista",
     "seller": "Vendedor",
-    "unknownArtist": "Artista Desconocido"
+    "unknownArtist": "Artista Desconocido",
+    "status": {
+      "draft": "Borrador",
+      "published": "Publicado",
+      "sold": "Vendido",
+      "rejected": "Rechazado"
+    },
+    "labels": {
+      "verified": "Verificado",
+      "featured": "Destacado"
+    }
   },
   "auction": {
     "subtitle": "Todas las subastas actuales",

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -8,7 +8,8 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import Link from "next/link";
-import { apiFetch } from "@/shared/api/api";
+import { useContainer } from "@/presentation/providers/DiProvider";
+import { PromoteAdmin } from "@/application/useCases/PromoteAdmin";
 
 export default function CreateAdminPage() {
   const [email, setEmail] = useState("");
@@ -16,16 +17,16 @@ export default function CreateAdminPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const container = useContainer();
+  const promoteAdminUseCase = useMemo(() => container.resolve(PromoteAdmin), [container]);
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
     setError(null);
     try {
-      await apiFetch("USER", "/api/admin/profiles/make-admin-by-email", {
-        method: "POST",
-        body: JSON.stringify({ email })
-      });
+      await promoteAdminUseCase.execute(email);
       setMessage(`Successfully promoted ${email} to admin (profile updated).`);
       setEmail("");
     } catch (err: unknown) {
