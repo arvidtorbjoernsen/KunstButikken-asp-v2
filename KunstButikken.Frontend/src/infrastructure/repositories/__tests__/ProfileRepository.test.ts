@@ -31,7 +31,7 @@ describe('ProfileRepository', () => {
     const repo = new ProfileRepository(apiClient);
 
     await expect(repo.getProfile()).resolves.toEqual(profile);
-    expect(apiClient.get).toHaveBeenCalledWith(`${baseUrl}/api/profile/api/admin/profiles/me`);
+    expect(apiClient.get).toHaveBeenCalledWith(`${baseUrl}/api/profile/me`);
   });
 
   it('updates profile via apiClient.put', async () => {
@@ -40,7 +40,7 @@ describe('ProfileRepository', () => {
     const repo = new ProfileRepository(apiClient);
 
     await expect(repo.updateProfile(profile)).resolves.toEqual(profile);
-    expect(apiClient.put).toHaveBeenCalledWith(`${baseUrl}/api/profile/api/admin/profiles/me`, profile);
+    expect(apiClient.put).toHaveBeenCalledWith(`${baseUrl}/api/profile`, profile);
   });
 
   it('promotes admin via apiClient.post', async () => {
@@ -48,6 +48,6 @@ describe('ProfileRepository', () => {
     const repo = new ProfileRepository(apiClient);
 
     await expect(repo.promoteToAdmin('user@example.com')).resolves.toBeUndefined();
-    expect(apiClient.post).toHaveBeenCalledWith(`${baseUrl}/api/profile/api/admin/profiles/make-admin-by-email`, { email: 'user@example.com' });
+    expect(apiClient.post).toHaveBeenCalledWith(`${baseUrl}/api/admin/profiles/make-admin-by-email`, { email: 'user@example.com' });
   });
 });

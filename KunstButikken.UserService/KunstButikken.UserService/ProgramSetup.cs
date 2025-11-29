@@ -8,6 +8,7 @@ using KunstButikken.UserService.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Scalar.Aspire;
+using Microsoft.IdentityModel.Tokens;
 using KunstButikken.UserService.Infrastructure.DependencyInjection;
 using KunstButikken.UserService.Application.DependencyInjection;
 using KunstButikken.UserService.Infrastructure.Keycloak.Seeding;
@@ -49,7 +50,8 @@ public static class ProgramSetup
             .AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase; });
 
         var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
-        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
+        var fallbackAudience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"];
+        var audiences = ParseAudiences(builder.Configuration["KEYCLOAK_AUDIENCES"], fallbackAudience ?? "kunstbutikken-api");
 
         var authority = builder.Configuration["KEYCLOAK_AUTHORITY"] ?? builder.Configuration["Authentication:Authority"];
 
@@ -61,7 +63,15 @@ public static class ProgramSetup
                 .AddAuthentication()
                 .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
                 {
-                    options.Audience = audience;
+                    if (audiences.Count > 0)
+                    {
+                        options.Audience = audiences[0];
+                        if (audiences.Count > 1)
+                        {
+                            options.TokenValidationParameters ??= new TokenValidationParameters();
+                            options.TokenValidationParameters.ValidAudiences = audiences;
+                        }
+                    }
                     if (!string.IsNullOrWhiteSpace(authority))
                     {
                         options.Authority = authority;
@@ -184,5 +194,20 @@ public static class ProgramSetup
         {
             Console.WriteLine("[UserService] Error invoking MapScalarApiReference reflectively: " + ex.Message);
         }
+    }
+
+    private static IReadOnlyList<string> ParseAudiences(string? rawAudiences, string defaultAudience)
+    {
+        var audiences = rawAudiences?.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList() ?? new List<string>();
+
+        if (audiences.Count == 0 && !string.IsNullOrWhiteSpace(defaultAudience))
+        {
+            audiences.Add(defaultAudience);
+        }
+
+        return audiences;
     }
 }

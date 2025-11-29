@@ -1,0 +1,11 @@
+{
+  "ignorePackages": [
+    "Microsoft.NETCore.App",
+    "Microsoft.AspNetCore.App",
+    "Microsoft.NETCore.Platforms",
+    "NETStandard.Library"
+  ],
+  "ignorePrefixes": [
+    "System."
+  ]
+}

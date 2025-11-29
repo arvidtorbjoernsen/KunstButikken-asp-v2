@@ -11,18 +11,17 @@ export class ProfileRepository implements IProfileRepository {
   constructor(@inject(DI_TOKENS.ApiClient) private readonly apiClient: ApiClient) {}
 
   async getProfile(): Promise<UserProfile> {
-    const url = buildServiceUrl('USER', '/api/admin/profiles/me');
+    const url = buildServiceUrl('USER', '/me');
     return this.apiClient.get<UserProfile>(url);
   }
 
   async updateProfile(profile: UserProfile): Promise<UserProfile> {
-    const url = buildServiceUrl('USER', '/api/admin/profiles/me');
+    const url = buildServiceUrl('USER');
     return this.apiClient.put<UserProfile>(url, profile);
   }
 
   async promoteToAdmin(email: string): Promise<void> {
-    const url = buildServiceUrl('USER', '/api/admin/profiles/make-admin-by-email');
+    const url = buildServiceUrl('ADMIN', '/profiles/make-admin-by-email');
     await this.apiClient.post(url, { email });
   }
 }
-

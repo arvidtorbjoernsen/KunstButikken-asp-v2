@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 using Scalar.Aspire;
+using Microsoft.IdentityModel.Tokens;
 
 // Updated namespace
 
@@ -42,7 +43,8 @@ public static class ProgramSetup
 
         // Authentication (Keycloak via Aspire helper)
         var realm = builder.Configuration["KEYCLOAK_REALM"] ?? "kunstbutikken";
-        var audience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"] ?? "kunstbutikken-api";
+        var fallbackAudience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? builder.Configuration["Authentication:Audience"];
+        var audiences = ParseAudiences(builder.Configuration["KEYCLOAK_AUDIENCES"], fallbackAudience ?? "kunstbutikken-api");
 
         var authority = builder.Configuration["KEYCLOAK_AUTHORITY"]
                         ?? builder.Configuration["Authentication:Authority"]
@@ -57,7 +59,15 @@ public static class ProgramSetup
                 .AddAuthentication()
                 .AddKeycloakJwtBearer("keycloak", realm: realm, options =>
                 {
-                    options.Audience = audience;
+                    if (audiences.Count > 0)
+                    {
+                        options.Audience = audiences[0];
+                        if (audiences.Count > 1)
+                        {
+                            options.TokenValidationParameters ??= new TokenValidationParameters();
+                            options.TokenValidationParameters.ValidAudiences = audiences;
+                        }
+                    }
                     if (!string.IsNullOrWhiteSpace(authority))
                     {
                         options.Authority = authority;
@@ -204,5 +214,20 @@ public static class ProgramSetup
         {
             Console.WriteLine($"[ProgramSetup] Error invoking MapScalarApiReference: {ex}");
         }
+    }
+
+    private static IReadOnlyList<string> ParseAudiences(string? rawAudiences, string defaultAudience)
+    {
+        var audiences = rawAudiences?.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList() ?? new List<string>();
+
+        if (audiences.Count == 0 && !string.IsNullOrWhiteSpace(defaultAudience))
+        {
+            audiences.Add(defaultAudience);
+        }
+
+        return audiences;
     }
 }
