@@ -44,3 +44,4 @@ public class AuthGatewayIntegrationTests : IAsyncLifetime
         Assert.Contains("Healthy", body, StringComparison.OrdinalIgnoreCase);
     }
 }
+
