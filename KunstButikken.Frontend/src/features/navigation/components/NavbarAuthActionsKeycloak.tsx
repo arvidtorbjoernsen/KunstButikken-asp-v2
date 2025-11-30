@@ -24,16 +24,15 @@ export default function NavbarAuthActionsKeycloak({ isAuthed, isSellerVerified }
   const { login, logout, isAdmin } = useKeycloak();
   const userIsAdmin = isAuthed && isAdmin;
 
-  console.log('[NavbarAuthActionsKeycloak] isAuthed:', isAuthed);
-  console.log('[NavbarAuthActionsKeycloak] isAdmin:', isAdmin);
-  console.log('[NavbarAuthActionsKeycloak] userIsAdmin:', userIsAdmin);
-  console.log('[NavbarAuthActionsKeycloak] isSellerVerified:', isSellerVerified); // Log new prop
+  const handleLogin = (target?: string) => {
+    login({ redirectUri: `${window.location.origin}/auth/signin?callbackUrl=${encodeURIComponent(target ?? '/')}` });
+  };
 
   if (!isAuthed) {
     return (
       <>
         <Button
-          onClick={login}
+          onClick={() => handleLogin('/auth/me')}
           size="small"
           color="inherit"
           startIcon={<LoginIcon />}
@@ -42,7 +41,7 @@ export default function NavbarAuthActionsKeycloak({ isAuthed, isSellerVerified }
           {t("nav.signin")}
         </Button>
         <Button
-          onClick={login}
+          onClick={() => handleLogin('/auth/me')}
           size="small"
           variant="outlined"
           startIcon={<PersonAddIcon />}

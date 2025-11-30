@@ -13,4 +13,5 @@ public interface IArtService
     Task DeleteAsync(Guid id, CancellationToken ct = default);
     Task<IEnumerable<Art>> GetFeaturedAsync(int limit, CancellationToken ct = default);
     Task<IEnumerable<Art>> GetUnverifiedAsync(CancellationToken ct = default);
+    Task<IEnumerable<Art>> GetBySellerAsync(Guid sellerId, bool includeUnverified = true, CancellationToken ct = default);
 }

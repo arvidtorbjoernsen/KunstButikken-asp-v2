@@ -15,10 +15,11 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react'; // Removed useRef
+import { useEffect, useMemo, useState } from 'react';
 
 export default function DevCheckButton() {
   const [open, setOpen] = useState(false);
+  const [homeDebug, setHomeDebug] = useState<any | null>(null);
   const { t } = useTranslations();
   const { keycloak, authenticated, isSeller, isBuyer, isAdmin, getUsername } = useKeycloak();
   const router = useRouter();
@@ -64,6 +65,25 @@ export default function DevCheckButton() {
   const handleForceRefresh = () => {
     router.push('/auth/logout');
   };
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const handler = (evt: Event) => {
+      const detail = (evt as CustomEvent).detail;
+      setHomeDebug(detail ?? (window as any).__KB_HOME_DEBUG__ ?? null);
+    };
+    window.addEventListener('kb-home-debug', handler);
+    const initial = (window as any).__KB_HOME_DEBUG__;
+    if (initial) {
+      setHomeDebug(initial);
+    }
+    return () => window.removeEventListener('kb-home-debug', handler);
+  }, []);
 
   return (
     <>
@@ -260,6 +280,59 @@ export default function DevCheckButton() {
                   {JSON.stringify(tokenParsed, null, 2)}
                 </Box>
               </Box>
+
+              {/* Homepage Seller Debug - New Section */}
+              {authenticated && homeDebug && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Homepage Seller Debug:
+                  </Typography>
+                  <Box
+                    sx={{
+                      p: 2,
+                      bgcolor: 'background.paper',
+                      borderRadius: 1,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                    }}
+                  >
+                    <Typography variant="body2">
+                      <strong>Is Seller:</strong> {homeDebug.isSeller ? 'Yes' : 'No'}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Has Seller Data:</strong> {homeDebug.hasSellerData ? 'Yes' : 'No'}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Allow Seller View:</strong> {homeDebug.allowSellerView ? 'Yes' : 'No'}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>View Mode:</strong> {homeDebug.viewMode}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Seller Art Count:</strong> {homeDebug.sellerArtCount}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Seller Featured Count:</strong> {homeDebug.sellerFeaturedCount}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Seller Auctions Count:</strong> {homeDebug.sellerAuctionsCount}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Updated: {homeDebug.timestamp}
+                    </Typography>
+                  </Box>
+                  <Button
+                    component={Link}
+                    href="/debug/session-data"
+                    onClick={handleClose}
+                    color="info"
+                    variant="text"
+                    sx={{ mt: 1 }}
+                  >
+                    View Full Session Data
+                  </Button>
+                </Box>
+              )}
             </Box>
           )}
         </DialogContent>

@@ -24,7 +24,6 @@
     <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="Aspire.RabbitMQ.Client" />
     <PackageReference Include="aspire.hosting" />
-    <PackageReference Include="aspire.npgsql.entityframeworkcore.postgresql" />
     <PackageReference Include="azure.storage.blobs" />
     <PackageReference Include="dotnetenv" />
     <PackageReference Include="microsoft.entityframeworkcore.relational" />

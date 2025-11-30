@@ -4,6 +4,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using KunstButikken.AuthGateway.Domain;
+using KunstButikken.AuthGateway.Domain.Interfaces;
 
 namespace KunstButikken.AuthGateway.Application.AuthSessions;
 
@@ -35,6 +37,7 @@ public sealed class AuthSessionService(IAuthSessionStore store) : IAuthSessionSe
             DisplayName: displayName,
             Email: email,
             Roles: roles,
+            AccessToken: accessToken,
             CreatedAt: now,
             ExpiresAt: now.Add(sessionLifetime),
             RefreshExpiresAt: now.Add(refreshLifetime));

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using KunstButikken.AuctionService.Domain.Interfaces;
 using KunstButikken.AuctionService.Domain.Models;
 using KunstButikken.AuctionService.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace KunstButikken.AuctionService.Infrastructure.Repositories;
 
@@ -33,4 +34,16 @@ public class AuctionRepository : IAuctionRepository
     public Task<Art?> GetArtByIdAsync(Guid id, CancellationToken cancellationToken = default) => _db.Arts.FindAsync(new object[] { id }, cancellationToken).AsTask();
 
     public void RemoveArt(Art art) => _db.Arts.Remove(art);
+
+    public Task<List<Auction>> GetBySellerAsync(Guid sellerId, bool includeClosed = true, CancellationToken ct = default)
+    {
+        var query = _db.Auctions.Where(a => a.SellerId == sellerId);
+        if (!includeClosed)
+        {
+            query = query.Where(a => a.Status != AuctionStatus.Closed);
+        }
+        return query
+            .OrderByDescending(a => a.StartsAt)
+            .ToListAsync(ct);
+    }
 }

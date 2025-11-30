@@ -1,4 +1,5 @@
 using KunstButikken.AuthGateway.Application.AuthSessions;
+using KunstButikken.AuthGateway.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

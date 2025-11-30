@@ -9,5 +9,5 @@ public interface IArtRepository
     Task AddAsync(Models.Art art, CancellationToken cancellationToken = default);
     Task RemoveAsync(Models.Art art, CancellationToken cancellationToken = default);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<List<Models.Art>> GetBySellerAsync(Guid sellerId, bool includeUnverified = true, CancellationToken cancellationToken = default);
 }
-

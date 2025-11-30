@@ -10,4 +10,5 @@ public interface IAuctionService
     Task<Auction?> UpdateAsync(Guid id, Auction updatedAuction, Guid? currentUserId, CancellationToken ct = default);
     Task<Auction?> PlaceBidAsync(Guid auctionId, decimal amount, Guid bidderId, CancellationToken ct = default);
     Task<Auction?> CloseAsync(Guid auctionId, CancellationToken ct = default);
+    Task<IReadOnlyList<Auction>> GetBySellerAsync(Guid sellerId, bool includeClosed = true, CancellationToken ct = default);
 }

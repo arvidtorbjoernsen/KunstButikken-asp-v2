@@ -49,5 +49,14 @@ internal sealed class FakeAuctionRepository : IAuctionRepository
     public void RemoveArt(Art art) => _arts.Remove(art);
 
     public void SeedArt(Art art) => _arts.Add(art);
-}
 
+    public Task<List<Auction>> GetBySellerAsync(Guid sellerId, bool includeClosed = true, CancellationToken ct = default)
+    {
+        var query = _auctions.Where(a => a.SellerId == sellerId);
+        if (!includeClosed)
+        {
+            query = query.Where(a => a.Status != AuctionStatus.Closed);
+        }
+        return Task.FromResult(query.OrderByDescending(a => a.StartsAt).ToList());
+    }
+}

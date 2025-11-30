@@ -40,7 +40,47 @@ export default function HomePageClient({
   isSeller = false,
 }: HomePageClientProps) {
   const { t } = useTranslations();
-  const [viewMode, setViewMode] = React.useState<'mine' | 'all'>(isSeller ? SELLER_VIEW : PUBLIC_VIEW);
+  const hasSellerData = (sellerArt?.length ?? 0) > 0 || (sellerAuctions?.length ?? 0) > 0;
+  const allowSellerView = isSeller || hasSellerData;
+  const [viewMode, setViewMode] = React.useState<'mine' | 'all'>(SELLER_VIEW);
+  const debugLoggedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && typeof window !== 'undefined') {
+      const summary = {
+        isSeller,
+        hasSellerData,
+        allowSellerView,
+        viewMode,
+        sellerArtCount: sellerArt?.length ?? 0,
+        sellerFeaturedCount: sellerFeatured?.length ?? 0,
+        sellerAuctionsCount: sellerAuctions?.length ?? 0,
+        timestamp: new Date().toISOString(),
+      };
+      (window as any).__KB_HOME_DEBUG__ = summary;
+      window.dispatchEvent(new CustomEvent('kb-home-debug', { detail: summary }));
+    }
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
+    const summary = {
+      isSeller,
+      hasSellerData,
+      allowSellerView,
+      viewMode,
+      sellerArtCount: sellerArt?.length ?? 0,
+      sellerFeaturedCount: sellerFeatured?.length ?? 0,
+      sellerAuctionsCount: sellerAuctions?.length ?? 0,
+    };
+    if (!debugLoggedRef.current) {
+      console.groupCollapsed('[HomePageClient] Seller view diagnostics');
+      console.table(summary);
+      console.groupEnd();
+      debugLoggedRef.current = true;
+    } else {
+      console.debug('[HomePageClient] Seller view updated', summary);
+    }
+  }, [allowSellerView, hasSellerData, isSeller, sellerArt, sellerAuctions, sellerFeatured, viewMode]);
 
   const handleViewModeChange = (_event: React.MouseEvent<HTMLElement>, next: 'mine' | 'all' | null) => {
     if (next) {
@@ -48,7 +88,8 @@ export default function HomePageClient({
     }
   };
 
-  const showingMine = isSeller && viewMode === SELLER_VIEW;
+  const effectiveView = allowSellerView ? viewMode : PUBLIC_VIEW;
+  const showingMine = allowSellerView && effectiveView === SELLER_VIEW;
   const featuredList = showingMine ? sellerFeatured : initialFeatured;
   const catalogList = showingMine ? sellerArt : initialAll;
   const hasFeatured = (featuredList?.length ?? 0) > 0;
@@ -73,12 +114,12 @@ export default function HomePageClient({
     <Container maxWidth="xl" sx={{ py: 8 }}>
       <Box mb={6}>
         <Typography variant="h4" component="h1" gutterBottom>
-          {t("home.title")}
+          {t("home.title" )}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {t("home.subtitle")}
         </Typography>
-        {isSeller && (
+        {allowSellerView && (
           <Box mt={3}>
             <ToggleButtonGroup
               value={viewMode}

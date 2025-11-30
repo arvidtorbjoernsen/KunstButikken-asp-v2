@@ -5,6 +5,7 @@ using System.Text;
 using KunstButikken.ArtService.Application.Interfaces;
 using KunstButikken.ArtService.Domain.Models;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // Updated namespace
@@ -265,6 +266,21 @@ public class ArtController(IArtService artService) : ControllerBase
         modify(art);
         await _svc.UpdateAsync(id, art).ConfigureAwait(false);
         return NoContent();
+    }
+
+    // Authenticated seller: get own art inventory
+    [HttpGet("mine")]
+    [Authorize(Roles = "seller")]
+    public async Task<ActionResult<IEnumerable<Art>>> GetMine([FromQuery] bool includeUnverified = true, CancellationToken ct = default)
+    {
+        var sellerIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+        if (string.IsNullOrWhiteSpace(sellerIdValue) || !Guid.TryParse(sellerIdValue, out var sellerId))
+        {
+            return Forbid();
+        }
+
+        var items = await _svc.GetBySellerAsync(sellerId, includeUnverified, ct).ConfigureAwait(false);
+        return Ok(items);
     }
 
     // Helper enum representing admin actions

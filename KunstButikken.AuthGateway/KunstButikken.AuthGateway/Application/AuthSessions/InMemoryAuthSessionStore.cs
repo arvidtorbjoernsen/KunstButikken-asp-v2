@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using KunstButikken.AuthGateway.Domain;
+using KunstButikken.AuthGateway.Domain.Interfaces;
 
 namespace KunstButikken.AuthGateway.Application.AuthSessions;
 

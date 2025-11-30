@@ -14,4 +14,7 @@ public interface IAuctionRepository
     Task AddArtAsync(Art art, CancellationToken cancellationToken = default);
     Task<Art?> GetArtByIdAsync(Guid id, CancellationToken cancellationToken = default);
     void RemoveArt(Art art);
+
+    // Seller-specific queries
+    Task<List<Auction>> GetBySellerAsync(Guid sellerId, bool includeClosed = true, CancellationToken ct = default);
 }

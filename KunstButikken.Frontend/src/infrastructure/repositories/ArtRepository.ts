@@ -31,6 +31,12 @@ export class ArtRepository implements IArtRepository {
     return data ? this.mapApiToUi(data) : null;
   }
 
+  async getMine(includeUnverified = true, accessToken?: string): Promise<UiArt[]> {
+    const url = buildServiceUrl('ART', `/mine?includeUnverified=${includeUnverified}`);
+    const data = await this.apiClient.get<ApiArt[]>(url, { headers: this.extendHeaders(accessToken) });
+    return Array.isArray(data) ? data.map(this.mapApiToUi) : [];
+  }
+
   private async fetchCollection(url: string): Promise<UiArt[]> {
     const res = await fetch(url, { next: { revalidate: 60 } });
     if (!res.ok) {
@@ -55,4 +61,13 @@ export class ArtRepository implements IArtRepository {
     isVerified: a.isVerified ?? undefined,
     isFeatured: a.isFeatured ?? undefined,
   });
+
+  private extendHeaders(accessToken?: string): HeadersInit | undefined {
+    if (!accessToken) {
+      return undefined;
+    }
+    return {
+      Authorization: `Bearer ${accessToken}`,
+    };
+  }
 }

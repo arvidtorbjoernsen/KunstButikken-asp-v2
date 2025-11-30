@@ -47,9 +47,8 @@ export default function MobileMenuKeycloak({ isAuthed, isSellerVerified }: Mobil
   console.log('[MobileMenuKeycloak] userIsAdmin:', userIsAdmin);
   console.log('[MobileMenuKeycloak] isSellerVerified:', isSellerVerified); // Log new prop
 
-  const handleLogin = () => {
-    setOpen(false);
-    login();
+  const handleLogin = (target?: string) => {
+    login({ redirectUri: `${window.location.origin}/auth/signin?callbackUrl=${encodeURIComponent(target ?? '/')}` });
   };
 
   const handleLogout = () => {
@@ -133,7 +132,7 @@ export default function MobileMenuKeycloak({ isAuthed, isSellerVerified }: Mobil
           {!isAuthed ? (
             <>
               <Button
-                onClick={handleLogin}
+                onClick={() => handleLogin('/auth/me')}
                 variant="outlined"
                 fullWidth
                 startIcon={<LoginIcon />}
@@ -141,7 +140,7 @@ export default function MobileMenuKeycloak({ isAuthed, isSellerVerified }: Mobil
                 {t("nav.signin")}
               </Button>
               <Button
-                onClick={handleLogin}
+                onClick={() => handleLogin('/auth/me')}
                 variant="contained"
                 fullWidth
               >

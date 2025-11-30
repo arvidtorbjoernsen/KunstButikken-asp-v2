@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using KunstButikken.AuthGateway.Domain;
+
 namespace KunstButikken.AuthGateway.Application.AuthSessions;
 
 public sealed record AuthSessionResult(
@@ -8,4 +12,3 @@ public sealed record AuthSessionResult(
     string? Email,
     IReadOnlyList<string> Roles,
     DateTimeOffset ExpiresAt);
-

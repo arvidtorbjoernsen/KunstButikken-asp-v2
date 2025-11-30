@@ -25,7 +25,7 @@ import { useTranslations } from "@/features/i18n/components/TranslationProvider"
  * Similar to Angular's navbar component that uses AuthService
  */
 export default function NavbarKeycloak() {
-  const { t } = useTranslations(); // Use translations for aria-label
+  const { t } = useTranslations();
   const { authenticated, loading, isSeller } = useKeycloak(); // Destructure isSeller
 
   // During loading, show navbar but without auth state

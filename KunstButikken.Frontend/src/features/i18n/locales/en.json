@@ -35,7 +35,8 @@
     "myCatalogue": "Your artwork",
     "myAuctions": "Your auctions",
     "noAuctions": "You have no auctions yet.",
-    "noFeatured": "No featured items to show."
+    "noFeatured": "No featured items to show.",
+    "noMine": "You have no art yet."
   },
   "artPage": {
     "title": "Art for Sale",

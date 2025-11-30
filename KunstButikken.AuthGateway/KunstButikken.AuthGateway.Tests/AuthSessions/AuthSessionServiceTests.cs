@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using KunstButikken.AuthGateway.Application.AuthSessions;
+using KunstButikken.AuthGateway.Domain;
 using Xunit;
 
 namespace KunstButikken.AuthGateway.Tests.AuthSessions;
@@ -68,7 +69,7 @@ public class AuthSessionServiceTests
         var service = new AuthSessionService(store);
         var handler = new JwtSecurityTokenHandler();
         var token = handler.WriteToken(new JwtSecurityToken(claims: new[] { new Claim(ClaimTypes.NameIdentifier, "kc-user") }));
-        var response = new KeycloakTokenResponse(token, "refresh-xyz", 3600, 7200);
+        var response = new KeycloakTokenResponse(token, "refresh-xyz", 3600, 7200, token);
 
         var session = await service.CreateSessionFromKeycloakAsync(response, TimeSpan.FromMinutes(10), TimeSpan.FromHours(2));
 

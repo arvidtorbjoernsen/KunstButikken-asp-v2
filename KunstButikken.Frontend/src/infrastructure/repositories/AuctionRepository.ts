@@ -45,4 +45,19 @@ export class AuctionRepository implements IAuctionRepository {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+
+  async getMine(includeClosed = true, accessToken?: string): Promise<UiAuction[]> {
+    const url = buildServiceUrl('AUCTION', `/mine?includeClosed=${includeClosed}`);
+    const data = await this.apiClient.get<ApiAuction[]>(url, { headers: this.extendHeaders(accessToken) });
+    return Array.isArray(data) ? data.map(mapApiToUi) : [];
+  }
+
+  private extendHeaders(accessToken?: string): HeadersInit | undefined {
+    if (!accessToken) {
+      return undefined;
+    }
+    return {
+      Authorization: `Bearer ${accessToken}`,
+    };
+  }
 }

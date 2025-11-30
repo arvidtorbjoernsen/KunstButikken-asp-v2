@@ -21,11 +21,9 @@ export class GetSellerAuctions {
   async execute({ user }: GetSellerAuctionsInput): Promise<GetSellerAuctionsOutput> {
     ensureRole(user, ['seller']);
 
-    const auctions = await this.repo.getAuctions('Open');
-    const mine = auctions.filter(a => a.sellerId === user.id);
-    const others = auctions.filter(a => a.sellerId !== user.id);
+    const mine = await this.repo.getMine(true, user.token);
+    const others = (await this.repo.getAuctions('Open')).filter(a => a.sellerId !== user.id);
 
     return { mine, others };
   }
 }
-

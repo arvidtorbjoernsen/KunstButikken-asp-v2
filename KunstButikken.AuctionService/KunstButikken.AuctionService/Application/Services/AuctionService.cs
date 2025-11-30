@@ -125,4 +125,10 @@ public sealed class AuctionAppService : IAuctionService
         await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
         return auction;
     }
+
+    public async Task<IReadOnlyList<Auction>> GetBySellerAsync(Guid sellerId, bool includeClosed = true, CancellationToken ct = default)
+    {
+        var items = await _repo.GetBySellerAsync(sellerId, includeClosed, ct).ConfigureAwait(false);
+        return items;
+    }
 }

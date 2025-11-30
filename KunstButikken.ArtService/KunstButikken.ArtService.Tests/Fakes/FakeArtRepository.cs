@@ -33,4 +33,14 @@ internal sealed class FakeArtRepository : IArtRepository
     }
 
     public void Seed(params Art[] arts) => _items.AddRange(arts);
+
+    public Task<List<Art>> GetBySellerAsync(Guid sellerId, bool includeUnverified = true, CancellationToken cancellationToken = default)
+    {
+        var query = _items.Where(a => a.SellerId == sellerId);
+        if (!includeUnverified)
+        {
+            query = query.Where(a => a.IsVerified && a.Status == ArtStatus.Published);
+        }
+        return Task.FromResult(query.OrderByDescending(a => a.CreatedAt).ToList());
+    }
 }

@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const AUTH_COOKIES = [
-  { name: 'KEYCLOAK_SESSION', requiredSecure: false },
-  { name: 'AUTHGATEWAY_SESSION', requiredSecure: true, scope: 'access' },
-  { name: 'AUTHGATEWAY_REFRESH', requiredSecure: true, scope: 'refresh' },
-];
 const PROTECTED_ROUTE_PATTERNS = [
   /^\/auth\/me(\/.*)?$/,
   /^\/profile(\/.*)?$/,

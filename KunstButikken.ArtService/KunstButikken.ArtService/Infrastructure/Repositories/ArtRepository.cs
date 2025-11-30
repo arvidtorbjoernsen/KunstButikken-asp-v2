@@ -39,4 +39,16 @@ public class ArtRepository : IArtRepository
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) =>
         _db.SaveChangesAsync(cancellationToken);
+
+    public Task<List<Art>> GetBySellerAsync(Guid sellerId, bool includeUnverified = true, CancellationToken cancellationToken = default)
+    {
+        var query = _db.Arts.Where(a => a.SellerId == sellerId);
+        if (!includeUnverified)
+        {
+            query = query.Where(a => a.IsVerified && a.Status == ArtStatus.Published);
+        }
+        return query
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
 }

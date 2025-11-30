@@ -103,6 +103,7 @@ public class AuthController(
         var session = await _sessionService.CreateSessionFromKeycloakAsync(tokens, _options.SessionLifetime, _options.RefreshLifetime, cancel).ConfigureAwait(false);
         _cookieWriter.WriteSessionCookie(Response, session);
         _cookieWriter.WriteRefreshCookie(Response, session);
+        _cookieWriter.WriteAccessTokenCookie(Response, session);
 
         return Ok(new { session.SessionId, session.UserId, session.Roles, session.ExpiresAt });
     }
@@ -155,6 +156,7 @@ public class AuthController(
         var session = await _sessionService.CreateSessionFromKeycloakAsync(tokens, _options.SessionLifetime, _options.RefreshLifetime, cancel).ConfigureAwait(false);
         _cookieWriter.WriteRefreshCookie(Response, session);
         _cookieWriter.WriteSessionCookie(Response, session);
+        _cookieWriter.WriteAccessTokenCookie(Response, session);
 
         return Ok(new { session.SessionId, session.ExpiresAt });
     }

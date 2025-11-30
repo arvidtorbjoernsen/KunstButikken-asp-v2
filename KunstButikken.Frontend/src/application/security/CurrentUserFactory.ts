@@ -13,9 +13,9 @@ export function createCurrentUserFromToken(token: string | null | undefined): Cu
     return {
       id: decoded?.sub,
       roles,
+      token,
     };
   } catch {
     return { roles: [] };
   }
 }
-

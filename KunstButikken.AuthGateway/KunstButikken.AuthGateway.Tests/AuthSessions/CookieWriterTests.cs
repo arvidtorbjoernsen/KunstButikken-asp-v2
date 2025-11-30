@@ -1,4 +1,5 @@
 using KunstButikken.AuthGateway.Application.AuthSessions;
+using KunstButikken.AuthGateway.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -13,7 +14,7 @@ public class CookieWriterTests
         var options = Options.Create(new AuthSessionOptions { CookieSecure = false, CookieDomain = "" });
         var writer = new CookieWriter(options);
         var response = new DefaultHttpContext().Response;
-        var session = new AuthSession("sid", "refresh", "user", null, null, null, Array.Empty<string>(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddMinutes(5), DateTimeOffset.UtcNow.AddHours(1));
+        var session = new AuthSession("sid", "refresh", "user", null, null, null, Array.Empty<string>(), "access", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddMinutes(5), DateTimeOffset.UtcNow.AddHours(1));
 
         writer.WriteSessionCookie(response, session);
         writer.WriteRefreshCookie(response, session);
@@ -22,4 +23,3 @@ public class CookieWriterTests
         Assert.Contains(AuthSessionOptions.RefreshCookie, response.Headers["Set-Cookie"].ToString());
     }
 }
-

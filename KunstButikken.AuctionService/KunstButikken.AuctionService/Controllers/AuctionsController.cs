@@ -5,6 +5,7 @@ using KunstButikken.AuctionService.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace KunstButikken.AuctionService.Controllers;
 
@@ -101,6 +102,20 @@ public class AuctionsController : ControllerBase
         await _hub.Clients.Group(id.ToString()).SendAsync("auctionClosed", auction).ConfigureAwait(false);
         await NotifyUpdatedAsync(id, auction).ConfigureAwait(false);
         return NoContent();
+    }
+
+    [HttpGet("mine")]
+    [Authorize(Roles = "seller")]
+    public async Task<ActionResult<IEnumerable<Auction>>> GetMine([FromQuery] bool includeClosed = true)
+    {
+        var sellerIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+        if (string.IsNullOrWhiteSpace(sellerIdValue) || !Guid.TryParse(sellerIdValue, out var sellerId))
+        {
+            return Forbid();
+        }
+
+        var items = await _service.GetBySellerAsync(sellerId, includeClosed).ConfigureAwait(false);
+        return Ok(items);
     }
 
     private Task NotifyUpdatedAsync(Guid auctionId, Auction auction) => _hub.Clients.Group(auctionId.ToString()).SendAsync("auctionUpdated", auction);

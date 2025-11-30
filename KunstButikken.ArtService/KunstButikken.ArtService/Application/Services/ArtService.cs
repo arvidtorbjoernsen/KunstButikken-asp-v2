@@ -125,4 +125,11 @@ public class ArtService : IArtService
         var query = _repo.Query().Where(a => !a.IsVerified).OrderByDescending(a => a.CreatedAt);
         return Task.FromResult<IEnumerable<Art>>(query.ToList());
     }
+
+    public Task<IEnumerable<Art>> GetBySellerAsync(Guid sellerId, bool includeUnverified = true, CancellationToken ct = default)
+    {
+        return _repo.GetBySellerAsync(sellerId, includeUnverified, ct).ContinueWith(t => (IEnumerable<Art>)t.Result, ct,
+            TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+            TaskScheduler.Default);
+    }
 }

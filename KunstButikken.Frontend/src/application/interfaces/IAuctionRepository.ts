@@ -5,6 +5,7 @@ export interface IAuctionRepository {
   getById(id: string): Promise<UiAuction | null>;
   updateAuction(id: string, payload: UpdateAuctionPayload): Promise<void>;
   placeBid(auctionId: string, amount: number): Promise<void>;
+  getMine(includeClosed?: boolean, accessToken?: string): Promise<UiAuction[]>;
 }
 
 export type UpdateAuctionPayload = {

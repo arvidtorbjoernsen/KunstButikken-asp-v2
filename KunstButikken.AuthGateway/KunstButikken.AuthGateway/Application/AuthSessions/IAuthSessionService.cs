@@ -1,6 +1,4 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using KunstButikken.AuthGateway.Domain;
 
 namespace KunstButikken.AuthGateway.Application.AuthSessions;
 

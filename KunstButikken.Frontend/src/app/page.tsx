@@ -7,8 +7,11 @@ import { headers } from 'next/headers';
 import { parseRolesFromBearer, hasRole } from '@/features/auth/lib/server-auth';
 import { Buffer } from 'node:buffer';
 import { GetSellerAuctions } from '@/application/useCases/GetSellerAuctions';
+import { GetSellerArt } from '@/application/useCases/GetSellerArt';
 import type { CurrentUserContext } from '@/application/security/types';
 import type { UiAuction } from '@/features/auction/types/auction';
+import { cookies } from 'next/headers';
+import { createCurrentUserFromToken } from '@/application/security/CurrentUserFactory';
 
 /**
  * Server-side data fetching for the home page
@@ -43,40 +46,39 @@ const sortArtByFeatured = (items: UiArt[]): UiArt[] =>
  */
 export default async function HomePage() {
   const hdrs = await headers();
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get('kb_session_access')?.value;
   const authHeader = hdrs.get('authorization') || hdrs.get('Authorization');
-  const token = authHeader ? authHeader.replace(/^Bearer\s+/i, '') : null;
-  const roles = parseRolesFromBearer(token);
+  const bearerFromHeader = authHeader ? authHeader.replace(/^Bearer\s+/i, '') : null;
+  const token = sessionToken ?? bearerFromHeader;
+  const currentUser = createCurrentUserFromToken(token);
+  const roles = currentUser.roles;
 
   const featured = sortArtByFeatured(await getFeaturedArt());
   const all = sortArtByFeatured(await getAllArt());
 
-  let sellerId: string | undefined;
-  if (token) {
-    try {
-      const [, payload] = token.split('.');
-      const decoded = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
-      sellerId = decoded?.sub;
-    } catch {
-      sellerId = undefined;
-    }
-  }
+  let sellerId = currentUser.id;
 
-  const isSeller = hasRole(roles, 'seller') && !!sellerId;
-
+  const isSeller = roles.includes('seller') && !!sellerId;
+  const container = createRequestScope();
   let sellerArt: UiArt[] = [];
   let sellerFeatured: UiArt[] = [];
   let sellerAuctions: UiAuction[] = [];
 
-  if (isSeller && sellerId) {
-    const sellerScoped = all.filter(art => art.sellerId === sellerId);
-    sellerArt = sellerScoped;
-    sellerFeatured = featured.filter(art => art.sellerId === sellerId);
-
-    const container = createRequestScope();
+  if (isSeller && sellerId && token) {
+    const getSellerArt = container.resolve(GetSellerArt);
     const getSellerAuctions = container.resolve(GetSellerAuctions);
-    const currentUser: CurrentUserContext = { id: sellerId, roles };
+    const currentSeller: CurrentUserContext = { id: sellerId, roles, token };
     try {
-      const auctions = await getSellerAuctions.execute({ user: currentUser });
+      const mineArt = await getSellerArt.execute({ user: currentSeller });
+      sellerArt = sortArtByFeatured(mineArt);
+      sellerFeatured = sellerArt.filter(a => a.isFeatured);
+    } catch {
+      sellerArt = [];
+      sellerFeatured = [];
+    }
+    try {
+      const auctions = await getSellerAuctions.execute({ user: currentSeller });
       sellerAuctions = auctions.mine;
     } catch {
       sellerAuctions = [];
