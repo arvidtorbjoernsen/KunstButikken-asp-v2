@@ -1,52 +1,46 @@
-using System.Net.Http.Json;
+// KunstButikken.AuthGateway.Tests/AuthGatewayIntegrationTests.cs
 using Aspire.Hosting;
 using Aspire.Hosting.Testing;
-using FluentAssertions;
-using KunstButikken.AppHost;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using System.Net;
 using Xunit;
 
-namespace KunstButikken.AuthGateway.Tests;
-
-public sealed class AuthGatewayIntegrationTests : IAsyncLifetime
+public class AuthGatewayIntegrationTests : IAsyncLifetime
 {
-    private DistributedApplication? _app;
-    private HttpClient? _client;
+    private IDistributedApplicationTestingBuilder _testingBuilder = null!;
+    private DistributedApplication _app = null!;
 
     public async Task InitializeAsync()
     {
-        var testingBuilder = AppHost.AppHostExtensions.CreateTestingBuilder();
-        var composition = AppHostProjects.BuildTestingApplication(testingBuilder);
-        var authGatewayName = composition.AuthGateway.Resource.Name;
-        testingBuilder.WithApp(app => app.WithEntrypoint(authGatewayName));
+        // Boot the AppHost defined in your solution
+        _testingBuilder = await DistributedApplicationTestingBuilder
+            .CreateAsync<Projects.KunstButikken_AppHost>();
 
-        _app = await testingBuilder.BuildAsync();
+        _app = await _testingBuilder.BuildAsync();
         await _app.StartAsync();
-        _client = _app.CreateHttpClient(authGatewayName);
     }
 
     public async Task DisposeAsync()
     {
-        if (_client is not null)
-        {
-            _client.Dispose();
-        }
-        if (_app is not null)
-        {
-            await _app.DisposeAsync();
-        }
+        await _app.DisposeAsync();
+        _testingBuilder.Dispose();
     }
 
     [Fact]
-    public async Task Alive_endpoint_returns_ok()
+    public async Task Health_endpoint_returns_ok()
     {
-        var response = await _client!.GetAsync("/auth/alive");
-        response.EnsureSuccessStatusCode();
-        var payload = await response.Content.ReadFromJsonAsync<AliveResponse>();
-        payload.Should().NotBeNull();
-        payload!.status.Should().Be("ok");
-    }
+        const string resourceName = "auth-gateway"; // <-- match AppHost name
 
-    private sealed record AliveResponse(string status, string service, DateTimeOffset time);
+        // Wait until the gateway is healthy to avoid race conditions
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        await _app.ResourceNotifications.WaitForResourceHealthyAsync(resourceName, cts.Token);
+
+        // Create an HttpClient for the resource's default "http" endpoint
+        using var client = _app.CreateHttpClient(resourceName, endpointName: "http");
+
+        var response = await client.GetAsync("/health");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Healthy", body, StringComparison.OrdinalIgnoreCase);
+    }
 }
