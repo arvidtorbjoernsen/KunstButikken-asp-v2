@@ -31,6 +31,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KunstButikken.AuthGateway\KunstButikken.AuthGateway.csproj" />
-    <ProjectReference Include="..\..\KunstButikken.AppHost\KunstButikken.AppHost\KunstButikken.AppHost.csproj" />
   </ItemGroup>
 </Project>

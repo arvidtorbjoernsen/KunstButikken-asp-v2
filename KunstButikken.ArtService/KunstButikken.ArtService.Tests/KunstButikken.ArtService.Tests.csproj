@@ -11,6 +11,7 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="FluentAssertions" />
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="aspire.keycloak.authentication" />
     <PackageReference Include="aspire.npgsql.entityframeworkcore.postgresql" />
@@ -33,7 +34,7 @@
     <ProjectReference Include="../KunstButikken.ArtService/Application/KunstButikken.ArtService.Application.csproj" />
     <ProjectReference Include="../KunstButikken.ArtService/Domain/KunstButikken.ArtService.Domain.csproj" />
     <ProjectReference Include="../KunstButikken.ArtService/Infrastructure/KunstButikken.ArtService.Infrastructure.csproj" />
-    <ProjectReference Include="../KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj" />
-    <ProjectReference Include="../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj" />
+    <ProjectReference Include="../../KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj" />
+    <ProjectReference Include="../../KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>

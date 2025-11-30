@@ -119,6 +119,7 @@ public static partial class AppCompositionBuilder
             (artService, artServiceLocalBuilder) = BuildArtService(
                 builder,
                 artDb,
+                usersDb,
                 userService ?? throw new InvalidOperationException("userService is null"),
                 azurite ?? throw new InvalidOperationException("azurite is null"),
                 eventBus ?? throw new InvalidOperationException("eventBus is null"),

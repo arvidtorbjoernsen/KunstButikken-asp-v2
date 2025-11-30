@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from '@/features/i18n/components/TranslationProvider';
 import type { UiAuction } from '../types/auction';
 import Chip from '@mui/material/Chip';
+import { FeaturedChip } from '@/features/ui/components';
 
 function formatCurrency(n?: number) {
   if (n == null) return '—';

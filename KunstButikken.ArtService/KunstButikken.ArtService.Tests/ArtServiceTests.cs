@@ -64,4 +64,73 @@ public class ArtServiceTests
         Assert.NotNull(response.ImageUrl);
         Assert.Equal(response.ImageUrl, art.ImageUrl);
     }
+
+    [Fact]
+    public async Task UpdateAsync_UpdatesArtAndPublishesEvent()
+    {
+        var art = new ArtBuilder().Build();
+        _repo.Seed(art);
+
+        var update = new ArtBuilder()
+            .WithTitleEn("New Title")
+            .WithDescriptionEn("New Description")
+            .Build();
+
+        await _sut.UpdateAsync(art.Id, update);
+
+        var updatedArt = await _repo.FindAsync(art.Id);
+        Assert.NotNull(updatedArt);
+        Assert.Equal("New Title", updatedArt.TitleEn);
+        Assert.Equal("New Description", updatedArt.DescriptionEn);
+        Assert.IsType<ArtUpdatedIntegrationEvent>(_eventBus.PublishedEvent);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesArtAndPublishesEvent()
+    {
+        var art = new ArtBuilder().Build();
+        _repo.Seed(art);
+
+        await _sut.DeleteAsync(art.Id);
+
+        var deletedArt = await _repo.FindAsync(art.Id);
+        Assert.Null(deletedArt);
+        Assert.IsType<ArtDeletedIntegrationEvent>(_eventBus.PublishedEvent);
+    }
+
+    [Fact]
+    public async Task GetUnverifiedAsync_ReturnsOnlyUnverified()
+    {
+        _repo.Seed(
+            new ArtBuilder().Verified().Build(),
+            new ArtBuilder().Build());
+
+        var result = await _sut.GetUnverifiedAsync();
+
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_FiltersByStatus()
+    {
+        _repo.Seed(
+            new ArtBuilder().WithStatus(ArtStatus.Draft).Build(),
+            new ArtBuilder().WithStatus(ArtStatus.Published).Verified().Build());
+
+        var result = await _sut.GetAllAsync(status: ArtStatus.Draft);
+
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_FiltersByFeatured()
+    {
+        _repo.Seed(
+            new ArtBuilder().WithStatus(ArtStatus.Published).Featured().Verified().Build(),
+            new ArtBuilder().WithStatus(ArtStatus.Published).Verified().Build());
+
+        var result = await _sut.GetAllAsync(featured: true);
+
+        Assert.Single(result);
+    }
 }

@@ -30,4 +30,8 @@
   <ItemGroup>
     <ProjectReference Include="..\KunstButikken.AuctionService\Application\KunstButikken.AuctionService.Application.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KunstButikken.AuctionService\KunstButikken.AuctionService.csproj" />
+    <ProjectReference Include="..\KunstButikken.AuctionService\Domain\KunstButikken.AuctionService.Domain.csproj" />
+  </ItemGroup>
 </Project>

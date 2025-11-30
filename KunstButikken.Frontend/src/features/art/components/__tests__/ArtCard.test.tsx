@@ -5,7 +5,7 @@ import ArtCard from '../ArtCard';
 // Mock useTranslations hook
 jest.mock('@/features/i18n/components/TranslationProvider', () => ({
   useTranslations: () => ({ locale: 'nb', t: (k: string) => {
-    const map: Record<string,string> = { 'art.artist': 'Artist', 'art.unknownArtist': 'Unknown', 'art.seller': 'Seller', 'art.price': 'Price' };
+    const map: Record<string,string> = { 'art.artist': 'Artist', 'art.unknownArtist': 'Unknown', 'art.seller': 'Seller', 'art.price': 'Price', 'art.labels.featured': 'Featured' };
     return map[k] ?? k;
   } }),
 }));
@@ -59,5 +59,20 @@ describe('ArtCard', () => {
     const priceNode = screen.getAllByText(/Price:/)[0];
     expect(priceNode).toBeInTheDocument();
     expect(priceNode.textContent).toContain('—');
+  });
+
+  test('shows featured chip even when status chips are hidden', () => {
+    render(<ArtCard art={baseArt as any} showStatus={false} alwaysShowFeatured />);
+
+    expect(screen.getByText('Featured')).toBeInTheDocument();
+    expect(screen.queryByText('Published')).toBeNull();
+    expect(screen.queryByText('Verified')).toBeNull();
+  });
+
+  test('does not render featured chip when art is not featured', () => {
+    const art = { ...baseArt, isFeatured: false } as any;
+    render(<ArtCard art={art} showStatus />);
+
+    expect(screen.queryByText('Featured')).toBeNull();
   });
 });

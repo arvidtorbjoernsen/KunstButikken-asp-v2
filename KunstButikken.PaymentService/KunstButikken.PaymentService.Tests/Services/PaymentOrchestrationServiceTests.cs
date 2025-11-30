@@ -1,65 +1,134 @@
+using Moq;
 using FluentAssertions;
-using KunstButikken.PaymentService.Application.Interfaces;
-using KunstButikken.PaymentService.Application.Models;
 using KunstButikken.PaymentService.Application.Services;
-using KunstButikken.PaymentService.Domain.Models;
 using KunstButikken.PaymentService.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
-using Moq;
+using Xunit;
+using KunstButikken.PaymentService.Application.Interfaces;
+using KunstButikken.PaymentService.Application.Models;
 using Stripe.Checkout;
+using KunstButikken.PaymentService.Domain.Models;
 
 namespace KunstButikken.PaymentService.Tests.Services;
 
-public sealed class PaymentOrchestrationServiceTests
+public class PaymentOrchestrationServiceTests
 {
-    [Fact]
-    public async Task ProcessCheckoutAsync_PersistsTransactionAndReturnsSession()
+    private readonly Mock<IPaymentRepository> _paymentRepositoryMock;
+    private readonly Mock<IStripeSessionService> _stripeSessionServiceMock;
+    private readonly Mock<IConfiguration> _configurationMock;
+    private readonly PaymentOrchestrationService _paymentService;
+
+    public PaymentOrchestrationServiceTests()
     {
-        // Arrange
-        var repo = new Mock<IPaymentRepository>();
-        var sessionService = new Mock<IStripeSessionService>();
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Stripe:ApiKey"] = "sk_test_123"
-            }!)
-            .Build();
+        _paymentRepositoryMock = new Mock<IPaymentRepository>();
+        _stripeSessionServiceMock = new Mock<IStripeSessionService>();
+        _configurationMock = new Mock<IConfiguration>();
+        _paymentService = new PaymentOrchestrationService(
+            _paymentRepositoryMock.Object,
+            _stripeSessionServiceMock.Object,
+            _configurationMock.Object);
+    }
 
-        var createdTransaction = new Transaction();
-        repo.Setup(r => r.AddAsync(It.IsAny<Transaction>(), It.IsAny<CancellationToken>()))
-            .Returns<Transaction, CancellationToken>((tx, _) =>
-            {
-                createdTransaction = tx;
-                return Task.CompletedTask;
-            });
-        repo.Setup(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
-
-        sessionService.Setup(s => s.CreateAsync(It.IsAny<SessionCreateOptions>(), null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Session
-            {
-                Id = "cs_test_123",
-                Url = "https://checkout.stripe.com/pay/cs_test_123"
-            });
-
-        var sut = new PaymentOrchestrationService(repo.Object, sessionService.Object, configuration);
-
-        var request = new CheckoutRequest
+    private static CheckoutRequest BuildCheckoutRequest()
+        => new()
         {
             Amount = 100,
             Currency = "usd",
             UserId = Guid.NewGuid(),
-            FrontendBaseUrl = "https://frontend"
+            ArtId = Guid.NewGuid(),
+            AuctionId = Guid.NewGuid(),
+            Description = "Test Artwork",
+            FrontendBaseUrl = "https://example.com"
         };
 
+    [Fact]
+    public async Task ProcessCheckoutAsync_WhenRequestIsNull_ShouldThrowArgumentNullException()
+    {
+        CheckoutRequest? request = null;
+
+        Func<Task> act = async () => await _paymentService.ProcessCheckoutAsync(request!);
+
+        await act.Should().ThrowAsync<ArgumentNullException>();
+    }
+
+    [Fact]
+    public async Task ProcessCheckoutAsync_WhenAmountIsZero_ShouldThrowArgumentException()
+    {
+        var request = BuildCheckoutRequest();
+        request.Amount = 0;
+
+        Func<Task> act = async () => await _paymentService.ProcessCheckoutAsync(request);
+
+        await act.Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Fact]
+    public async Task ProcessCheckoutAsync_WhenStripeApiKeyIsNotConfigured_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var request = BuildCheckoutRequest();
+        _configurationMock.Setup(c => c["Stripe:ApiKey"]).Returns((string)null);
+        _configurationMock.Setup(c => c["Stripe__ApiKey"]).Returns((string)null);
+
         // Act
-        var response = await sut.ProcessCheckoutAsync(request);
+        Func<Task> act = async () => await _paymentService.ProcessCheckoutAsync(request);
 
         // Assert
-        response.SessionId.Should().Be("cs_test_123");
-        response.Url.Should().Contain("stripe.com");
-        repo.Verify(r => r.AddAsync(It.IsAny<Transaction>(), It.IsAny<CancellationToken>()), Times.Once);
-        createdTransaction.Amount.Should().Be(100);
-        createdTransaction.StripeSessionId.Should().Be("cs_test_123");
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Fact]
+    public async Task ProcessCheckoutAsync_WhenRequestIsValid_ShouldReturnSessionResponse()
+    {
+        // Arrange
+        var request = BuildCheckoutRequest();
+
+        _configurationMock.Setup(c => c["Stripe:ApiKey"]).Returns("test_api_key");
+
+        var session = new Session
+        {
+            Id = "session_123",
+            Url = "https://stripe.com/session_123"
+        };
+
+        _stripeSessionServiceMock.Setup(s => s.CreateAsync(It.IsAny<SessionCreateOptions>(), default))
+            .ReturnsAsync(session);
+
+        // Act
+        var result = await _paymentService.ProcessCheckoutAsync(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.SessionId.Should().Be(session.Id);
+        result.Url.Should().Be(session.Url);
+        result.TransactionId.Should().NotBeEmpty();
+
+        _paymentRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Transaction>(), default), Times.Once);
+        _paymentRepositoryMock.Verify(r => r.SaveChangesAsync(default), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task ProcessCheckoutAsync_WhenCurrencyIsNull_ShouldDefaultToUsd()
+    {
+        // Arrange
+        var request = BuildCheckoutRequest();
+        request.Currency = null!;
+
+        _configurationMock.Setup(c => c["Stripe:ApiKey"]).Returns("test_api_key");
+
+        var session = new Session
+        {
+            Id = "session_123",
+            Url = "https://stripe.com/session_123"
+        };
+
+        _stripeSessionServiceMock.Setup(s => s.CreateAsync(It.IsAny<SessionCreateOptions>(), default))
+            .ReturnsAsync(session);
+
+        // Act
+        await _paymentService.ProcessCheckoutAsync(request);
+
+        // Assert
+        _paymentRepositoryMock.Verify(r => r.AddAsync(It.Is<Transaction>(t => t.Currency == "usd"), default), Times.Once);
     }
 }

@@ -28,6 +28,32 @@ internal sealed class ArtBuilder
         return this;
     }
 
+    public ArtBuilder WithTitleEn(string title)
+    {
+        _art.TitleEn = title;
+        _art.TitleNb = title;
+        return this;
+    }
+
+    public ArtBuilder WithTitleNb(string title)
+    {
+        _art.TitleNb = title;
+        return this;
+    }
+
+    public ArtBuilder WithDescriptionEn(string description)
+    {
+        _art.DescriptionEn = description;
+        _art.DescriptionNb = description;
+        return this;
+    }
+
+    public ArtBuilder WithDescriptionNb(string description)
+    {
+        _art.DescriptionNb = description;
+        return this;
+    }
+
     public ArtBuilder Featured(bool featured = true)
     {
         _art.IsFeatured = featured;
@@ -42,4 +68,3 @@ internal sealed class ArtBuilder
 
     public Art Build() => _art;
 }
-

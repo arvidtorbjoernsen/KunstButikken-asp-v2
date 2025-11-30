@@ -7,7 +7,7 @@ import { ensureRole } from '@/application/security/ensureRole';
 import type { CurrentUserContext } from '@/application/security/types';
 import ArtForSaleClient from './ArtForSaleClient';
 import type { UiArt } from '@/features/art/types/art';
-import { createAuctionArtMapper } from '@/features/art/lib/auction-to-art';
+import type { UiAuction } from '@/features/auction/types/auction';
 
 export default async function ArtForSalePage() {
   const hdrs = await headers();
@@ -38,18 +38,28 @@ export default async function ArtForSalePage() {
 
   ensureRole(currentUser, ['buyer', 'seller'], { allowGuests: true });
 
-  const mapAuctionToArt = createAuctionArtMapper(allArt);
+  const isSellerRole = hasRole(roles, 'seller');
+  const isBuyerRole = hasRole(roles, 'buyer');
 
-  let mine: UiArt[] = [];
-  let others: UiArt[] = allArt.filter(a => a.isVerified);
+  const sortArtByFeatured = (items: UiArt[]) =>
+    [...items].sort((a, b) => Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)));
 
-  if (sellerId && hasRole(roles, 'seller')) {
+  const sellerArt = sellerId ? sortArtByFeatured(allArt.filter(a => a.sellerId === sellerId)) : [];
+  const publicArt = sortArtByFeatured(allArt.filter(a => a.isVerified && (!sellerId || a.sellerId !== sellerId)));
+
+  let myAuctions: UiAuction[] = [];
+  if (sellerId && isSellerRole) {
     const sellerAuctions = await getSellerAuctions.execute({ user: currentUser });
-    mine = sellerAuctions.mine.map(mapAuctionToArt);
-    others = sellerAuctions.others.map(mapAuctionToArt);
-  } else if (hasRole(roles, 'buyer')) {
-    others = allArt.filter(a => a.isVerified);
+    myAuctions = sellerAuctions.mine;
   }
 
-  return <ArtForSaleClient mine={mine} others={others} isSeller={hasRole(roles, 'seller')} isBuyer={hasRole(roles, 'buyer')} />;
+  return (
+    <ArtForSaleClient
+      myArt={isSellerRole ? sellerArt : []}
+      others={publicArt}
+      myAuctions={myAuctions}
+      isSeller={isSellerRole}
+      isBuyer={isBuyerRole}
+    />
+  );
 }

@@ -12,21 +12,21 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Moq" />
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="aspire.keycloak.authentication" />
-    <PackageReference Include="aspire.npgsql.entityframeworkcore.postgresql" />
-    <PackageReference Include="aspire.rabbitmq.client" />
-    <PackageReference Include="dotnetenv" />
-    <PackageReference Include="microsoft.entityframeworkcore" />
-    <PackageReference Include="microsoft.entityframeworkcore.inmemory" />
-    <PackageReference Include="microsoft.entityframeworkcore.relational" />
-    <PackageReference Include="microsoft.extensions.http.resilience" />
-    <PackageReference Include="microsoft.extensions.servicediscovery" />
-    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
-    <PackageReference Include="opentelemetry.extensions.hosting" />
-    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
-    <PackageReference Include="opentelemetry.instrumentation.http" />
-    <PackageReference Include="opentelemetry.instrumentation.runtime" />
-    <PackageReference Include="rabbitmq.client" />
+    <PackageReference Include="Aspire.Keycloak.Authentication" />
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Aspire.RabbitMQ.Client" />
+    <PackageReference Include="DotNetEnv" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
+    <PackageReference Include="RabbitMQ.Client" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../KunstButikken.AdminService/Application/KunstButikken.AdminService.Application.csproj" />

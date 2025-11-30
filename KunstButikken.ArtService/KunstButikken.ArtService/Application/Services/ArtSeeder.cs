@@ -9,6 +9,7 @@ using KunstButikken.ArtService.Application.Interfaces;
 using KunstButikken.ArtService.Domain.Interfaces;
 using KunstButikken.ArtService.Domain.Models;
 using KunstButikken.ArtService.Infrastructure.Data;
+using KunstButikken.ArtService.Infrastructure.Services;
 using KunstButikken.Common.Logging;
 using KunstButikken.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
@@ -115,19 +116,20 @@ public class ArtSeeder : IArtSeeder
             LogMessages.Warning_Msg_38(_logger, ex);
         }
 
+        var sellerProvider = scope.ServiceProvider.GetRequiredService<ISeedSellerProvider>();
+
         var sellers = await FetchSellersAsync(cancellationToken).ConfigureAwait(false);
         if (sellers == null || sellers.Length == 0)
         {
-            LogMessages.Warning_Msg_39(_logger, null);
-            sellers = new[]
+            var localSellers = await sellerProvider.GetSellersAsync(10, cancellationToken).ConfigureAwait(false);
+            sellers = localSellers.Select(s => new SellerInfo(s.UserId, s.DisplayName)).ToArray();
+
+            if (sellers.Length == 0)
             {
-                new SellerInfo(Guid.Parse("11111111-1111-1111-1111-111111111111"), "Seller One"),
-                new SellerInfo(Guid.Parse("22222222-2222-2222-2222-222222222222"), "Seller Two"),
-                new SellerInfo(Guid.Parse("33333333-3333-3333-3333-333333333333"), "Seller Three")
-            };
-        }
-        else
-        {
+                _logger.LogWarning("[ArtSeeding] No verified sellers found. Aborting seeding.");
+                return;
+            }
+
             LogMessages.Information_Count_40(_logger, sellers.Length, null);
         }
 
@@ -286,64 +288,52 @@ public class ArtSeeder : IArtSeeder
 
     private async Task<SellerInfo[]?> FetchSellersAsync(CancellationToken cancellationToken)
     {
-        var userServiceUrl = _config["USER_SERVICE_URL"] ?? _config["NEXT_PUBLIC_USER_SERVICE_URL"];
-        if (string.IsNullOrWhiteSpace(userServiceUrl))
-        {
-            LogMessages.Warning_Msg_50(_logger, null);
-            return null;
-        }
+        using var scope = _services.CreateScope();
+        var sellerProvider = scope.ServiceProvider.GetRequiredService<ISeedSellerProvider>();
 
+        var httpClient = _httpClientFactory.CreateClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, _config["UserServiceUrl"] + "/sellers/verified");
+        request.Headers.Add("Accept", "application/json");
+        request.Headers.Add("x-api-key", _config["UserServiceApiKey"] ?? string.Empty);
+
+        var attempt = 0;
         var maxAttempts = 5;
         var delay = TimeSpan.FromSeconds(2);
 
-        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        while (true)
         {
             try
             {
-                using var http = _httpClientFactory.CreateClient();
-                http.BaseAddress ??= new Uri(userServiceUrl.TrimEnd('/'));
-                var sellersUri = new Uri(http.BaseAddress, "/api/sellers");
-                using var resp = await http.GetAsync(sellersUri, cancellationToken).ConfigureAwait(false);
-
-                if (!resp.IsSuccessStatusCode)
-                {
-                    _logger.LogWarning(
-                        "[ArtSeeding] Attempt {Attempt}/{Max}: Failed to fetch sellers (status {Status}). Retrying in {Delay}s",
-                        attempt, maxAttempts, (int)resp.StatusCode, delay.TotalSeconds);
-                    await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
-                    continue;
-                }
+                attempt++;
+                var resp = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                resp.EnsureSuccessStatusCode();
 
                 var sellers = await resp.Content.ReadFromJsonAsync<List<SellerDto>>(cancellationToken).ConfigureAwait(false);
                 if (sellers is { Count: > 0 })
                 {
-                    return sellers
-                        .Take(3)
-                        .Select(s => new SellerInfo(s.UserId, s.DisplayName ?? $"Seller {s.UserId}")).ToArray();
+                    return sellers.Take(3).Select(s => new SellerInfo(s.UserId, s.DisplayName ?? $"Seller {s.UserId}")).ToArray();
                 }
 
                 _logger.LogWarning(
-                    "[ArtSeeding] Attempt {Attempt}/{Max}: Seller list empty. Retrying in {Delay}s",
+                    "[ArtSeeding] Attempt {Attempt}/{MaxAttempts}: Seller list empty. Retrying in {Delay}s",
                     attempt, maxAttempts, delay.TotalSeconds);
+                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                continue;
+            }
+            catch (Exception ex) when (attempt < maxAttempts)
+            {
+                LogMessages.Warning_Attempt_MaxAttempts_Delay_52(_logger, attempt, maxAttempts, delay.TotalSeconds, ex);
                 await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                LogMessages.Warning_Attempt_MaxAttempts_Delay_52(_logger, attempt, maxAttempts, delay.TotalSeconds, ex);
-                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                LogMessages.Warning_MaxAttempts_54(_logger, maxAttempts, ex);
+                return null;
             }
         }
 
         LogMessages.Warning_MaxAttempts_54(_logger, maxAttempts, null);
         return null;
-    }
-
-    private sealed record SellerInfo(Guid UserId, string DisplayName);
-
-    private sealed class SellerDto
-    {
-        [JsonPropertyName("userId")] public Guid UserId { get; set; }
-        [JsonPropertyName("displayName")] public string? DisplayName { get; set; }
     }
 
     private sealed class SeedMeta
@@ -363,4 +353,12 @@ public class ArtSeeder : IArtSeeder
         [JsonPropertyName("description_en")] public string? DescriptionEn { get; set; }
         [JsonPropertyName("description_no")] public string? DescriptionNo { get; set; }
     }
+
+    private sealed class SellerDto
+    {
+        [JsonPropertyName("userId")] public Guid UserId { get; set; }
+        [JsonPropertyName("displayName")] public string? DisplayName { get; set; }
+    }
+
+    private sealed record SellerInfo(Guid UserId, string DisplayName);
 }

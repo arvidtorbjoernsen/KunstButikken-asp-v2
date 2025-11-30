@@ -8,6 +8,7 @@ public static partial class AppCompositionBuilder
     private static (IResourceBuilder<IResourceWithEnvironment>, IResourceBuilder<ProjectResource>) BuildArtService(
         IDistributedApplicationBuilder builder,
         IResourceBuilder<PostgresDatabaseResource> artDb,
+        IResourceBuilder<PostgresDatabaseResource> usersDb,
         IResourceBuilder<IResourceWithEnvironment> userService,
         IResourceBuilder<ContainerResource> azurite,
         IResourceBuilder<RabbitMQServerResource> eventBus,
@@ -18,10 +19,12 @@ public static partial class AppCompositionBuilder
         var azRef = azurite.GetEndpoint("blob") ?? throw new InvalidOperationException("Azurite blob endpoint not available");
         var art = builder.AddProject("art-service", "../../KunstButikken.ArtService/KunstButikken.ArtService/KunstButikken.ArtService.csproj")
             .WithReference(artDb)
+            .WithReference(usersDb)
             .WithReference(eventBus)
             .WithReference(azRef)
             .WithReference(postgres)
             .WithEnvironment("ConnectionStrings__Default", artDb)
+            .WithEnvironment("ConnectionStrings__Users", usersDb)
             .WithEnvironment("AzureBlob__Container", azureBlobContainer)
             .WithEnvironment("AzureBlob__PublicUrl", azurite.GetEndpointString("blob"))
             .WithEnvironment("AzureBlob__ConnectionString", "UseDevelopmentStorage=true")

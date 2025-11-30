@@ -8,6 +8,7 @@ using KunstButikken.ArtService.Infrastructure.Repositories;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Azure;
 using KunstButikken.ArtService.Infrastructure.Storage;
+using KunstButikken.ArtService.Infrastructure.Services;
 
 namespace KunstButikken.ArtService.Infrastructure.DependencyInjection;
 
@@ -34,6 +35,7 @@ public static class InfrastructureServiceCollectionExtensions
         }
 
         services.AddScoped<IArtRepository, ArtRepository>();
+        services.AddScoped<ISeedSellerProvider, SeedSellerProvider>();
 
         var blobConnection = configuration["AzureBlob:ConnectionString"] ?? configuration.GetConnectionString("artimages");
         if (!string.IsNullOrWhiteSpace(blobConnection))
@@ -45,6 +47,20 @@ public static class InfrastructureServiceCollectionExtensions
         {
             services.AddSingleton<IBlobStorage, NullBlobStorage>();
         }
+
+        var usersCs = configuration.GetConnectionString("Users")
+                      ?? configuration.GetConnectionString("usersdb")
+                      ?? configuration.GetConnectionString("UserService")
+                      ?? configuration.GetSection("ConnectionStrings")["UserDb"];
+        if (!string.IsNullOrWhiteSpace(usersCs))
+        {
+            services.AddDbContext<SeedSellerDbContext>(options => options.UseNpgsql(usersCs));
+        }
+        else
+        {
+            services.AddDbContext<SeedSellerDbContext>(options => options.UseInMemoryDatabase("seed_sellers"));
+        }
+
         return services;
     }
 }

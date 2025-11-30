@@ -9,6 +9,7 @@ using KunstButikken.ArtService.Infrastructure.Data;
 using KunstButikken.ArtService.Domain.Models;
 using KunstButikken.ServiceDefaults;
 using KunstButikken.ArtService.Domain.Interfaces;
+using KunstButikken.ArtService.Infrastructure.Services;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,8 @@ public class SeedController(
     IWebHostEnvironment env,
     IConfiguration cfg,
     IDateTimeProvider clock,
-    IHttpClientFactory httpFactory)
+    IHttpClientFactory httpFactory,
+    ISeedSellerProvider sellerProvider)
     : ControllerBase
 {
     // Reuse JsonSerializerOptions to satisfy CA2000/Json caching suggestions
@@ -41,8 +43,8 @@ public class SeedController(
     private readonly ArtDbContext _db = db ?? throw new ArgumentNullException(nameof(db));
     private readonly IWebHostEnvironment _env = env ?? throw new ArgumentNullException(nameof(env));
 
-    private readonly IHttpClientFactory
-        _httpFactory = httpFactory ?? throw new ArgumentNullException(nameof(httpFactory));
+    private readonly IHttpClientFactory _httpFactory = httpFactory ?? throw new ArgumentNullException(nameof(httpFactory));
+    private readonly ISeedSellerProvider _sellerProvider = sellerProvider ?? throw new ArgumentNullException(nameof(sellerProvider));
 
     private static string GetContentType(string path)
     {
@@ -153,11 +155,12 @@ public class SeedController(
         // Prices are generated using RandomNumberGenerator.GetInt32 for cents-like variance.
         // Deterministic repeatability is not required for this endpoint.
 
-        // Use deterministic seller placeholders (must exist in UserService for realistic linking; otherwise arbitrary GUIDs)
-        var sellerIds = new[]
+        var sellers = await _sellerProvider.GetSellersAsync(limit, HttpContext.RequestAborted).ConfigureAwait(false);
+        if (sellers.Count == 0)
         {
-            Guid.Parse("11111111-1111-1111-1111-111111111111"), Guid.Parse("22222222-2222-2222-2222-222222222222"), Guid.Parse("33333333-3333-3333-3333-333333333333")
-        };
+            result.Messages.Add("No verified sellers available; seed aborted.");
+            return BadRequest(result);
+        }
 
         var items = metas
             .Where(m => m != null && !string.IsNullOrWhiteSpace(m.Filename))
@@ -195,13 +198,7 @@ public class SeedController(
             var descriptionNb = meta.DescriptionNo ?? meta.DescriptionEn ?? "Sample description";
 
             var idx = result.Inserted + result.Skipped;
-            var seller = sellerIds[idx % sellerIds.Length];
-            var sellerDisplayName = (idx % sellerIds.Length) switch
-            {
-                0 => "Seller One",
-                1 => "Seller Two",
-                _ => "Seller Three"
-            };
+            var seller = sellers[idx % sellers.Count];
 
             _db.Arts.Add(new Art
             {
@@ -212,9 +209,9 @@ public class SeedController(
                 DescriptionNb = descriptionNb,
                 ImageUrl = new Uri(imageUrl),
                 Price = Math.Round((decimal)(RandomNumberGenerator.GetInt32(900) + 100), 2),
-                SellerId = seller,
+                SellerId = seller.UserId,
                 Artist = "Seed Artist",
-                SellerDisplayName = sellerDisplayName,
+                SellerDisplayName = seller.DisplayName,
                 Status = ArtStatus.Published,
                 IsVerified = true,
                 IsFeatured = (idx + 1) % 5 == 0,

@@ -61,4 +61,7 @@
     <Compile Include="..\Migrations\**\*.cs" />
     <Compile Include="..\Logging\**\*.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

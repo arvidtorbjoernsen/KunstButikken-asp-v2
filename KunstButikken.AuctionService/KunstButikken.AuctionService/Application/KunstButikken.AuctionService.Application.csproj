@@ -13,24 +13,23 @@
     <ProjectReference Include="..\..\..\KunstButikken.ServiceDefaults\KunstButikken.ServiceDefaults.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="aspire.keycloak.authentication" />
-    <PackageReference Include="aspire.npgsql.entityframeworkcore.postgresql" />
-    <PackageReference Include="aspire.rabbitmq.client" />
-    <PackageReference Include="dotnetenv" />
-    <PackageReference Include="microsoft.entityframeworkcore.inmemory" />
-    <PackageReference Include="microsoft.entityframeworkcore.relational" />
-    <PackageReference Include="microsoft.extensions.http.resilience" />
-    <PackageReference Include="microsoft.extensions.servicediscovery" />
-    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
-    <PackageReference Include="opentelemetry.extensions.hosting" />
-    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
-    <PackageReference Include="opentelemetry.instrumentation.http" />
-    <PackageReference Include="opentelemetry.instrumentation.runtime" />
-    <PackageReference Include="rabbitmq.client" />
-  </ItemGroup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ItemGroup>
 </Project>

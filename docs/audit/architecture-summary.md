@@ -1,60 +1,60 @@
-# Architecture Audit Summary (2025-11-29)
+# Architecture Audit Summary (2025-11-30)
 
 ## Overview
 Branch: `chore/review-architecture`
 Scope covers backend services (Admin, AuthGateway, Payment, User, Auction, Art) and the Next.js frontend. Focus areas: Dependency Injection, Clean Architecture, Repository pattern, DRY, and auth/security (frontend).
 
 ## Top Issues (Prioritized)
-1. **Art/Auction services lack Clean Architecture layering**
-   - *Impact*: Domain logic intertwined with EF infrastructure.
-   - *Recommendation*: Introduce Application/Domain/Infrastructure projects mirroring Payment/User services.
-   - *Effort*: 5d
-   - *Dependencies*: Need shared DTO contracts + DI extensions.
+1. **Auction/Art services still leaking Infrastructure into controllers**
+   - *Impact*: SignalR hubs + controllers talk to DbContexts directly despite Application/Domain split, limiting testability and violating Clean Architecture.
+   - *Recommendation*: Route HTTP/Hub flows through Application handlers + repositories; introduce MediatR or command/query services.
+   - *Effort*: 5-7d
+   - *Dependencies*: Requires DI extension updates + refactoring ProgramSetup auth wiring.
 
-2. **Repository interfaces missing in PaymentService**
-   - *Impact*: DbContext leaks into Application layer, reducing testability.
-   - *Recommendation*: Define repository interfaces in Application and inject Infrastructure implementations.
-   - *Effort*: 2d
-
-3. **Keycloak auth configuration duplicated across services**
-   - *Impact*: Inconsistent audiences/authority; high maintenance.
-   - *Recommendation*: Move Keycloak builder logic into `KunstButikken.ServiceDefaults` helper so ProgramSetup files call a single method.
-   - *Effort*: 3d
-
-4. **Frontend auth hardening (SSR + token refresh)**
-   - *Impact*: Client-only token management; no SSR middleware; risk for future server actions.
-   - *Recommendation*: Add middleware validating Keycloak session for SSR, ensure `apiFetch` refreshes tokens, document cookie strategy.
+2. **PaymentService handlers bypass repositories**
+   - *Impact*: Recent payout/settlement commands inject `PaymentDbContext`, making unit tests cumbersome.
+   - *Recommendation*: Define `IPayoutRepository`/`ISettlementRepository` in Application layer, adapt Infrastructure implementation.
    - *Effort*: 2-3d
 
-5. **Test coverage gaps for Auction/Art domain logic**
-   - *Impact*: Critical flows untested.
-   - *Recommendation*: After layer split, add targeted unit tests (e.g., bidding rules).
-   - *Effort*: 2d bootstrap, ongoing.
+3. **Keycloak auth configuration duplicated across services**
+   - *Impact*: Each ProgramSetup parses `KEYCLOAK_*`; inconsistencies risk auth failures.
+   - *Recommendation*: Build `ServiceDefaults.AddKeycloakAuth(...)` helper and adopt across services.
+   - *Effort*: 3d
+
+4. **Frontend auth hardening (SSR + token telemetry)**
+   - *Impact*: Middleware covers only defined matchers; server actions/RSC still rely on client tokens, no telemetry for refresh failures.
+   - *Recommendation*: Add server-side auth helpers, propagate middleware verdict via headers, send refresh failures to Sentry, finalize cookie contract.
+   - *Effort*: 2-3d
+
+5. **Test coverage gaps for Art/Auction domains**
+   - *Impact*: Auction only 2 unit tests; Art still sample tests; regressions likely.
+   - *Recommendation*: Add domain service tests + integration-event contract tests once layers enforced.
+   - *Effort*: 4d bootstrap, ongoing.
 
 ## Supporting Documents
 - Backend findings: `docs/audit/backend.md`
 - Frontend findings: `docs/audit/frontend.md`
 
 ## Suggested Roadmap
-1. **Week 1**: Plan Art/Auction layering + shared Keycloak helper design.
-2. **Week 2**: Implement repository interfaces in Payment, start Art/Auction refactor.
-3. **Week 3**: Frontend auth hardening + SSR middleware, begin new domain tests.
-4. **Week 4**: Finish Art/Auction layering, add DI extensions, expand tests.
+1. **Week 1**: Implement shared Keycloak helper; plan controller refactors for Auction/Art.
+2. **Week 2**: Refactor Payment handlers to repositories; begin Auction/Art handler rewrites.
+3. **Week 3**: Frontend auth utilities + telemetry, expand middleware coverage, add SSR tests.
+4. **Week 4**: Finish domain refactors, add DI extensions + domain tests for Art/Auction.
 
 ## Verification Steps
 ```bash
 # Backend spot-checks
 cd KunstButikken-asp
+
+dotnet test KunstButikken.PaymentService/KunstButikken.PaymentService.Tests/KunstButikken.PaymentService.Tests.csproj
+dotnet test KunstButikken.UserService/KunstButikken.UserService.Tests/KunstButikken.UserService.Tests.csproj
+dotnet test KunstButikken.AuctionService/KunstButikken.AuctionService.Tests/KunstButikken.AuctionService.Tests.csproj
 ```
-
-- `dotnet test KunstButikken.UserService/KunstButikken.UserService.Tests/KunstButikken.UserService.Tests.csproj`
-- `dotnet test KunstButikken.PaymentService/KunstButikken.PaymentService.Tests/KunstButikken.PaymentService.Tests.csproj`
-
 ```bash
 # Frontend tests
 cd KunstButikken.Frontend
+pnpm install --frozen-lockfile
 pnpm test
 ```
-
-All above tests currently pass.
-
+- Backend suites above pass (Payment: 5 tests, User: 1, Auction: 2).
+- Frontend: 24 suites / 79 tests, ~80% statement coverage.

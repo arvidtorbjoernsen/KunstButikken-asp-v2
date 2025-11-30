@@ -1,24 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-// Minimal mocks used by the component
-jest.mock('next/link', () => ({
-  __esModule: true,
-  default: ({
-    children,
-    href,
-    ...props
-  }: {
-    children: React.ReactNode;
-    href: string;
-    [key: string]: unknown;
-  }) => (
-    <a href={href} {...props}>
-      {children}
-    </a>
-  ),
-}));
-
 // Mock the translation provider used by the component
 jest.mock('@/features/i18n/components/TranslationProvider', () => ({
   __esModule: true,
@@ -30,6 +12,7 @@ jest.mock('@/features/i18n/components/TranslationProvider', () => ({
         'art.unknownArtist': 'Unknown',
         'art.seller': 'Seller',
         'art.price': 'Price',
+        'art.labels.featured': 'Featured',
       };
       return map[key] ?? key;
     },
@@ -97,5 +80,20 @@ describe('ArtCard', () => {
     render(<ArtCard art={artNoArtist as UiArt} />);
 
     expect(screen.getByText(/artist: unknown/i)).toBeInTheDocument();
+  });
+
+  it('can show featured chip without status chips when requested', () => {
+    const featuredArt = { ...baseArt, id: 'art-4', isFeatured: true };
+    render(<ArtCard art={featuredArt as UiArt} alwaysShowFeatured />);
+
+    expect(screen.getByText(/featured/i)).toBeInTheDocument();
+    expect(screen.queryByText(/published/i)).toBeNull();
+  });
+
+  it('hides featured chip when art is not featured', () => {
+    const nonFeatured = { ...baseArt, id: 'art-5', isFeatured: false };
+    render(<ArtCard art={nonFeatured as UiArt} showStatus />);
+
+    expect(screen.queryByText(/featured/i)).toBeNull();
   });
 });

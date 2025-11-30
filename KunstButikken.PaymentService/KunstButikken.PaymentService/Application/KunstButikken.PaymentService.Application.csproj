@@ -13,16 +13,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Stripe.net" />
-    <PackageReference Include="aspire.keycloak.authentication" />
-    <PackageReference Include="aspire.rabbitmq.client" />
-    <PackageReference Include="dotnetenv" />
-    <PackageReference Include="microsoft.extensions.http.resilience" />
-    <PackageReference Include="microsoft.extensions.servicediscovery" />
-    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
-    <PackageReference Include="opentelemetry.extensions.hosting" />
-    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
-    <PackageReference Include="opentelemetry.instrumentation.http" />
-    <PackageReference Include="opentelemetry.instrumentation.runtime" />
-    <PackageReference Include="rabbitmq.client" />
-  </ItemGroup>
+
+
+
+
+
+
+
+
+
+
+</ItemGroup>
 </Project>

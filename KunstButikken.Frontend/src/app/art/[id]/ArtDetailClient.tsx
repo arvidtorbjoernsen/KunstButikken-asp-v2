@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
+import { FeaturedChip } from '@/features/ui/components';
 
 interface ArtDetailClientProps {
   art: UiArt | null;
@@ -93,12 +94,7 @@ export default function ArtDetailClient({ art }: ArtDetailClientProps) {
                     />
                   )}
                   {art.isFeatured && (
-                    <Chip
-                      label="Featured"
-                      color="secondary"
-                      size="small"
-                      variant="outlined"
-                    />
+                    <FeaturedChip variant="outlined" />
                   )}
                 </Box>
               </Box>

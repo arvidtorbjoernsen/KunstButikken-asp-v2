@@ -29,6 +29,7 @@ public class ArtService : IArtService
     public Task<IEnumerable<Art>> GetAllAsync(ArtStatus? status = null, bool? featured = null, CancellationToken ct = default)
     {
         var query = _repo.Query();
+
         if (status.HasValue)
         {
             query = query.Where(a => a.Status == status.Value);
@@ -39,7 +40,16 @@ public class ArtService : IArtService
             query = query.Where(a => a.IsFeatured == featured.Value);
         }
 
-        query = query.Where(a => a.Status == ArtStatus.Published && a.IsVerified);
+        if (!status.HasValue)
+        {
+            query = query.Where(a => a.Status == ArtStatus.Published);
+        }
+
+        if (!status.HasValue && !featured.HasValue)
+        {
+            query = query.Where(a => a.IsVerified);
+        }
+
         return Task.FromResult<IEnumerable<Art>>(query.OrderByDescending(a => a.CreatedAt).ToList());
     }
 

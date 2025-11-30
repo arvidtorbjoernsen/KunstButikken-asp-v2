@@ -1,78 +1,102 @@
 <Project>
     <PropertyGroup>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-        <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+        <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
         <NoWarn>$(NoWarn);NU1507</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="Aspire.Azure.Storage.Blobs" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Hosting" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Hosting.Keycloak" Version="13.0.1-preview.1.25575.3"/>
-        <PackageVersion Include="Aspire.Hosting.NodeJS" Version="9.5.2"/>
-        <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Hosting.Testing" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Hosting.Yarp" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Keycloak.Authentication" Version="13.0.1-preview.1.25575.3"/>
-        <PackageVersion Include="Aspire.Hosting.Azure" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Microsoft.Data.SqlClient" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.0.1"/>
-        <PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.0.1"/>
-        <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
-        <PackageVersion Include="DotNetEnv" Version="3.1.1"/>
-        <PackageVersion Include="FluentAssertions" Version="8.8.0"/>
-        <PackageVersion Include="Moq" Version="4.20.72"/>
-        <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="0.4.1-preview.1"/>
-        <PackageVersion Include="ModelContextProtocol.Core" Version="0.4.1-preview.1"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="18.0.2"/>
-        <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="18.0.2"/>
-        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0"/>
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
-        <PackageVersion Include="Microsoft.OpenApi" Version="3.0.1"/>
-        <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0"/>
-        <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0"/>
-        <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.14.0"/>
-        <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.14.0"/>
-        <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.14.0"/>
-        <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.14.0"/>
-        <PackageVersion Include="RabbitMQ.Client" Version="7.2.0"/>
-        <PackageVersion Include="Scalar.Aspire" Version="0.7.4"/>
-        <PackageVersion Include="Stripe.net" Version="50.0.0"/>
-        <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.0.1"/>
-        <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.1"/>
-        <PackageVersion Include="Azure.Storage.Blobs" Version="12.26.0"/>
-        <PackageVersion Include="xunit" Version="2.9.3"/>
-        <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
+        <!-- Aspire -->
+        <PackageVersion Include="Aspire.Azure.Storage.Blobs" Version="13.0.1" />
+        <PackageVersion Include="Aspire.Hosting" Version="13.0.1" />
+        <PackageVersion Include="Aspire.Hosting.Azure" Version="13.0.1" />
+        <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="13.0.1" />
+        <PackageVersion Include="Aspire.Hosting.Keycloak" Version="13.0.1-preview.1.25575.3" />
+        <PackageVersion Include="Aspire.Hosting.NodeJS" Version="9.5.2" />
+        <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.0.1" />
+        <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.0.1" />
+        <PackageVersion Include="Aspire.Hosting.Testing" Version="13.0.1" />
+        <PackageVersion Include="Aspire.Hosting.Yarp" Version="13.0.1" />
+        <PackageVersion Include="Aspire.Keycloak.Authentication" Version="13.0.1-preview.1.25575.3" />
+        <PackageVersion Include="Aspire.Microsoft.Data.SqlClient" Version="13.0.1" />
+        <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.0.1" />
+        <PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.0.1" />
 
-        <!-- Internal KunstButikken packages -->
-        <PackageVersion Include="KunstButikken.AppHost" Version="1.0.0"/>
-        <PackageVersion Include="KunstButikken.AdminService.Domain" Version="1.0.0"/>
-        <PackageVersion Include="KunstButikken.ArtService.Domain" Version="1.0.0"/>
-        <PackageVersion Include="KunstButikken.AuctionService.Domain" Version="1.0.0"/>
-        <PackageVersion Include="KunstButikken.Common.Logging" Version="1.0.0"/>
-        <PackageVersion Include="KunstButikken.IntegrationEvents.Contracts" Version="1.0.0"/>
-        <PackageVersion Include="KunstButikken.ServiceDefaults" Version="1.0.0"/>
-        <PackageVersion Include="KunstButikken.UserService.Application" Version="1.0.0"/>
-        <PackageVersion Include="KunstButikken.UserService.Domain" Version="1.0.0"/>
-        <PackageVersion Include="KunstButikken.UserService.Infrastructure" Version="1.0.0"/>
+        <!-- Microsoft -->
+        <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+        <PackageVersion Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+        <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="18.0.2" />
+        <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="18.0.2" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces" Version="5.0.0" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.0.0" />
+        <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.3" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="10.0.1" />
+        <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.1" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.OpenApi" Version="3.0.1" />
+
+        <!-- Azure -->
+        <PackageVersion Include="Azure.Core" Version="1.50.0" />
+        <PackageVersion Include="Azure.Identity" Version="1.17.1" />
+        <PackageVersion Include="Azure.ResourceManager.Resources" Version="1.11.2" />
+        <PackageVersion Include="Azure.Storage.Blobs" Version="12.26.0" />
+
+        <!-- OpenTelemetry -->
+        <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0" />
+        <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.14.0" />
+        <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.14.0" />
+        <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.14.0" />
+        <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.14.0" />
+
+        <!-- Testing -->
+        <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+        <PackageVersion Include="FluentAssertions" Version="8.8.0" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+        <PackageVersion Include="Moq" Version="4.20.72" />
+        <PackageVersion Include="xunit" Version="2.9.3" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+
+        <!-- Other -->
+        <PackageVersion Include="Castle.Core" Version="5.2.1" />
+        <PackageVersion Include="DotNetEnv" Version="3.1.1" />
+        <PackageVersion Include="Google.Protobuf" Version="3.33.1" />
+        <PackageVersion Include="Grpc.Tools" Version="2.76.0" />
+        <PackageVersion Include="Humanizer.Core" Version="3.0.1" />
+        <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="0.4.1-preview.1" />
+        <PackageVersion Include="ModelContextProtocol.Core" Version="0.4.1-preview.1" />
+        <PackageVersion Include="NETStandard.Library" Version="2.0.3" />
+        <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
+        <PackageVersion Include="Polly.Core" Version="8.6.5" />
+        <PackageVersion Include="Polly.Extensions" Version="8.6.5" />
+        <PackageVersion Include="RabbitMQ.Client" Version="7.2.0" />
+        <PackageVersion Include="Scalar.Aspire" Version="0.7.4" />
+        <PackageVersion Include="Stripe.net" Version="50.0.0" />
+        <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.0.1" />
+        <PackageVersion Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
+        <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
+        <PackageVersion Include="System.IO.Hashing" Version="10.0.0" />
+        <PackageVersion Include="System.Threading.RateLimiting" Version="10.0.0" />
+        <PackageVersion Include="xunit.analyzers" Version="1.26.0" />
+        <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
     </ItemGroup>
 </Project>

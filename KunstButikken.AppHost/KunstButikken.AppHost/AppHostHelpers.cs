@@ -6,6 +6,7 @@ using System.Reflection;
 using System.IO;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 
 internal static class AppHostHelpers
 {
@@ -202,6 +203,77 @@ internal static class AppHostHelpers
             foreach (var svc in services)
             {
                 svc.WithEnvironment("FRONTEND_ORIGINS", string.Join(",", origins));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AppHostHelpers] PropagateCors failed: {ex.Message}");
+        }
+    }
+
+    public static void PropagateCors(
+        IEnumerable<object> frontends,
+        IEnumerable<object> services)
+    {
+        try
+        {
+            var origins = frontends
+                .Select(f => KunstButikken.ServiceDefaults.ResourceBuilderExtensions.GetEndpointString(f, "web"))
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Distinct()
+                .ToArray();
+
+            foreach (var svc in services)
+            {
+                if (svc == null) continue;
+
+                // Prefer calling a fluent WithEnvironment(string, object) method if available
+                var withEnv = svc.GetType().GetMethod("WithEnvironment", new Type[] { typeof(string), typeof(object) });
+                if (withEnv != null)
+                {
+                    try
+                    {
+                        withEnv.Invoke(svc, new object[] { "FRONTEND_ORIGINS", string.Join(",", origins) });
+                        continue;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[AppHostHelpers] PropagateCors: WithEnvironment invocation failed: {ex.Message}");
+                    }
+                }
+
+                // Otherwise try to set an Env dictionary property (test helpers may expose this)
+                var envProp = svc.GetType().GetProperty("Env");
+                if (envProp != null)
+                {
+                    try
+                    {
+                        var dict = envProp.GetValue(svc) as IDictionary<string, string>;
+                        if (dict != null)
+                        {
+                            dict["FRONTEND_ORIGINS"] = string.Join(",", origins);
+                            continue;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[AppHostHelpers] PropagateCors: Env property set failed: {ex.Message}");
+                    }
+                }
+
+                // If the service is an Aspire resource builder, try invoking the WithEnvironment extension via reflection on its runtime type
+                try
+                {
+                    var method = svc.GetType().GetMethod("WithEnvironment", BindingFlags.Public | BindingFlags.Instance);
+                    if (method != null)
+                    {
+                        method.Invoke(svc, new object[] { "FRONTEND_ORIGINS", string.Join(",", origins) });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[AppHostHelpers] PropagateCors failed to set env on service: {ex.Message}");
+                }
             }
         }
         catch (Exception ex)

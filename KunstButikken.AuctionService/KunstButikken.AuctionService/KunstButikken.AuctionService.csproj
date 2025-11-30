@@ -10,28 +10,26 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.OpenApi" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
-    <PackageReference Include="Scalar.Aspire" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
-    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
-    <PackageReference Include="Aspire.Keycloak.Authentication" />
-    <PackageReference Include="RabbitMQ.Client" />
-    <PackageReference Include="Aspire.RabbitMQ.Client" />
-    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
-    <PackageReference Include="Aspire.Hosting.RabbitMQ" />
-    <PackageReference Include="Aspire.Hosting" />
-    <PackageReference Include="dotnetenv" />
-    <PackageReference Include="microsoft.entityframeworkcore.relational" />
-    <PackageReference Include="microsoft.extensions.servicediscovery" />
-    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
-    <PackageReference Include="opentelemetry.extensions.hosting" />
-    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
-    <PackageReference Include="opentelemetry.instrumentation.http" />
-    <PackageReference Include="opentelemetry.instrumentation.runtime" />
-  </ItemGroup>
+
+<PackageReference Include="Scalar.Aspire" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Application/KunstButikken.AuctionService.Application.csproj" />
     <ProjectReference Include="Infrastructure/KunstButikken.AuctionService.Infrastructure.csproj" />
