@@ -48,6 +48,9 @@ const KeycloakContext = createContext<KeycloakContextValue>({
 
 export const useKeycloak = () => useContext(KeycloakContext);
 
+export const hasRole = (keycloak: KeycloakInstance | null, role: string) =>
+  keycloak?.tokenParsed?.realm_access?.roles?.includes(role) ?? false;
+
 interface KeycloakProviderProps {
   children: React.ReactNode;
 }

@@ -1,10 +1,12 @@
 ﻿namespace KunstButikken.AppHost.Tests;
 
+using Xunit;
+
 public class UnitTest1
 {
-    [Fact]
-    public void Test1()
+    [Fact(DisplayName = "Sanity: tests run")]
+    public void Sanity()
     {
-
+        Assert.True(true);
     }
 }

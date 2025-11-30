@@ -5,6 +5,7 @@ import { createRequestScope } from '@/infrastructure/di/container';
 import type { UiArt } from '@/features/art/types/art';
 import { headers } from 'next/headers';
 import { parseRolesFromBearer, hasRole } from '@/features/auth/lib/server-auth';
+import { Buffer } from 'node:buffer';
 import { GetSellerAuctions } from '@/application/useCases/GetSellerAuctions';
 import type { CurrentUserContext } from '@/application/security/types';
 import type { UiAuction } from '@/features/auction/types/auction';
@@ -26,6 +27,9 @@ async function getAllArt(): Promise<UiArt[]> {
   return getAllArtUseCase.execute();
 }
 
+const sortArtByFeatured = (items: UiArt[]): UiArt[] =>
+  [...items].sort((a, b) => Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)));
+
 /**
  * Home page component with server-side rendering
  *
@@ -43,8 +47,8 @@ export default async function HomePage() {
   const token = authHeader ? authHeader.replace(/^Bearer\s+/i, '') : null;
   const roles = parseRolesFromBearer(token);
 
-  const featured = await getFeaturedArt();
-  const all = await getAllArt();
+  const featured = sortArtByFeatured(await getFeaturedArt());
+  const all = sortArtByFeatured(await getAllArt());
 
   let sellerId: string | undefined;
   if (token) {
@@ -64,7 +68,8 @@ export default async function HomePage() {
   let sellerAuctions: UiAuction[] = [];
 
   if (isSeller && sellerId) {
-    sellerArt = all.filter(art => art.sellerId === sellerId);
+    const sellerScoped = all.filter(art => art.sellerId === sellerId);
+    sellerArt = sellerScoped;
     sellerFeatured = featured.filter(art => art.sellerId === sellerId);
 
     const container = createRequestScope();

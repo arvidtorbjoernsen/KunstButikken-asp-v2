@@ -80,7 +80,12 @@ export default function HomePageClient({
         </Typography>
         {isSeller && (
           <Box mt={3}>
-            <ToggleButtonGroup value={viewMode} exclusive onChange={handleViewModeChange} aria-label={t('home.viewToggleLabel')}>
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={handleViewModeChange}
+              aria-label={t('home.viewToggleLabel')}
+            >
               <ToggleButton value="mine" aria-label={t('home.viewMine')}>
                 {t('home.viewMine')}
               </ToggleButton>
@@ -118,18 +123,18 @@ export default function HomePageClient({
         <Typography variant="h6" gutterBottom>
           {showingMine ? t('home.myFeatured') : t('home.featured')}
         </Typography>
-        {hasFeatured ? renderArtGrid(featuredList, showingMine) : (
-          <Typography variant="body2" color="text.secondary">{t('home.noFeatured')}</Typography>
-        )}
+        {hasFeatured
+          ? renderArtGrid(featuredList, showingMine)
+          : <Typography variant="body2" color="text.secondary">{t('home.noFeatured')}</Typography>}
       </Box>
 
       <Box mb={4}>
         <Typography variant="h6" gutterBottom>
           {showingMine ? t('home.myCatalogue') : t('home.allArt')}
         </Typography>
-        {hasCatalog ? renderArtGrid(catalogList, showingMine) : (
-          <Typography variant="body2" color="text.secondary">{t('home.noArtwork')}</Typography>
-        )}
+        {hasCatalog
+          ? renderArtGrid(catalogList, showingMine)
+          : <Typography variant="body2" color="text.secondary">{t('home.noArtwork')}</Typography>}
       </Box>
     </Container>
   );

@@ -2,14 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using FluentAssertions;
+
 using KunstButikken.AuctionService.Application.Services;
 using KunstButikken.AuctionService.Domain.Interfaces;
 using KunstButikken.AuctionService.Domain.Models;
-using KunstButikken.ServiceDefaults;
 using KunstButikken.AuctionService.Tests.Fixtures;
 using KunstButikken.AuctionService.Tests.TestDoubles;
+using KunstButikken.ServiceDefaults;
+
 using Moq;
+
 using Xunit;
 
 namespace KunstButikken.AuctionService.Tests.Services;
@@ -183,6 +187,20 @@ public class AuctionAppServiceTests
     }
 
     [Fact]
+    public async Task PlaceBidAsync_ThrowsWhenBidTooLow()
+    {
+        var auction = AuctionFixture.CreateAuction();
+        auction.Status = AuctionStatus.Open;
+        auction.EndsAt = DateTimeOffset.UtcNow.AddHours(1);
+        // no existing bids, starting price applies
+
+        _repo.SetupQuery(auction);
+
+        await _service.Invoking(s => s.PlaceBidAsync(auction.Id, auction.StartingPrice, Guid.NewGuid()))
+            .Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Fact]
     public async Task PlaceBidAsync_ReturnsNull_WhenAuctionMissing()
     {
         _repo.SetupQuery();
@@ -241,5 +259,18 @@ public class AuctionAppServiceTests
 
         result.Should().BeNull();
         _repo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ThrowsWhenSellerMismatch()
+    {
+        var auctionId = Guid.NewGuid();
+        var auction = AuctionFixture.CreateAuction(auctionId);
+        auction.SellerId = Guid.NewGuid(); // different seller
+
+        _repo.SetupQuery(auction);
+
+        await _service.Invoking(s => s.UpdateAsync(auctionId, new Auction(), Guid.NewGuid()))
+            .Should().ThrowAsync<UnauthorizedAccessException>();
     }
 }

@@ -1,3 +1,5 @@
+import jwt from 'jsonwebtoken';
+
 /**
  * Small server-side authentication helpers for Next.js route handlers.
  *
@@ -29,21 +31,13 @@ export function getBearerToken(req: Request): string | null {
 export function parseRolesFromBearer(token: string | null): string[] {
   if (!token) return [];
   try {
-    const [, payload] = token.split('.');
-    if (!payload) return [];
-    const decoded = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as {
-      realm_access?: { roles?: string[] };
-      resource_access?: Record<string, { roles?: string[] }>;
-    };
-    const realmRoles: string[] = decoded?.realm_access?.roles ?? [];
-    const clientRoles: string[] = Object.values(decoded?.resource_access ?? {})
-      .flatMap(r => r.roles ?? []);
-    return [...new Set([...realmRoles, ...clientRoles])];
+    const decoded = jwt.decode(token, { json: true }) as { realm_access?: { roles?: string[] } } | null;
+    return decoded?.realm_access?.roles ?? [];
   } catch {
     return [];
   }
 }
 
-export function hasRole(roles: string[], target: string): boolean {
-  return roles.map(r => r.toLowerCase()).includes(target.toLowerCase());
+export function hasRole(roles: string[], role: string): boolean {
+  return roles.includes(role);
 }

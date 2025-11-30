@@ -1,11 +1,14 @@
 using System.IO;
-using ArtServiceApp = KunstButikken.ArtService.Application.Services.ArtService;
+
 using KunstButikken.ArtService.Domain.Models;
 using KunstButikken.ArtService.Tests.Builders;
 using KunstButikken.ArtService.Tests.Fakes;
 using KunstButikken.IntegrationEvents.Contracts.Events;
 using KunstButikken.ServiceDefaults;
+
 using Microsoft.Extensions.Logging.Abstractions;
+
+using ArtServiceApp = KunstButikken.ArtService.Application.Services.ArtService;
 
 namespace KunstButikken.ArtService.Tests;
 
@@ -132,5 +135,20 @@ public class ArtServiceTests
         var result = await _sut.GetAllAsync(featured: true);
 
         Assert.Single(result);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_DefaultsToPublishedAndVerified()
+    {
+        _repo.Seed(
+            new ArtBuilder().WithStatus(ArtStatus.Published).Verified().Build(),
+            new ArtBuilder().WithStatus(ArtStatus.Published).Build(),
+            new ArtBuilder().WithStatus(ArtStatus.Draft).Verified().Build());
+
+        var result = await _sut.GetAllAsync();
+
+        // Only the published and verified art should be returned
+        Assert.Single(result);
+        Assert.All(result, a => Assert.Equal(ArtStatus.Published, a.Status));
     }
 }

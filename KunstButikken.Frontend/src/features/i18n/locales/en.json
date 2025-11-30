@@ -27,7 +27,15 @@
     "noResults": "No results",
     "featured": "Featured",
     "allArt": "All Artwork",
-    "noArtwork": "No artwork available at the moment."
+    "noArtwork": "No artwork available at the moment.",
+    "viewToggleLabel": "Select art scope",
+    "viewMine": "My art",
+    "viewAll": "All art",
+    "myFeatured": "Your featured art",
+    "myCatalogue": "Your artwork",
+    "myAuctions": "Your auctions",
+    "noAuctions": "You have no auctions yet.",
+    "noFeatured": "No featured items to show."
   },
   "artPage": {
     "title": "Art for Sale",

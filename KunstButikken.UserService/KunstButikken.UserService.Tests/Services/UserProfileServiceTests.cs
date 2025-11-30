@@ -4,7 +4,9 @@ using KunstButikken.ServiceDefaults;
 using KunstButikken.UserService.Application.Services;
 using KunstButikken.UserService.Domain.Entities;
 using KunstButikken.UserService.Domain.Interfaces;
+
 using Moq;
+
 using Xunit;
 
 namespace KunstButikken.UserService.Tests.Services;
@@ -299,6 +301,26 @@ public class UserProfileServiceTests
         Assert.False(result.IsSeller);
     }
 
+    [Fact]
+    public async Task GetOrCreateProfileAsync_NoClaims_UsesDefaults()
+    {
+        var userId = Guid.NewGuid();
+        _repo.Setup(r => r.GetByUserIdAsync(userId, default)).ReturnsAsync((UserProfile?)null);
+
+        // Principal with no claims and no identity name
+        var principal = new System.Security.Claims.ClaimsPrincipal(new System.Security.Claims.ClaimsIdentity());
+
+        var result = await _service.GetOrCreateProfileAsync(userId, principal);
+
+        Assert.Equal("Anonymous", result.DisplayName);
+        Assert.Equal(string.Empty, result.Email);
+        Assert.Equal("Anonymous", result.FullName);
+        Assert.False(result.IsSeller);
+        Assert.False(result.IsAdmin);
+        Assert.False(result.IsSellerVerified);
+        _repo.Verify(r => r.AddAsync(It.Is<UserProfile>(p => p.UserId == userId), default), Times.Once);
+    }
+
     private static ClaimsPrincipal BuildPrincipal(bool addRoles)
     {
         var claims = new List<Claim>
@@ -315,4 +337,3 @@ public class UserProfileServiceTests
         return new ClaimsPrincipal(new ClaimsIdentity(claims, "test"));
     }
 }
-

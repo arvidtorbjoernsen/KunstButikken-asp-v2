@@ -66,5 +66,17 @@ internal sealed class ArtBuilder
         return this;
     }
 
+    public ArtBuilder WithArtist(string artist)
+    {
+        _art.Artist = artist;
+        return this;
+    }
+
+    public ArtBuilder WithPrice(decimal price)
+    {
+        _art.Price = price;
+        return this;
+    }
+
     public Art Build() => _art;
 }
