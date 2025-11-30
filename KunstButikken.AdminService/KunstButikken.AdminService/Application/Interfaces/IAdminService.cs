@@ -1,4 +1,4 @@
-using KunstButikken.AdminService.Models;
+using KunstButikken.AdminService.Domain.Models;
 
 namespace KunstButikken.AdminService.Application.Interfaces;
 
@@ -8,4 +8,3 @@ public interface IAdminService
     Task<AdminActionResponse> RejectArtAsync(Guid id, string reason, string performedBy, CancellationToken ct = default);
     Task<IEnumerable<AdminLog>> GetLogsAsync(CancellationToken ct = default);
 }
-

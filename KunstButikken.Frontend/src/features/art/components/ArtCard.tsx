@@ -10,7 +10,8 @@ import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Link from "next/link";
 import type { UiArt } from "@/features/art/types/art";
-import {useTranslations} from "@/features/i18n/components/TranslationProvider";
+import { useTranslations } from "@/features/i18n/components/TranslationProvider";
+import { FeaturedChip } from '@/features/ui/components';
 
 const statusMap: Record<number, { label: string; color: 'default' | 'success' | 'error' | 'warning' }> = {
   0: { label: 'Draft', color: 'default' },
@@ -19,17 +20,19 @@ const statusMap: Record<number, { label: string; color: 'default' | 'success' | 
   3: { label: 'Rejected', color: 'warning' },
 };
 
-export default function ArtCard({ art, showStatus = false }: { art: UiArt; showStatus?: boolean }) {
+const verifiedLabel = 'Verified';
+
+export default function ArtCard({ art, showStatus = false, alwaysShowFeatured = false }: { art: UiArt; showStatus?: boolean; alwaysShowFeatured?: boolean }) {
   const { t, locale } = useTranslations();
 
   const hasImage = !!art.image;
+  const showChips = showStatus || alwaysShowFeatured;
 
   // Use language-specific title and description based on current locale
   const title = locale === 'nb' ? art.titleNb : art.titleEn;
   const description = locale === 'nb' ? art.descriptionNb : art.descriptionEn;
-  
-  const artWithStatus = art as any;
-  const status = artWithStatus.status != null ? statusMap[artWithStatus.status] : null;
+
+  const status = typeof art.status === 'number' ? statusMap[art.status] : null;
 
   // Helper function for currency formatting
   const formatCurrencyNOK = (n?: number) => {
@@ -63,32 +66,25 @@ export default function ArtCard({ art, showStatus = false }: { art: UiArt; showS
               >
                 {title}
               </Typography>
-              {showStatus && (
+              {showChips && (
                 <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', ml: 1 }}>
-                  {status && (
-                    <Chip 
-                      label={status.label} 
-                      color={status.color} 
-                      size="small" 
+                  {showStatus && status && (
+                    <Chip
+                      label={status.label}
+                      color={status.color}
+                      size="small"
                       sx={{ height: 20, fontSize: '0.7rem' }}
                     />
                   )}
-                  {artWithStatus.isVerified && (
-                    <Chip 
-                      label="Verified" 
-                      color="primary" 
-                      size="small" 
+                  {showStatus && art.isVerified && (
+                    <Chip
+                      label={verifiedLabel}
+                      color="primary"
+                      size="small"
                       sx={{ height: 20, fontSize: '0.7rem' }}
                     />
                   )}
-                  {artWithStatus.isFeatured && (
-                    <Chip 
-                      label="Featured" 
-                      color="secondary" 
-                      size="small" 
-                      sx={{ height: 20, fontSize: '0.7rem' }}
-                    />
-                  )}
+                  {art.isFeatured && <FeaturedChip />}
                 </Box>
               )}
             </Box>

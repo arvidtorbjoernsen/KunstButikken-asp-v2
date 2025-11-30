@@ -1,9 +1,8 @@
-// ...existing code...
 using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using KunstButikken.PaymentService.Data;
+using KunstButikken.PaymentService.Infrastructure.Data;
 
 namespace KunstButikken.PaymentService.Infrastructure.DesignTime;
 
@@ -25,4 +24,3 @@ public class DesignTimePaymentDbContextFactory : IDesignTimeDbContextFactory<Pay
         return new PaymentDbContext(optionsBuilder.Options);
     }
 }
-

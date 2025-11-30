@@ -1,8 +1,6 @@
 using KunstButikken.ArtService.Infrastructure.Data;
 using KunstButikken.ArtService.Domain.Interfaces;
 using KunstButikken.ArtService.Domain.Models;
-using KunstButikken.IntegrationEvents.Contracts.Abstractions;
-using KunstButikken.IntegrationEvents.Contracts.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace KunstButikken.ArtService.Infrastructure.Repositories;
@@ -10,12 +8,10 @@ namespace KunstButikken.ArtService.Infrastructure.Repositories;
 public class ArtRepository : IArtRepository
 {
     private readonly ArtDbContext _db;
-    private readonly IEventBus _eventBus;
 
-    public ArtRepository(ArtDbContext db, IEventBus eventBus)
+    public ArtRepository(ArtDbContext db)
     {
         _db = db;
-        _eventBus = eventBus;
     }
 
     public IQueryable<Art> Query() => _db.Arts.AsQueryable();
@@ -25,30 +21,20 @@ public class ArtRepository : IArtRepository
         return _db.Arts.FindAsync(new object[] { id }, cancellationToken).AsTask();
     }
 
-    public async Task AddAsync(Art art, CancellationToken cancellationToken = default)
+    public Task AddAsync(Art art, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(art);
 
         _db.Arts.Add(art);
-        var integrationEvent = new ArtCreatedIntegrationEvent(
-            art.TitleEn,
-            art.TitleNb,
-            art.Artist,
-            art.SellerId,
-            art.SellerDisplayName,
-            art.Price,
-            art.ImageUrl
-        );
-        await _eventBus.PublishAsync(integrationEvent, cancellationToken).ConfigureAwait(false);
+        return Task.CompletedTask;
     }
 
-    public async Task RemoveAsync(Art art, CancellationToken cancellationToken = default)
+    public Task RemoveAsync(Art art, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(art);
 
         _db.Arts.Remove(art);
-        var integrationEvent = new ArtDeletedIntegrationEvent(art.Id);
-        await _eventBus.PublishAsync(integrationEvent, cancellationToken).ConfigureAwait(false);
+        return Task.CompletedTask;
     }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) =>

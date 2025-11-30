@@ -1,6 +1,7 @@
 "use client";
 
-import { useTranslations } from "@/features/i18n/components/TranslationProvider";
+import { useTranslations } from '@/features/i18n/components/TranslationProvider';
+import type { UiArt } from '@/features/art/types/art';
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -10,26 +11,10 @@ import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
-
-interface ApiArt {
-  id: string;
-  titleNb: string;
-  titleEn: string;
-  descriptionNb?: string;
-  descriptionEn?: string;
-  imageUrl?: string;
-  price: number;
-  sellerId?: string;
-  sellerDisplayName?: string;
-  artist?: string;
-  status?: number;
-  isVerified?: boolean;
-  isFeatured?: boolean;
-  createdAt?: string;
-}
+import { FeaturedChip } from '@/features/ui/components';
 
 interface ArtDetailClientProps {
-  art: ApiArt | null;
+  art: UiArt | null;
 }
 
 const statusMap: Record<number, { label: string; color: 'default' | 'success' | 'error' | 'warning' }> = {
@@ -61,16 +46,16 @@ export default function ArtDetailClient({ art }: ArtDetailClientProps) {
       <Grid container spacing={4}>
         {/* Image Section */}
         <Grid size={{ xs: 12, md: 7 }}>
-          {art.imageUrl ? (
+          {art.image ? (
             <Card sx={{ borderRadius: 2, overflow: 'hidden' }}>
               <CardMedia
                 component="img"
-                image={art.imageUrl}
+                image={art.image}
                 alt={title}
-                sx={{ 
-                  width: '100%', 
-                  height: { xs: 300, sm: 400, md: 500 }, 
-                  objectFit: 'cover' 
+                sx={{
+                  width: '100%',
+                  height: { xs: 300, sm: 400, md: 500 },
+                  objectFit: 'cover'
                 }}
               />
             </Card>
@@ -94,27 +79,22 @@ export default function ArtDetailClient({ art }: ArtDetailClientProps) {
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   {status && (
-                    <Chip 
-                      label={status.label} 
-                      color={status.color} 
-                      size="small" 
+                    <Chip
+                      label={status.label}
+                      color={status.color}
+                      size="small"
                     />
                   )}
                   {art.isVerified && (
-                    <Chip 
-                      label="Verified" 
-                      color="primary" 
-                      size="small" 
+                    <Chip
+                      label="Verified"
+                      color="primary"
+                      size="small"
                       variant="outlined"
                     />
                   )}
                   {art.isFeatured && (
-                    <Chip 
-                      label="Featured" 
-                      color="secondary" 
-                      size="small" 
-                      variant="outlined"
-                    />
+                    <FeaturedChip variant="outlined" />
                   )}
                 </Box>
               </Box>
@@ -124,8 +104,8 @@ export default function ArtDetailClient({ art }: ArtDetailClientProps) {
               {/* Price */}
               <Box sx={{ mb: 3 }}>
                 <Typography variant="h5" color="primary" sx={{ fontWeight: 600 }}>
-                  {new Intl.NumberFormat(undefined, { 
-                    style: "currency", 
+                  {new Intl.NumberFormat(undefined, {
+                    style: "currency",
                     currency: "NOK" // Changed to NOK
                   }).format(Number(art.price))}
                 </Typography>

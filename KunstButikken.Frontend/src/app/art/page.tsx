@@ -1,140 +1,65 @@
-'use client';
-
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import { useEffect, useState } from 'react';
-
-import ArtCard from '@/features/art/components/ArtCard';
-import { useTranslations } from '@/features/i18n/components/TranslationProvider';
-import { useKeycloak } from '@/features/auth/lib/keycloak';
-import { getAllClient } from '@/features/art/api/art-client';
+import { headers } from 'next/headers';
+import { parseRolesFromBearer, hasRole } from '@/features/auth/lib/server-auth';
+import { createRequestScope } from '@/infrastructure/di/container';
+import { GetAllArt } from '@/application/useCases/GetAllArt';
+import { GetSellerAuctions } from '@/application/useCases/GetSellerAuctions';
+import { ensureRole } from '@/application/security/ensureRole';
+import type { CurrentUserContext } from '@/application/security/types';
+import ArtForSaleClient from './ArtForSaleClient';
 import type { UiArt } from '@/features/art/types/art';
+import type { UiAuction } from '@/features/auction/types/auction';
 
-export default function ArtForSalePage() {
-  const { t } = useTranslations();
-  const { authenticated, isSeller, isBuyer, keycloak } = useKeycloak();
+export default async function ArtForSalePage() {
+  const hdrs = await headers();
+  const authHeader = hdrs.get('authorization') || hdrs.get('Authorization');
+  const token = authHeader ? authHeader.replace(/^Bearer\s+/i, '') : null;
+  const roles = parseRolesFromBearer(token);
 
-  const [allArt, setAllArt] = useState<UiArt[]>([]);
-  const [myArt, setMyArt] = useState<UiArt[]>([]);
-  const [loading, setLoading] = useState(true);
+  const container = createRequestScope();
+  const getAllArt = container.resolve(GetAllArt);
+  const getSellerAuctions = container.resolve(GetSellerAuctions);
+  const allArt = await getAllArt.execute();
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const all = await getAllClient();
-        if (!mounted) return;
+  let sellerId: string | undefined;
+  if (token) {
+    try {
+      const [, payload] = token.split('.');
+      const decoded = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+      sellerId = decoded?.sub;
+    } catch {
+      sellerId = undefined;
+    }
+  }
 
-        const userId = keycloak?.tokenParsed?.['sub'];
+  const currentUser: CurrentUserContext = {
+    id: sellerId,
+    roles,
+  };
 
-        console.log('[ArtPage] Debug info:');
-        console.log('  - Total art items:', all.length);
-        console.log('  - User ID (sub):', userId);
-        console.log('  - isSeller:', isSeller);
-        console.log('  - isBuyer:', isBuyer);
-        console.log('  - authenticated:', authenticated);
-        console.log('  - Sample art item:', all[0]);
+  ensureRole(currentUser, ['buyer', 'seller'], { allowGuests: true });
 
-        // Filter based on role
-        let filteredArt = all;
-        let sellerArt: UiArt[] = [];
+  const isSellerRole = hasRole(roles, 'seller');
+  const isBuyerRole = hasRole(roles, 'buyer');
 
-        if (isSeller && userId) {
-          // Sellers see their own art separately
-          sellerArt = all.filter(art => {
-            const match = art.sellerId === userId;
-            if (match) console.log('  - Found MY art:', art.titleEn, 'sellerId:', art.sellerId);
-            return match;
-          });
-          filteredArt = all.filter(art => art.sellerId !== userId);
-          console.log('  - My art count:', sellerArt.length);
-          console.log('  - Other art count:', filteredArt.length);
-        } else if (isBuyer || authenticated) {
-          // Buyers only see verified art
-          filteredArt = all.filter(art => art.isVerified === true);
-          console.log('  - Buyer sees verified art count:', filteredArt.length);
-        }
-        // Non-authenticated users see all (or we could restrict further)
+  const sortArtByFeatured = (items: UiArt[]) =>
+    [...items].sort((a, b) => Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)));
 
-        setMyArt(sellerArt);
-        setAllArt(filteredArt);
-      } catch (err) {
-        console.warn('Failed to fetch art client-side:', err);
-        if (!mounted) return;
-        setAllArt([]);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [authenticated, keycloak, isSeller, isBuyer]);
+  const sellerArt = sellerId ? sortArtByFeatured(allArt.filter(a => a.sellerId === sellerId)) : [];
+  const publicArt = sortArtByFeatured(allArt.filter(a => a.isVerified && (!sellerId || a.sellerId !== sellerId)));
 
-  if (loading) {
-    return (
-      <Container maxWidth="xl" sx={{ py: 8 }}>
-        <Typography>{t('home.loading') ?? 'Loading artworks...'}</Typography>
-      </Container>
-    );
+  let myAuctions: UiAuction[] = [];
+  if (sellerId && isSellerRole) {
+    const sellerAuctions = await getSellerAuctions.execute({ user: currentUser });
+    myAuctions = sellerAuctions.mine;
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 8 }}>
-      <Box mb={6}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {t('artPage.forSale')}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {isSeller
-            ? 'Your art and all available artworks'
-            : isBuyer
-              ? 'Verified artworks available for purchase'
-              : t('nav.art')}
-        </Typography>
-      </Box>
-
-      {/* Seller's Own Art Section */}
-      {isSeller && myArt.length > 0 && (
-        <Box mb={6}>
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-            My Artworks
-          </Typography>
-          <Grid container spacing={3}>
-            {myArt.map(art => (
-              <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }} key={art.id}>
-                <ArtCard art={art} showStatus />
-              </Grid>
-            ))}
-          </Grid>
-          <Divider sx={{ mt: 6, mb: 4 }} />
-        </Box>
-      )}
-
-      {/* All Other Art */}
-      <Box>
-        {isSeller && myArt.length > 0 && (
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-            All Other Artworks
-          </Typography>
-        )}
-        {allArt.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">
-            {t('artPage.noArt') ?? 'No art found.'}
-          </Typography>
-        ) : (
-          <Grid container spacing={3}>
-            {allArt.map(art => (
-              <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }} key={art.id}>
-                <ArtCard art={art} />
-              </Grid>
-            ))}
-          </Grid>
-        )}
-      </Box>
-    </Container>
+    <ArtForSaleClient
+      myArt={isSellerRole ? sellerArt : []}
+      others={publicArt}
+      myAuctions={myAuctions}
+      isSeller={isSellerRole}
+      isBuyer={isBuyerRole}
+    />
   );
 }

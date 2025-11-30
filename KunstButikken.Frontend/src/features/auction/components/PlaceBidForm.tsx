@@ -6,7 +6,8 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
-import { apiFetch } from '@/shared/api/api';
+import { useContainer } from '@/presentation/providers/DiProvider';
+import { PlaceBid } from '@/application/useCases/PlaceBid';
 import { useKeycloak } from '@/features/auth/lib/keycloak';
 import { useTranslations } from '@/features/i18n/components/TranslationProvider';
 
@@ -100,12 +101,15 @@ export default function PlaceBidForm({
         </Alert>
       );
     }
-    
+
     // Case 2: The auction is unavailable for any other reason (ended, closed, etc.).
     return <Alert severity="info">{t('auction.auctionClosed')}</Alert>;
   }
 
   // If we reach here, the auction is open and the bid form can be displayed.
+  const container = useContainer();
+  const placeBidUseCase = React.useMemo(() => container.resolve(PlaceBid), [container]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -124,15 +128,12 @@ export default function PlaceBidForm({
 
     setLoading(true);
     try {
-      await apiFetch('AUCTION', `/${auctionId}/bid`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bidAmount),
-      });
+      await placeBidUseCase.execute(auctionId, bidAmount);
       setSuccess(t('auction.bidPlaced'));
       setAmount('');
-    } catch (err: any) {
-      setError(err?.message || t('auction.failedToPlaceBid'));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t('auction.failedToPlaceBid');
+      setError(message);
     } finally {
       setLoading(false);
     }

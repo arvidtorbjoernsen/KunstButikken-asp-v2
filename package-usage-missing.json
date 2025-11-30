@@ -1,0 +1,177 @@
+[
+  {
+    "ProjectName": "KunstButikken.ArtService.Domain",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.ArtService/KunstButikken.ArtService/Domain/KunstButikken.ArtService.Domain.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AdminService.Domain",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AdminService/KunstButikken.AdminService/Domain/KunstButikken.AdminService.Domain.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AuctionService.Domain",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AuctionService/KunstButikken.AuctionService/Domain/KunstButikken.AuctionService.Domain.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AuthGateway.Application",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AuthGateway/KunstButikken.AuthGateway/Application/KunstButikken.AuthGateway.Application.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AuthGateway.Domain",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AuthGateway/KunstButikken.AuthGateway/Domain/KunstButikken.AuthGateway.Domain.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AuctionService.Infrastructure",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AuctionService/KunstButikken.AuctionService/Infrastructure/KunstButikken.AuctionService.Infrastructure.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.ArtService.Infrastructure",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.ArtService/KunstButikken.ArtService/Infrastructure/KunstButikken.ArtService.Infrastructure.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.PaymentService.Domain",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.PaymentService/KunstButikken.PaymentService/Domain/KunstButikken.PaymentService.Domain.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AdminService.Application",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AdminService/KunstButikken.AdminService/Application/KunstButikken.AdminService.Application.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AuctionService.Application",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AuctionService/KunstButikken.AuctionService/Application/KunstButikken.AuctionService.Application.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AuthGateway",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AuthGateway/KunstButikken.AuthGateway/KunstButikken.AuthGateway.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.PaymentService.Application",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.PaymentService/KunstButikken.PaymentService/Application/KunstButikken.PaymentService.Application.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.ArtService.Application",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.ArtService/KunstButikken.ArtService/Application/KunstButikken.ArtService.Application.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.IntegrationEvents.Contracts",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.IntegrationEvents.Contracts/KunstButikken.IntegrationEvents.Contracts.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.Common.Logging",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.Common.Logging/KunstButikken.Common.Logging.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.ServiceDefaults",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.ServiceDefaults/KunstButikken.ServiceDefaults.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AdminService.Infrastructure",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AdminService/KunstButikken.AdminService/Infrastructure/KunstButikken.AdminService.Infrastructure.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.UserService.Domain",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.UserService/KunstButikken.UserService/Domain/KunstButikken.UserService.Domain.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.PaymentService.Infrastructure",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.PaymentService/KunstButikken.PaymentService/Infrastructure/KunstButikken.PaymentService.Infrastructure.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AuctionService",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AuctionService/KunstButikken.AuctionService/KunstButikken.AuctionService.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.PaymentService",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.PaymentService/KunstButikken.PaymentService/KunstButikken.PaymentService.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AdminService",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AdminService/KunstButikken.AdminService/KunstButikken.AdminService.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.ArtService",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.ArtService/KunstButikken.ArtService/KunstButikken.ArtService.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.UserService.Shared.Dev",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.UserService/KunstButikken.UserService/DevTools/KunstButikken.UserService.Shared.Dev.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.UserService.Application",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.UserService/KunstButikken.UserService/Application/KunstButikken.UserService.Application.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.ArtService.Tests",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.ArtService/KunstButikken.ArtService.Tests/KunstButikken.ArtService.Tests.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AuctionService.Tests",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AuctionService/KunstButikken.AuctionService.Tests/KunstButikken.AuctionService.Tests.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AdminService.Tests",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AdminService/KunstButikken.AdminService.Tests/KunstButikken.AdminService.Tests.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AuthGateway.Tests",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AuthGateway/KunstButikken.AuthGateway.Tests/KunstButikken.AuthGateway.Tests.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.PaymentService.Tests",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.PaymentService/KunstButikken.PaymentService.Tests/KunstButikken.PaymentService.Tests.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.UserService.Tests",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.UserService/KunstButikken.UserService.Tests/KunstButikken.UserService.Tests.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.UserService.Infrastructure",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.UserService/KunstButikken.UserService/Infrastructure/KunstButikken.UserService.Infrastructure.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.UserService",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.UserService/KunstButikken.UserService/KunstButikken.UserService.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AppHost",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AppHost/KunstButikken.AppHost/KunstButikken.AppHost.csproj",
+    "MissingPackages": []
+  },
+  {
+    "ProjectName": "KunstButikken.AppHost.Tests",
+    "ProjectPath": "/Users/arvidt/Development/USN/TSD2640/Prosjekt/KunstButikken-asp/KunstButikken.AppHost/KunstButikken.AppHost.Tests/KunstButikken.AppHost.Tests.csproj",
+    "MissingPackages": []
+  }
+]

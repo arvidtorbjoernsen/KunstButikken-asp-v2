@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using KunstButikken.AuctionService.Interfaces;
+using KunstButikken.AuctionService.Domain.Interfaces;
 using KunstButikken.AuctionService.Domain.Models;
 using KunstButikken.AuctionService.Infrastructure.Persistence;
 

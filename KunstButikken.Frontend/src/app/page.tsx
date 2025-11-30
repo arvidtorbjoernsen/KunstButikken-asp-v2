@@ -1,7 +1,14 @@
-import { parseResponse } from '@/shared/api';
-import type { ApiArt, UiArt } from '@/features/art/types/art';
 import HomePageClient from './HomePageClient';
-import { buildServiceUrl } from '@/shared/config';
+import { GetFeaturedArt } from '@/application/useCases/GetFeaturedArt';
+import { GetAllArt } from '@/application/useCases/GetAllArt';
+import { createRequestScope } from '@/infrastructure/di/container';
+import type { UiArt } from '@/features/art/types/art';
+import { headers } from 'next/headers';
+import { parseRolesFromBearer, hasRole } from '@/features/auth/lib/server-auth';
+import { Buffer } from 'node:buffer';
+import { GetSellerAuctions } from '@/application/useCases/GetSellerAuctions';
+import type { CurrentUserContext } from '@/application/security/types';
+import type { UiAuction } from '@/features/auction/types/auction';
 
 /**
  * Server-side data fetching for the home page
@@ -9,76 +16,19 @@ import { buildServiceUrl } from '@/shared/config';
  * Similar to Angular's SSR data fetching in resolvers
  */
 async function getFeaturedArt(): Promise<UiArt[]> {
-  const urlFeatured = buildServiceUrl('ART', '/featured?limit=5');
-
-  try {
-    const res = await fetch(urlFeatured, {
-      // Revalidate every 60 seconds (ISR - Incremental Static Regeneration)
-      next: { revalidate: 60 },
-    });
-
-    if (!res.ok) {
-      console.error(`Failed to fetch featured art: ${res.status}`);
-      return [];
-    }
-
-    const data = await parseResponse<ApiArt[]>(res);
-
-    const mapItem = (a: ApiArt): UiArt => ({
-      id: String(a.id ?? ''),
-      titleNb: a.titleNb ?? 'Untitled',
-      titleEn: a.titleEn ?? 'Untitled',
-      descriptionNb: a.descriptionNb ?? undefined,
-      descriptionEn: a.descriptionEn ?? undefined,
-      artist: a.artist ?? (a.sellerId ? a.sellerId.substring(0, 8) : 'Unknown Artist'),
-      sellerDisplayName: a.sellerDisplayName ?? undefined,
-      price: a.price ?? 0,
-      image: a.imageUrl ?? '',
-    });
-
-    return Array.isArray(data) ? data.map(mapItem) : [];
-  } catch (err) {
-    console.warn(
-      'Failed to fetch featured art server-side:',
-      err instanceof Error ? err.message : String(err),
-    );
-    return [];
-  }
+  const container = createRequestScope();
+  const getFeaturedArtUseCase = container.resolve(GetFeaturedArt);
+  return getFeaturedArtUseCase.execute(5);
 }
 
 async function getAllArt(): Promise<UiArt[]> {
-  const url = buildServiceUrl('ART', '/');
-
-  try {
-    const res = await fetch(url, { next: { revalidate: 60 } });
-    if (!res.ok) {
-      console.error(`Failed to fetch all art: ${res.status}`);
-      return [];
-    }
-
-    const data = await parseResponse<ApiArt[]>(res);
-
-    const mapItem = (a: ApiArt): UiArt => ({
-      id: String(a.id ?? ''),
-      titleNb: a.titleNb ?? a.titleEn ?? 'Untitled',
-      titleEn: a.titleEn ?? a.titleNb ?? 'Untitled',
-      descriptionNb: a.descriptionNb ?? undefined,
-      descriptionEn: a.descriptionEn ?? undefined,
-      artist: a.artist ?? a.sellerDisplayName ?? a.sellerId ?? 'Unknown Artist',
-      sellerDisplayName: a.sellerDisplayName ?? undefined,
-      price: a.price ?? 0,
-      image: a.imageUrl ?? '',
-    });
-
-    return Array.isArray(data) ? data.map(mapItem) : [];
-  } catch (err) {
-    console.warn(
-      'Failed to fetch all art server-side:',
-      err instanceof Error ? err.message : String(err),
-    );
-    return [];
-  }
+  const container = createRequestScope();
+  const getAllArtUseCase = container.resolve(GetAllArt);
+  return getAllArtUseCase.execute();
 }
+
+const sortArtByFeatured = (items: UiArt[]): UiArt[] =>
+  [...items].sort((a, b) => Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)));
 
 /**
  * Home page component with server-side rendering
@@ -92,11 +42,55 @@ async function getAllArt(): Promise<UiArt[]> {
  * but with Next.js this is the default behavior for components without 'use client'
  */
 export default async function HomePage() {
-  // Fetch data server-side before rendering
-  const featured = await getFeaturedArt();
-  const all = await getAllArt();
+  const hdrs = await headers();
+  const authHeader = hdrs.get('authorization') || hdrs.get('Authorization');
+  const token = authHeader ? authHeader.replace(/^Bearer\s+/i, '') : null;
+  const roles = parseRolesFromBearer(token);
 
-  // Pass the fetched data to the client component for rendering
-  // The server generates the initial HTML, then client hydrates for interactivity
-  return <HomePageClient initialFeatured={featured} initialAll={all} />;
+  const featured = sortArtByFeatured(await getFeaturedArt());
+  const all = sortArtByFeatured(await getAllArt());
+
+  let sellerId: string | undefined;
+  if (token) {
+    try {
+      const [, payload] = token.split('.');
+      const decoded = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+      sellerId = decoded?.sub;
+    } catch {
+      sellerId = undefined;
+    }
+  }
+
+  const isSeller = hasRole(roles, 'seller') && !!sellerId;
+
+  let sellerArt: UiArt[] = [];
+  let sellerFeatured: UiArt[] = [];
+  let sellerAuctions: UiAuction[] = [];
+
+  if (isSeller && sellerId) {
+    const sellerScoped = all.filter(art => art.sellerId === sellerId);
+    sellerArt = sellerScoped;
+    sellerFeatured = featured.filter(art => art.sellerId === sellerId);
+
+    const container = createRequestScope();
+    const getSellerAuctions = container.resolve(GetSellerAuctions);
+    const currentUser: CurrentUserContext = { id: sellerId, roles };
+    try {
+      const auctions = await getSellerAuctions.execute({ user: currentUser });
+      sellerAuctions = auctions.mine;
+    } catch {
+      sellerAuctions = [];
+    }
+  }
+
+  return (
+    <HomePageClient
+      initialFeatured={featured}
+      initialAll={all}
+      sellerFeatured={sellerFeatured}
+      sellerArt={sellerArt}
+      sellerAuctions={sellerAuctions}
+      isSeller={isSeller}
+    />
+  );
 }

@@ -1,8 +1,10 @@
 using System;
 using System.IO;
+
+using KunstButikken.UserService.Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using KunstButikken.UserService.Data;
 
 namespace KunstButikken.UserService.Infrastructure.DesignTime;
 

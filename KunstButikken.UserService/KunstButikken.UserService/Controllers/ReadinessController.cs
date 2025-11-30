@@ -1,6 +1,7 @@
 using System.Data.Common;
 using KunstButikken.Common.Logging;
-using KunstButikken.UserService.Data;
+using KunstButikken.UserService.Infrastructure.Persistence;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace KunstButikken.UserService.Controllers;

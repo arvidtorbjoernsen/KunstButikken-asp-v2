@@ -1,6 +1,5 @@
 "use client";
 
-import { apiFetch } from "@/shared/api/api";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import InfoIcon from "@mui/icons-material/Info";
@@ -27,28 +26,11 @@ import Stack from "@mui/material/Stack";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
-
-interface UserProfile {
-  id?: string;
-  userId?: string;
-  keycloakId?: string;
-  displayName: string;
-  email: string;
-  fullName: string;
-  isSeller: boolean;
-  isSellerVerified?: boolean;
-  isAdmin: boolean;
-  profileImageUrl?: string;
-  preferencesJson?: string;
-  phoneNumber?: string;
-  address?: string;
-  city?: string;
-  postalCode?: string;
-  country?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { useContainer } from '@/presentation/providers/DiProvider';
+import { GetProfile } from '@/application/useCases/GetProfile';
+import { UpdateProfile } from '@/application/useCases/UpdateProfile';
+import type { UserProfile } from '@/features/profile/types/profile';
+import { useEffect, useMemo, useState } from "react";
 
 export default function ProfileClient() {
   // State management
@@ -85,9 +67,7 @@ export default function ProfileClient() {
       setError(null);
 
       try {
-        console.log("[ProfileClient] Loading profile from UserService...");
-        const profileData = await apiFetch<UserProfile>("USER", "/me");
-        console.log("[ProfileClient] Profile loaded successfully:", profileData);
+        const profileData = await getProfileUseCase.execute();
 
         setProfile(profileData);
 
@@ -103,7 +83,7 @@ export default function ProfileClient() {
         setIsSeller(profileData.isSeller === true);
         setProfileImageUrl(profileData.profileImageUrl || "");
       } catch (err) {
-        console.error("[ProfileClient] Error loading profile:", err);
+        console.error('[ProfileClient] Error loading profile:', err);
         const errorMessage = err instanceof Error ? err.message : "Failed to load profile";
         setError(`Failed to load profile. Please try again. (${errorMessage})`);
         showSnackbar("Failed to load profile", "error");
@@ -140,15 +120,12 @@ export default function ProfileClient() {
     };
 
     try {
-      await apiFetch("USER", "", {
-        method: "PUT",
-        body: JSON.stringify(updatedProfile)
-      });
+      await updateProfileUseCase.execute(updatedProfile);
 
       setProfile(updatedProfile);
       showSnackbar("Profile updated successfully!", "success");
     } catch (err) {
-      console.error("Error updating profile:", err);
+      console.error('Error updating profile:', err);
       showSnackbar("Failed to update profile. Please try again.", "error");
     } finally {
       setSaving(false);
@@ -170,6 +147,10 @@ export default function ProfileClient() {
       showSnackbar("Form reset to saved values", "success");
     }
   };
+
+  const container = useContainer();
+  const getProfileUseCase = useMemo(() => container.resolve(GetProfile), [container]);
+  const updateProfileUseCase = useMemo(() => container.resolve(UpdateProfile), [container]);
 
   if (loading) {
     return (

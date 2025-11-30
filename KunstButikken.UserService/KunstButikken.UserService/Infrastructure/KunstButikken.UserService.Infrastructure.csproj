@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -10,8 +11,18 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="aspire.rabbitmq.client" />
+    <PackageReference Include="dotnetenv" />
+    <PackageReference Include="microsoft.entityframeworkcore.relational" />
+    <PackageReference Include="microsoft.extensions.servicediscovery" />
+    <PackageReference Include="opentelemetry.exporter.opentelemetryprotocol" />
+    <PackageReference Include="opentelemetry.extensions.hosting" />
+    <PackageReference Include="opentelemetry.instrumentation.aspnetcore" />
+    <PackageReference Include="opentelemetry.instrumentation.http" />
+    <PackageReference Include="opentelemetry.instrumentation.runtime" />
+    <PackageReference Include="rabbitmq.client" />
   </ItemGroup>
   <ItemGroup>
     <!-- Infrastructure compiles only files in its project folder (default globbing).
@@ -27,12 +38,14 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Aspire.Keycloak.Authentication" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\KunstButikken.UserService.Domain.csproj" />
+    <ProjectReference Include="..\Application\KunstButikken.UserService.Application.csproj" />
     <ProjectReference Include="..\..\..\KunstButikken.IntegrationEvents.Contracts\KunstButikken.IntegrationEvents.Contracts.csproj" />
+    <ProjectReference Include="..\DevTools\KunstButikken.UserService.Shared.Dev.csproj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\KunstButikken.ServiceDefaults\KunstButikken.ServiceDefaults.csproj" />
@@ -43,14 +56,12 @@
   <ItemGroup>
     <!-- Include the UserService implementation files that live in the solution's Data/Services folders
          The Web project explicitly removes these files from its compilation so the class library
-         becomes the single owner of these implementation files. -->
-    <Compile Include="..\Data\**\*.cs" />
-    <Compile Include="..\Services\**\*.cs" />
+         becomes the single owner of these implementation files. Place shared types into the
+         Domain/Application projects or keep copies inside this Infrastructure folder. -->
     <Compile Include="..\Migrations\**\*.cs" />
     <Compile Include="..\Logging\**\*.cs" />
-    <!-- Include only the DTOs/helpers from Controllers that are used by services -->
-    <Compile Include="..\Controllers\DevRequests.cs" />
-    <Compile Include="..\Controllers\DevControllerHelpers.cs" />
-    <!-- Controllers are part of the Web project; do not include them here to avoid duplicate types -->
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
   </ItemGroup>
 </Project>

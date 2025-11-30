@@ -1,12 +1,10 @@
 using KunstButikken.AuctionService.Application.Interfaces;
 using KunstButikken.AuctionService.Domain.Models;
 using KunstButikken.AuctionService.Hubs;
-using KunstButikken.ServiceDefaults;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 
 namespace KunstButikken.AuctionService.Controllers;
 
@@ -14,54 +12,41 @@ namespace KunstButikken.AuctionService.Controllers;
 [Route("api/[controller]")]
 public class AuctionsController : ControllerBase
 {
-    private readonly IDateTimeProvider _clock;
     private readonly IHubContext<AuctionHub> _hub;
     private readonly IAuctionService _service;
 
-    public AuctionsController(IAuctionService service, IHubContext<AuctionHub> hub, IDateTimeProvider clock)
+    public AuctionsController(IAuctionService service, IHubContext<AuctionHub> hub)
     {
         _service = service;
         _hub = hub;
-        _clock = clock;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Auction>>> GetAll([FromQuery] AuctionStatus? status)
     {
-        IQueryable<Auction> q = _service.Query().Include(a => a.Bids);
-        if (status.HasValue)
-        {
-            q = q.Where(a => a.Status == status);
-        }
-
-        return Ok(await q.OrderByDescending(a => a.StartsAt).ToListAsync().ConfigureAwait(false));
+        var auctions = await _service.GetAllAsync(status, includeBids: true).ConfigureAwait(false);
+        return Ok(auctions);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<Auction>> Get(Guid id)
     {
-        var a = await _service.Query().Include(x => x.Bids).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
-        return a is null ? NotFound() : Ok(a);
+        var auction = await _service.GetByIdAsync(id, includeBids: true).ConfigureAwait(false);
+        return auction is null ? NotFound() : Ok(auction);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Auction>> Create([FromBody] Auction a)
+    public async Task<ActionResult<Auction>> Create([FromBody] Auction auction)
     {
-        if (a is null)
+        if (auction is null)
         {
-            throw new ArgumentNullException(nameof(a));
+            throw new ArgumentNullException(nameof(auction));
         }
 
-        a.Id = Guid.NewGuid();
-        a.Status = AuctionStatus.Open;
-        await _service.AddAsync(a).ConfigureAwait(false);
-        await _service.SaveChangesAsync().ConfigureAwait(false);
-        await _hub.Clients.Group(a.Id.ToString()).SendAsync("auctionUpdated", a).ConfigureAwait(false);
-        await _hub.Clients.All.SendAsync("auctionCreated", a).ConfigureAwait(false);
-        return CreatedAtAction(nameof(Get), new
-        {
-            id = a.Id
-        }, a);
+        var created = await _service.CreateAsync(auction).ConfigureAwait(false);
+        await NotifyUpdatedAsync(created.Id, created).ConfigureAwait(false);
+        await _hub.Clients.All.SendAsync("auctionCreated", created).ConfigureAwait(false);
+        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
     [HttpPut("{id:guid}")]
@@ -73,95 +58,50 @@ public class AuctionsController : ControllerBase
             throw new ArgumentNullException(nameof(updatedAuction));
         }
 
-        var auction = await _service.Query().Include(x => x.Bids).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
-        if (auction is null)
-        {
-            return NotFound();
-        }
-
         var userId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-        if (auction.SellerId.ToString() != userId)
+        Guid? sellerId = Guid.TryParse(userId, out var parsed) ? parsed : null;
+        try
+        {
+            var auction = await _service.UpdateAsync(id, updatedAuction, sellerId).ConfigureAwait(false);
+            if (auction is null) return NotFound();
+            await NotifyUpdatedAsync(id, auction).ConfigureAwait(false);
+            return Ok(auction);
+        }
+        catch (UnauthorizedAccessException)
         {
             return Forbid();
         }
-
-        if (auction.Bids.Count > 0)
+        catch (InvalidOperationException ex)
         {
-            return BadRequest("Cannot edit an auction with bids.");
+            return BadRequest(ex.Message);
         }
-
-        auction.StartsAt = updatedAuction.StartsAt;
-        auction.EndsAt = updatedAuction.EndsAt;
-        auction.StartingPrice = updatedAuction.StartingPrice;
-        auction.ReservePrice = updatedAuction.ReservePrice;
-
-        await _service.SaveChangesAsync().ConfigureAwait(false);
-
-        var freshAuction = await _service.Query().Include(x => x.Bids).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
-        await _hub.Clients.Group(id.ToString()).SendAsync("auctionUpdated", freshAuction).ConfigureAwait(false);
-
-        return Ok(freshAuction);
     }
 
     [HttpPost("{id:guid}/bid")]
     public async Task<IActionResult> Bid(Guid id, [FromBody] decimal amount)
     {
-        var a = await _service.Query().Include(x => x.Bids).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
-        if (a is null)
+        try
         {
-            return NotFound();
+            var updated = await _service.PlaceBidAsync(id, amount, Guid.NewGuid()).ConfigureAwait(false);
+            if (updated is null) return NotFound();
+            await NotifyUpdatedAsync(id, updated).ConfigureAwait(false);
+            return Accepted();
         }
-
-        if (a.Status != AuctionStatus.Open || a.EndsAt <= _clock.UtcNow)
+        catch (InvalidOperationException ex)
         {
-            return BadRequest("Auction closed");
+            return BadRequest(ex.Message);
         }
-
-        var min = a.Bids.Count == 0 ? a.StartingPrice : a.Bids.Max(b => b.Amount);
-        if (amount <= min)
-        {
-            return BadRequest("Bid must be greater than " + min);
-        }
-
-        var bid = new Bid
-        {
-            Id = Guid.NewGuid(), AuctionId = id, BidderId = Guid.NewGuid(), Amount = amount
-        };
-        await _service.AddBidAsync(bid).ConfigureAwait(false);
-        await _service.SaveChangesAsync().ConfigureAwait(false);
-
-        var updatedAuction = await _service.Query().Include(x => x.Bids).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
-
-        await _hub.Clients.Group(id.ToString()).SendAsync("auctionUpdated", updatedAuction).ConfigureAwait(false);
-        return Accepted();
     }
 
     [HttpPost("{id:guid}/close")]
     public async Task<IActionResult> Close(Guid id)
     {
-        var a = await _service.Query().Include(x => x.Bids).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
-        if (a is null)
-        {
-            return NotFound();
-        }
-
-        a.Status = AuctionStatus.Closed;
-        var top = a.Bids.OrderByDescending(b => b.Amount).FirstOrDefault();
-        var reserveOk = !a.ReservePrice.HasValue || top != null && top.Amount >= a.ReservePrice.Value;
-        if (top != null && reserveOk)
-        {
-            a.WinningBid = top.Amount;
-            a.WinnerId = top.BidderId;
-        }
-        else
-        {
-            a.WinningBid = null;
-            a.WinnerId = null;
-        }
-
-        await _service.SaveChangesAsync().ConfigureAwait(false);
-        await _hub.Clients.Group(id.ToString()).SendAsync("auctionClosed", a).ConfigureAwait(false);
-        await _hub.Clients.Group(id.ToString()).SendAsync("auctionUpdated", a).ConfigureAwait(false);
+        var auction = await _service.CloseAsync(id).ConfigureAwait(false);
+        if (auction is null) return NotFound();
+        await _hub.Clients.Group(id.ToString()).SendAsync("auctionClosed", auction).ConfigureAwait(false);
+        await NotifyUpdatedAsync(id, auction).ConfigureAwait(false);
         return NoContent();
     }
+
+    private Task NotifyUpdatedAsync(Guid auctionId, Auction auction) => _hub.Clients.Group(auctionId.ToString()).SendAsync("auctionUpdated", auction);
 }

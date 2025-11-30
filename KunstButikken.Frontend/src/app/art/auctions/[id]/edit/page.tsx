@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { apiFetch } from '@/shared/api/api';
 import { UiAuction } from '@/features/auction/types/auction';
 import {
   Container,
@@ -17,6 +16,9 @@ import {
   Alert,
 } from '@mui/material';
 import { useTranslations } from '@/features/i18n/components/TranslationProvider';
+import { UpdateAuction } from '@/application/useCases/UpdateAuction';
+import { GetAuctionById } from '@/application/useCases/GetAuctionById';
+import { useContainer } from '@/presentation/providers/DiProvider';
 
 const schema = z.object({
   startsAt: z.date(),
@@ -30,6 +32,9 @@ type FormData = z.infer<typeof schema>;
 export default function EditAuctionPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { t } = useTranslations();
+  const container = useContainer();
+  const updateAuctionUseCase = useMemo(() => container.resolve(UpdateAuction), [container]);
+  const getAuctionByIdUseCase = useMemo(() => container.resolve(GetAuctionById), [container]);
   const [auction, setAuction] = useState<UiAuction | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,7 +50,8 @@ export default function EditAuctionPage({ params }: { params: { id: string } }) 
   useEffect(() => {
     const fetchAuction = async () => {
       try {
-        const data = await apiFetch<UiAuction>('AUCTION', `/${params.id}`);
+        const data = await getAuctionByIdUseCase.execute(params.id);
+        if (!data) throw new Error('Not found');
         setAuction(data);
         reset({
           startsAt: new Date(data.startsAt),
@@ -53,22 +59,25 @@ export default function EditAuctionPage({ params }: { params: { id: string } }) 
           startingPrice: data.startingPrice,
           reservePrice: data.reservePrice,
         });
-      } catch (err) {
+      } catch {
         setError(t('auction.failedToFetchAuctionData'));
       }
     };
     fetchAuction();
-  }, [params.id, reset, t]);
+  }, [params.id, reset, t, getAuctionByIdUseCase]);
 
   const onSubmit = async (data: FormData) => {
     try {
-      await apiFetch('AUCTION', `/${params.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
+      await updateAuctionUseCase.execute(params.id, {
+        ...data,
+        startsAt: data.startsAt.toISOString(),
+        endsAt: data.endsAt.toISOString(),
       });
       router.push(`/art/auctions/${params.id}`);
-    } catch (err: any) {
-      setError(err.message || t('auction.failedToUpdateAuction'));
+    } catch (err: unknown) {
+      const fallback = t('auction.failedToUpdateAuction');
+      const message = err instanceof Error ? err.message : fallback;
+      setError(message || fallback);
     }
   };
 

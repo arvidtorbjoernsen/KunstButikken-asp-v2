@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -6,9 +7,21 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
-    <PackageReference Include="Microsoft.Extensions.Azure" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="aspire.rabbitmq.client" />
+    <PackageReference Include="microsoft.entityframeworkcore.relational" />
+    <PackageReference Include="microsoft.extensions.configuration.abstractions" />
+    <PackageReference Include="microsoft.extensions.dependencyinjection" />
+    <PackageReference Include="microsoft.extensions.dependencyinjection.abstractions" />
+    <PackageReference Include="microsoft.extensions.hosting.abstractions" />
+    <PackageReference Include="microsoft.extensions.logging.abstractions" />
+    <PackageReference Include="opentelemetry.extensions.hosting" />
+    <PackageReference Include="rabbitmq.client" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\KunstButikken.ArtService.Domain.csproj" />

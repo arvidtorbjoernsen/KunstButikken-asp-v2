@@ -2,6 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using KunstButikken.AuctionService.Infrastructure.Persistence;
+using KunstButikken.AuctionService.Domain.Interfaces;
+using KunstButikken.AuctionService.Infrastructure.Repositories;
 
 namespace KunstButikken.AuctionService.Infrastructure.DependencyInjection;
 
@@ -24,7 +26,7 @@ public static class InfrastructureServiceCollectionExtensions
             services.AddDbContext<AuctionDbContext>(options => options.UseInMemoryDatabase("auctions_inmemory"));
         }
 
-        services.AddScoped<KunstButikken.AuctionService.Interfaces.IAuctionRepository, KunstButikken.AuctionService.Infrastructure.Repositories.AuctionRepository>();
+        services.AddScoped<IAuctionRepository, AuctionRepository>();
         return services;
     }
 }

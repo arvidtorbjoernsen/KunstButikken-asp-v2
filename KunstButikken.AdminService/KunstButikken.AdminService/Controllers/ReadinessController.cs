@@ -1,4 +1,4 @@
-using KunstButikken.AdminService.Data;
+using KunstButikken.AdminService.Infrastructure.Data;
 using KunstButikken.Common.Logging;
 using Microsoft.AspNetCore.Mvc;
 

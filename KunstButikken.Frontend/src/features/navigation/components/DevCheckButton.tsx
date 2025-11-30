@@ -14,13 +14,14 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react'; // Removed useRef
 
 export default function DevCheckButton() {
   const [open, setOpen] = useState(false);
   const { t } = useTranslations();
   const { keycloak, authenticated, isSeller, isBuyer, isAdmin, getUsername } = useKeycloak();
-  // Removed const buttonRef = useRef<HTMLButtonElement>(null);
+  const router = useRouter();
 
   // Only show in development
   if (process.env.NODE_ENV === 'production') {
@@ -61,8 +62,7 @@ export default function DevCheckButton() {
   };
 
   const handleForceRefresh = () => {
-    // Navigate to the clear-session page which handles the full reset
-    window.location.href = '/auth/logout';
+    router.push('/auth/logout');
   };
 
   return (
@@ -191,10 +191,10 @@ export default function DevCheckButton() {
                       <Typography variant="body2" sx={{ mt: 1 }}>
                         <strong>Resource/Client Roles:</strong>
                       </Typography>
-                      {Object.entries(resourceAccess).map(([client, data]: [string, any]) => (
+                      {Object.entries(resourceAccess).map(([client, data]) => (
                         <Box key={client} sx={{ ml: 2, mt: 0.5 }}>
                           <Typography variant="body2">
-                            <strong>{client}:</strong> {data?.roles?.join(', ') || 'none'}
+                            <strong>{client}:</strong> {Array.isArray(data?.roles) ? data.roles.join(', ') : 'none'}
                           </Typography>
                         </Box>
                       ))}

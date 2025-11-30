@@ -1,12 +1,12 @@
-using KunstButikken.UserService.Data;
+using KunstButikken.UserService.Application.Interfaces;
+using KunstButikken.UserService.Domain.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KunstButikken.UserService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SellersController(IUserRepository repo) : ControllerBase
+public class SellersController(ISellerQueryService sellers) : ControllerBase
 {
     /// <summary>
     ///     Get all verified sellers. Used by other services for seeding and lookups.
@@ -14,16 +14,8 @@ public class SellersController(IUserRepository repo) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<SellerDto>>> GetSellers()
     {
-        var sellers = await repo.Query()
-            .Where(p => p.IsSeller)
-            .OrderBy(p => p.CreatedAt)
-            .Select(p => new SellerDto
-            {
-                Id = p.Id, UserId = p.UserId, DisplayName = p.DisplayName, Email = p.Email
-            })
-            .ToListAsync().ConfigureAwait(false);
-
-        return Ok(sellers);
+        var list = await sellers.GetSellersAsync().ConfigureAwait(false);
+        return Ok(list);
     }
 
     /// <summary>
@@ -32,13 +24,7 @@ public class SellersController(IUserRepository repo) : ControllerBase
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<SellerDto>> GetSellerByUserId(Guid userId)
     {
-        var seller = await repo.Query()
-            .Where(p => p.UserId == userId && p.IsSeller)
-            .Select(p => new SellerDto
-            {
-                Id = p.Id, UserId = p.UserId, DisplayName = p.DisplayName, Email = p.Email
-            })
-            .FirstOrDefaultAsync().ConfigureAwait(false);
+        var seller = await sellers.GetSellerByUserIdAsync(userId).ConfigureAwait(false);
 
         if (seller == null)
         {
@@ -50,12 +36,4 @@ public class SellersController(IUserRepository repo) : ControllerBase
 
         return Ok(seller);
     }
-}
-
-public class SellerDto
-{
-    public Guid Id { get; set; }
-    public Guid UserId { get; set; }
-    public string DisplayName { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
 }

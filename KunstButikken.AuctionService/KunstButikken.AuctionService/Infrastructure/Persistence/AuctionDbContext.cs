@@ -21,7 +21,7 @@ public class AuctionDbContext : DbContext
             throw new ArgumentNullException(nameof(modelBuilder));
         }
 
-        modelBuilder.Entity<Auction>().HasMany(a => a.Bids).WithOne().HasForeignKey(b => b.AuctionId);
+        modelBuilder.Entity<Auction>().HasMany(a => a.Bids).WithOne(b => b.Auction).HasForeignKey(b => b.AuctionId);
         modelBuilder.Entity<Auction>()
             .Property(a => a.SellerDisplayName)
             .IsRequired()

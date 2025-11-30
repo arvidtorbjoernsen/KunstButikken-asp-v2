@@ -1,4 +1,4 @@
-namespace KunstButikken.AdminService.Models;
+namespace KunstButikken.AdminService.Domain.Models;
 
 public class AdminLog
 {
@@ -8,4 +8,3 @@ public class AdminLog
     public string PerformedBy { get; set; } = "system";
     public string Details { get; set; } = string.Empty;
 }
-

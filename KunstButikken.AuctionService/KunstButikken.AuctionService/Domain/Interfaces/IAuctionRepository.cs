@@ -1,6 +1,6 @@
 using KunstButikken.AuctionService.Domain.Models;
 
-namespace KunstButikken.AuctionService.Interfaces;
+namespace KunstButikken.AuctionService.Domain.Interfaces;
 
 public interface IAuctionRepository
 {

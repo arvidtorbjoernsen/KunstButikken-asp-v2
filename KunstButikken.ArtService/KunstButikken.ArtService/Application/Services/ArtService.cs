@@ -3,6 +3,7 @@ using KunstButikken.ArtService.Domain.Interfaces;
 using KunstButikken.ArtService.Domain.Models;
 using KunstButikken.ArtService.Domain.DTOs;
 using KunstButikken.IntegrationEvents.Contracts.Abstractions;
+using KunstButikken.IntegrationEvents.Contracts.Events;
 using Microsoft.Extensions.Logging;
 using KunstButikken.ServiceDefaults;
 
@@ -28,6 +29,7 @@ public class ArtService : IArtService
     public Task<IEnumerable<Art>> GetAllAsync(ArtStatus? status = null, bool? featured = null, CancellationToken ct = default)
     {
         var query = _repo.Query();
+
         if (status.HasValue)
         {
             query = query.Where(a => a.Status == status.Value);
@@ -38,7 +40,16 @@ public class ArtService : IArtService
             query = query.Where(a => a.IsFeatured == featured.Value);
         }
 
-        query = query.Where(a => a.Status == ArtStatus.Published && a.IsVerified);
+        if (!status.HasValue)
+        {
+            query = query.Where(a => a.Status == ArtStatus.Published);
+        }
+
+        if (!status.HasValue && !featured.HasValue)
+        {
+            query = query.Where(a => a.IsVerified);
+        }
+
         return Task.FromResult<IEnumerable<Art>>(query.OrderByDescending(a => a.CreatedAt).ToList());
     }
 
@@ -51,7 +62,6 @@ public class ArtService : IArtService
         art.CreatedAt = _clock.UtcNow;
         await _repo.AddAsync(art, ct).ConfigureAwait(false);
         await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
-        // publish event
         var ev = new KunstButikken.IntegrationEvents.Contracts.Events.ArtCreatedIntegrationEvent(
             art.TitleEn, art.TitleNb, art.Artist, art.SellerId, art.SellerDisplayName, art.Price, art.ImageUrl);
         await _eventBus.PublishAsync(ev, ct).ConfigureAwait(false);
@@ -75,18 +85,6 @@ public class ArtService : IArtService
         await _eventBus.PublishAsync(ev, ct).ConfigureAwait(false);
     }
 
-    public async Task<ImageUploadResponse> UploadImageAsync(Guid id, Stream fileStream, string fileName, string contentType, CancellationToken ct = default)
-    {
-        var art = await _repo.FindAsync(id, ct).ConfigureAwait(false);
-        if (art == null) throw new KeyNotFoundException();
-        var ext = Path.GetExtension(fileName);
-        var blobName = $"{id}/{Guid.NewGuid()}{ext}";
-        var url = await _blob.UploadAsync(blobName, fileStream, contentType, ct).ConfigureAwait(false);
-        art.ImageUrl = new Uri(url);
-        await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
-        return new ImageUploadResponse { ImageUrl = art.ImageUrl };
-    }
-
     public async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
         var art = await _repo.FindAsync(id, ct).ConfigureAwait(false);
@@ -95,6 +93,22 @@ public class ArtService : IArtService
         await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
         var ev = new KunstButikken.IntegrationEvents.Contracts.Events.ArtDeletedIntegrationEvent(art.Id);
         await _eventBus.PublishAsync(ev, ct).ConfigureAwait(false);
+    }
+
+    public async Task<ImageUploadResponse> UploadImageAsync(Guid id, Stream fileStream, string fileName, string contentType, CancellationToken ct = default)
+    {
+        var art = await _repo.FindAsync(id, ct).ConfigureAwait(false);
+        if (art == null)
+        {
+            throw new KeyNotFoundException();
+        }
+
+        var ext = Path.GetExtension(fileName);
+        var blobName = $"{id}/{Guid.NewGuid()}{ext}";
+        var url = await _blob.UploadAsync(blobName, fileStream, contentType, ct).ConfigureAwait(false);
+        art.ImageUrl = new Uri(url);
+        await _repo.SaveChangesAsync(ct).ConfigureAwait(false);
+        return new ImageUploadResponse { ImageUrl = art.ImageUrl };
     }
 
     public Task<IEnumerable<Art>> GetFeaturedAsync(int limit, CancellationToken ct = default)

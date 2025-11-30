@@ -1,9 +1,8 @@
-// ...existing code...
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
+using KunstButikken.PaymentService.Domain.Repositories;
+using KunstButikken.PaymentService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using KunstButikken.PaymentService.Data;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KunstButikken.PaymentService.Infrastructure.DependencyInjection;
 
@@ -12,22 +11,22 @@ public static class InfrastructureServiceCollectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var cs = configuration.GetConnectionString("Default")
-                 ?? configuration.GetConnectionString("paymentsdb");
+                 ?? configuration.GetConnectionString("paymentsdb")
+                 ?? configuration["ConnectionStrings:Default"]
+                 ?? configuration["ConnectionStrings:paymentsdb"];
 
         if (!string.IsNullOrWhiteSpace(cs) && !cs.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
         {
             services.AddDbContext<PaymentDbContext>(options =>
-            {
-                options.UseNpgsql(cs, b => b.MigrationsAssembly(typeof(PaymentDbContext).Assembly.FullName));
-            });
+                options.UseNpgsql(cs, npgsql => npgsql.EnableRetryOnFailure()
+                    .MigrationsAssembly(typeof(PaymentDbContext).Assembly.FullName)));
         }
         else
         {
-            services.AddDbContext<PaymentDbContext>(options => options.UseInMemoryDatabase("payment_inmemory"));
+            services.AddDbContext<PaymentDbContext>(options => options.UseInMemoryDatabase("payment_inmemory_db"));
         }
 
-        services.AddScoped<KunstButikken.PaymentService.Data.IPaymentRepository, KunstButikken.PaymentService.Data.PaymentRepository>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
         return services;
     }
 }
-

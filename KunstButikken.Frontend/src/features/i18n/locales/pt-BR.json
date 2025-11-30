@@ -25,11 +25,19 @@
     "subtitle": "Explore obras selecionadas da nossa loja",
     "searchPlaceholder": "Pesquisar arte, artistas ou vendedores",
     "noResults": "Sem resultados",
-    "featured": "Em destaque"
+    "featured": "Em destaque",
+    "allArt": "Toda a arte",
+    "noArtwork": "Nenhuma obra disponível no momento."
   },
   "artPage": {
+    "title": "Arte à Venda",
+    "sellerDescription": "Gerencie sua arte e navegue pelas obras de arte verificadas de outros vendedores",
+    "buyerDescription": "Obras de arte verificadas disponíveis para compra",
+    "defaultDescription": "Navegue pelas obras de arte verificadas",
+    "yourArt": "Sua Arte",
+    "otherArt": "Outras Obras de Arte Disponíveis",
     "featured": "Em destaque",
-    "forSale": "Arte à Venda"
+    "noArt": "Nenhuma arte encontrada."
   },
   "art": {
     "price": "Preço",

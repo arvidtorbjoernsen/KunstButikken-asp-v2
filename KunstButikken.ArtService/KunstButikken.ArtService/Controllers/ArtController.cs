@@ -13,7 +13,7 @@ namespace KunstButikken.ArtService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-internal class ArtController(IArtService artService) : ControllerBase
+public class ArtController(IArtService artService) : ControllerBase
 {
     // Static mapping of admin actions to the corresponding modification lambda.
     // For Reject we leave the mapping null and handle it specially.

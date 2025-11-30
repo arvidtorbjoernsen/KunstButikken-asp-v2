@@ -10,30 +10,28 @@ import { parseResponse } from './response';
 import { getGatewayBase } from '@/shared/config';
 
 let keycloakTokenGetter: (() => string | undefined) | null = null;
+let keycloakTokenRefresher: (() => Promise<boolean>) | null = null;
 
 /**
  * Set the token getter function (called from KeycloakProvider)
  */
-export function setKeycloakTokenGetter(getter: () => string | undefined) {
+export function setKeycloakTokenGetter(getter: (() => string | undefined) | null) {
   keycloakTokenGetter = getter;
 }
 
-/**
- * Create authenticated fetch with auto token attachment
- * Similar to Angular's authTokenInterceptor
- */
-export async function apiFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  // Get API gateway URL from centralized config
+export function setKeycloakTokenRefresher(refresher: (() => Promise<boolean>) | null) {
+  keycloakTokenRefresher = refresher;
+}
+
+async function performFetch(
+  url: string,
+  options: RequestInit = {},
+  isRetry = false,
+): Promise<Response> {
   const gatewayUrl = getGatewayBase();
-
-  // Check if this request is going to our API gateway
   const isApiRequest = url.startsWith(gatewayUrl) || url.startsWith('/api/');
-
-  // Clone headers to avoid mutation
   const headers = new Headers(options.headers);
 
-  // Attach token if this is an API request and we have a token
-  // Similar to Angular's authTokenInterceptor
   if (isApiRequest && keycloakTokenGetter) {
     const token = keycloakTokenGetter();
     if (token) {
@@ -46,11 +44,22 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
     console.debug('[apiFetch] Skipping token for non-API request:', url);
   }
 
-  // Make the request with updated headers
-  return fetch(url, {
+  const response = await fetch(url, {
     ...options,
     headers,
   });
+
+  if (!isRetry && (response.status === 401 || response.status === 403) && keycloakTokenRefresher) {
+    console.warn('[apiFetch] Received auth error, attempting token refresh...');
+    const refreshed = await keycloakTokenRefresher();
+    if (refreshed) {
+      console.info('[apiFetch] Token refresh succeeded, retrying request');
+      return performFetch(url, options, true);
+    }
+    console.warn('[apiFetch] Token refresh failed or unavailable');
+  }
+
+  return response;
 }
 
 /**
@@ -122,3 +131,7 @@ export const apiClient = {
     return parseResponse<T>(response);
   },
 };
+
+export async function apiFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  return performFetch(url, options);
+}

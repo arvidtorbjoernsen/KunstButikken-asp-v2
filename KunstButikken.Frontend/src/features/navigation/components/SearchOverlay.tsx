@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
@@ -8,7 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslations } from '@/features/i18n/components/TranslationProvider';
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '@/shared/state/store';
+import type { RootState, AppDispatch } from '@/shared/state/store';
 import { setQuery } from '@/features/search/state/searchSlice';
 import Popover from '@mui/material/Popover';
 import Box from '@mui/material/Box';
@@ -46,15 +46,16 @@ function useDebounce<T>(value: T, delay: number): T {
 
 export default function SearchOverlay({ open, onClose, anchorEl }: SearchOverlayProps) {
   const { t, locale } = useTranslations();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const query = useSelector((s: RootState) => s.search.query);
   const { results, loading, error } = useSelector((s: RootState) => s.searchResults);
+  const placeholder = useMemo(() => t('home.searchPlaceholder'), [t]);
 
   const debouncedQuery = useDebounce(query, 700);
 
   useEffect(() => {
     if (debouncedQuery) {
-      dispatch(fetchSearchResults(debouncedQuery) as any);
+      dispatch(fetchSearchResults(debouncedQuery));
     } else {
       dispatch(clearSearchResults());
     }
@@ -116,7 +117,7 @@ export default function SearchOverlay({ open, onClose, anchorEl }: SearchOverlay
         </IconButton>
         <InputBase
           sx={{ ml: 1, flex: 1, textOverflow: 'clip' }}
-          placeholder={t('home.searchPlaceholder')}
+          placeholder={placeholder}
           inputProps={{ 'aria-label': t('aria.search') }}
           value={query}
           onChange={e => dispatch(setQuery(e.target.value))}

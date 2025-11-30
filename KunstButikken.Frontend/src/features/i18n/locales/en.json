@@ -25,17 +25,43 @@
     "subtitle": "Explore selected works from our store",
     "searchPlaceholder": "Search for art, artists or sellers",
     "noResults": "No results",
-    "featured": "Featured"
+    "featured": "Featured",
+    "allArt": "All Artwork",
+    "noArtwork": "No artwork available at the moment.",
+    "viewToggleLabel": "Select art scope",
+    "viewMine": "My art",
+    "viewAll": "All art",
+    "myFeatured": "Your featured art",
+    "myCatalogue": "Your artwork",
+    "myAuctions": "Your auctions",
+    "noAuctions": "You have no auctions yet.",
+    "noFeatured": "No featured items to show."
   },
   "artPage": {
+    "title": "Art for Sale",
+    "sellerDescription": "Manage your art and browse verified artworks from other sellers",
+    "buyerDescription": "Verified artworks available for purchase",
+    "defaultDescription": "Browse verified artworks",
+    "yourArt": "Your Art",
+    "otherArt": "Other Available Art",
     "featured": "Featured",
-    "forSale": "Art for Sale"
+    "noArt": "No art found."
   },
   "art": {
     "price": "Price",
     "artist": "Artist",
     "seller": "Seller",
-    "unknownArtist": "Unknown Artist"
+    "unknownArtist": "Unknown Artist",
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "sold": "Sold",
+      "rejected": "Rejected"
+    },
+    "labels": {
+      "verified": "Verified",
+      "featured": "Featured"
+    }
   },
   "auction": {
     "subtitle": "All current auctions",

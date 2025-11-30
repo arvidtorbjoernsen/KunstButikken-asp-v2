@@ -1,7 +1,6 @@
-namespace KunstButikken.AdminService.Models;
+namespace KunstButikken.AdminService.Domain.Models;
 
 public class HealthResponse
 {
     public string Status { get; set; } = "ok";
 }
-

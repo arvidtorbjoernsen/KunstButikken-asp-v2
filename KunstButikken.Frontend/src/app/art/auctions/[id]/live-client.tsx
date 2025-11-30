@@ -10,13 +10,16 @@ import Alert from '@mui/material/Alert';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
-import type { UiAuction } from '@/features/auction/types/auction';
-import { apiFetch } from '@/shared/api/api';
+import type { UiAuction, ApiAuction } from '@/features/auction/types/auction';
 import * as signalR from '@microsoft/signalr';
 import PlaceBidForm from '@/features/auction/components/PlaceBidForm';
 import { useKeycloak } from '@/features/auth/lib/keycloak';
 import { useTranslations } from '@/features/i18n/components/TranslationProvider';
 import { getGatewayBase } from '@/shared/config';
+import { mapApiToUi as parseApiAuctionToUi } from '@/features/auction/api/auction-client';
+import type { TFunc } from '@/features/i18n/components/TranslationProvider';
+import { useContainer } from '@/presentation/providers/DiProvider';
+import { GetAuctionById } from '@/application/useCases/GetAuctionById';
 
 type ServerAuction = {
   id: string;
@@ -33,44 +36,11 @@ type ServerAuction = {
 };
 
 function map(a: ServerAuction): UiAuction {
-  const startsAt = new Date(a.startsAt);
-  const endsAt = new Date(a.endsAt);
-  const highestBid = a.bids?.length ? Math.max(...a.bids.map(b => b.amount)) : undefined;
-  const now = Date.now();
-  const timeLeftMs = endsAt.getTime() - now;
-  const hasStarted = startsAt.getTime() <= now;
-  const hasEnded = timeLeftMs <= 0;
-  const statusNorm = ((): 'Draft' | 'Open' | 'Closed' => {
-    if (typeof a.status === 'number') {
-      if (a.status === 1) return 'Open';
-      if (a.status === 2) return 'Closed';
-      return 'Draft';
-    }
-    return a.status;
-  })();
-  const isOpen = statusNorm === 'Open' && hasStarted && !hasEnded;
-  const isClosed = statusNorm === 'Closed' || hasEnded;
-  const reservePrice = a.reservePrice ?? undefined;
-  const reserveMet = reservePrice == null || (highestBid != null && highestBid >= reservePrice);
-
-  return {
-    id: a.id,
-    artId: a.artId,
-    sellerId: a.sellerId,
-    startsAt,
-    endsAt,
-    startingPrice: a.startingPrice,
-    reservePrice,
-    status: statusNorm,
-    bidsCount: a.bids?.length ?? 0,
-    highestBid,
-    isOpen,
-    isClosed,
-    reserveMet,
-    timeLeftMs,
-    winningBid: a.winningBid,
-    winnerId: a.winnerId,
-  };
+  return parseApiAuctionToUi({
+    ...a,
+    sellerDisplayName: undefined,
+    bids: a.bids.map(b => ({ ...b, auctionId: a.id, bidderId: '' })),
+  } as ApiAuction);
 }
 
 function useCountdown(target: Date | null | undefined) {
@@ -112,12 +82,12 @@ function formatCurrencyNOK(n?: number) {
 
 // Small presentational helper to reduce complexity in AuctionView
 function AuctionStatusBlock({
-                              auction,
-                              t,
-                              isOwner,
-                            }: {
+  auction,
+  t,
+  isOwner,
+}: {
   auction: UiAuction;
-  t: any;
+  t: TFunc;
   isOwner: boolean;
 }) {
   const formatDateTime = (date: Date) =>
@@ -248,6 +218,8 @@ function AuctionView() {
 
 function AuctionProvider({ auctionId, initial }: { auctionId: string; initial: UiAuction }) {
   const dispatch = useDispatch();
+  const container = useContainer();
+  const getAuctionByIdUseCase = React.useMemo(() => container.resolve(GetAuctionById), [container]);
 
   const dispatchAuction = (auction: UiAuction) => {
     const serializablePayload: SerializableUiAuction = {
@@ -266,15 +238,10 @@ function AuctionProvider({ auctionId, initial }: { auctionId: string; initial: U
     let active = true;
     const interval = setInterval(async () => {
       try {
-        const data = await apiFetch<ServerAuction>(
-          'AUCTION',
-          `/${auctionId}`,
-          { method: 'GET' },
-          false,
-        );
-        if (!active) return;
-        dispatchAuction(map(data));
-      } catch (e) {
+        const fresh = await getAuctionByIdUseCase.execute(auctionId);
+        if (!active || !fresh) return;
+        dispatchAuction(fresh);
+      } catch {
         if (!active) return;
         dispatch(setError('Failed to refresh auction'));
       }
@@ -283,7 +250,7 @@ function AuctionProvider({ auctionId, initial }: { auctionId: string; initial: U
       active = false;
       clearInterval(interval);
     };
-  }, [auctionId, dispatch]);
+  }, [auctionId, dispatch, getAuctionByIdUseCase]);
 
   useEffect(() => {
     let connection: signalR.HubConnection | null = null;
@@ -303,7 +270,7 @@ function AuctionProvider({ auctionId, initial }: { auctionId: string; initial: U
               const { getKeycloakToken } = await import('@/features/auth/lib/keycloak-client');
               const token = getKeycloakToken?.();
               return token ?? '';
-            } catch (e) {
+            } catch {
               return '';
             }
           },
@@ -327,8 +294,9 @@ function AuctionProvider({ auctionId, initial }: { auctionId: string; initial: U
         await connection.start();
         await connection.invoke('JoinAuction', auctionId);
         dispatch(setError(null));
-      } catch (err: any) {
-        dispatch(setError(`Live connection failed: ${err?.message || 'unknown error'}`));
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'unknown error';
+        dispatch(setError(`Live connection failed: ${message}`));
       }
     }
 
@@ -351,9 +319,9 @@ function AuctionProvider({ auctionId, initial }: { auctionId: string; initial: U
 }
 
 export default function AuctionLiveClient({
-                                            auctionId,
-                                            initial,
-                                          }: {
+  auctionId,
+  initial,
+}: {
   auctionId: string;
   initial: UiAuction;
 }) {

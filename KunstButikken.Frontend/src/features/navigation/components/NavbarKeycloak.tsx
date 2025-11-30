@@ -34,7 +34,7 @@ export default function NavbarKeycloak() {
   const [searchOverlayOpen, setSearchOverlayOpen] = useState(false);
   const toolbarRef = useRef<HTMLDivElement>(null); // Ref for the Toolbar
 
-  const handleOpenSearchOverlay = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpenSearchOverlay = () => {
     setSearchOverlayOpen(true);
     // Set anchorEl to the Toolbar itself for centering the Popover below it
     setAnchorEl(toolbarRef.current);

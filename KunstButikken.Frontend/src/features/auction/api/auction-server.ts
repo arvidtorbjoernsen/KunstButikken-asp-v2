@@ -22,5 +22,5 @@ export async function getAuctionByIdServer(id: string): Promise<ApiAuction | nul
   const res = await fetch(url, { next: { revalidate: 5 } });
   if (!res.ok) return null;
   const data = await parseResponse<ApiAuction>(res);
-  return (data as any)?.id ? data : null;
+  return data?.id ? data : null;
 }

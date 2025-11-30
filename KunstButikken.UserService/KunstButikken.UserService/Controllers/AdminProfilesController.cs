@@ -1,32 +1,25 @@
-using KunstButikken.UserService.Data;
+using KunstButikken.UserService.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KunstButikken.UserService.Controllers;
 
 [ApiController]
 [Route("api/admin/profiles")]
 [Authorize(Roles = "Admin")]
-public class AdminProfilesController(IUserRepository repo) : ControllerBase
+public class AdminProfilesController(IAdminProfileService adminProfiles) : ControllerBase
 {
     [HttpGet("pending-sellers")]
     public async Task<IActionResult> GetPendingSellers()
     {
-        var list = await repo.Query()
-            .Where(p => p.IsSeller && !p.IsSellerVerified)
-            .OrderBy(p => p.CreatedAt)
-            .ToListAsync().ConfigureAwait(false);
+        var list = await adminProfiles.GetPendingSellersAsync().ConfigureAwait(false);
         return Ok(list);
     }
 
     [HttpGet("admins")]
     public async Task<IActionResult> GetAdmins()
     {
-        var list = await repo.Query()
-            .Where(p => p.IsAdmin)
-            .OrderBy(p => p.CreatedAt)
-            .ToListAsync().ConfigureAwait(false);
+        var list = await adminProfiles.GetAdminsAsync().ConfigureAwait(false);
         return Ok(list);
     }
 
@@ -35,14 +28,14 @@ public class AdminProfilesController(IUserRepository repo) : ControllerBase
     public async Task<IActionResult> ToggleAdmin(Guid userId)
     {
         var make = HttpContext.Request.Path.Value?.EndsWith("/make-admin", StringComparison.OrdinalIgnoreCase) ?? false;
-        var profile = await repo.Query().FirstOrDefaultAsync(p => p.UserId == userId).ConfigureAwait(false);
-        if (profile is null)
+        try
+        {
+            await adminProfiles.ToggleAdminAsync(userId, make).ConfigureAwait(false);
+        }
+        catch (InvalidOperationException)
         {
             return NotFound();
         }
-
-        profile.IsAdmin = make;
-        await repo.SaveChangesAsync().ConfigureAwait(false);
         return NoContent();
     }
 
@@ -56,15 +49,15 @@ public class AdminProfilesController(IUserRepository repo) : ControllerBase
             return BadRequest("Email required");
         }
 
-        var profile = await repo.Query().FirstOrDefaultAsync(p => p.Email == req.Email).ConfigureAwait(false);
-        if (profile is null)
+        try
         {
-            return NotFound("User profile with this email was not found");
+            var profile = await adminProfiles.MakeAdminByEmailAsync(req.Email.Trim()).ConfigureAwait(false);
+            return Ok(profile);
         }
-
-        profile.IsAdmin = true;
-        await repo.SaveChangesAsync().ConfigureAwait(false);
-        return Ok(profile);
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [HttpPost("{userId:guid}/verify-seller")]
@@ -73,28 +66,18 @@ public class AdminProfilesController(IUserRepository repo) : ControllerBase
     {
         var isVerify = HttpContext.Request.Path.Value?.EndsWith("/verify-seller", StringComparison.OrdinalIgnoreCase) ??
                        false;
-        var profile = await repo.Query().FirstOrDefaultAsync(p => p.UserId == userId).ConfigureAwait(false);
-        if (profile is null)
+        try
+        {
+            await adminProfiles.ToggleSellerVerificationAsync(userId, isVerify).ConfigureAwait(false);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
         {
             return NotFound();
         }
-
-        if (isVerify)
-        {
-            if (!profile.IsSeller)
-            {
-                return BadRequest("User is not a seller");
-            }
-
-            profile.IsSellerVerified = true;
-        }
-        else
-        {
-            profile.IsSellerVerified = false;
-            profile.IsSeller = false;
-        }
-
-        await repo.SaveChangesAsync().ConfigureAwait(false);
         return NoContent();
     }
 }

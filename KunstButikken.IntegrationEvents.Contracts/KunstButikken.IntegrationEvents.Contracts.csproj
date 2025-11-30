@@ -1,12 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Aspire.RabbitMQ.Client"/>
-        <PackageReference Include="RabbitMQ.Client"/>
-    </ItemGroup>
-
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Aspire.RabbitMQ.Client" />
+    <PackageReference Include="RabbitMQ.Client" />
+    <PackageReference Include="microsoft.extensions.configuration.abstractions" />
+    <PackageReference Include="microsoft.extensions.dependencyinjection" />
+    <PackageReference Include="microsoft.extensions.dependencyinjection.abstractions" />
+    <PackageReference Include="microsoft.extensions.hosting.abstractions" />
+    <PackageReference Include="microsoft.extensions.logging.abstractions" />
+    <PackageReference Include="opentelemetry.extensions.hosting" />
+  </ItemGroup>
 </Project>
