@@ -47,7 +47,7 @@
     "@ngrx/store-devtools": "^20.1.0",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
-    "express": "^5.1.0",
+    "express": "^5.2.0",
     "jsdom": "^27.2.0",
     "keycloak-angular": "20.0.0",
     "keycloak-js": "^26.2.1",
