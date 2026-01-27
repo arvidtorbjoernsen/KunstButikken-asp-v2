@@ -32,7 +32,7 @@
     "@stripe/stripe-js": "^8.5.3",
     "import-in-the-middle": "1.15.0",
     "keycloak-js": "^26.2.1",
-    "next": "^16.0.4",
+    "next": "^16.1.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "7.66.0",
